@@ -64,7 +64,6 @@ pnpm test:e2e    # rendered documentation/user journeys
 
 ## 发布说明
 
-维护者负责版本号、changelog、不可变 `/v/<exact-semver>/` 资产和 GitHub Pages 发布。
+维护者负责版本号、changelog、不可变 `/v<exact-semver>/` 资产和 GitHub Pages 发布。
 当前没有 npm 自动发布流程；在 scope、registry 权限和 Trusted Publishing（可信发布）设置
 确认前，请勿提交包含长期 npm token 的 workflow。
-

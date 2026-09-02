@@ -3,9 +3,8 @@
  * @note 仅使用 Node.js 内建模块，以便在干净的 GitHub Actions 环境中运行。
  */
 
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { cp, readdir, readFile, rename, rm, stat } from "node:fs/promises";
-import { randomUUID } from "node:crypto";
 import { extname, relative, resolve, sep } from "node:path";
 
 /** @brief 清单格式版本 / Manifest schema version. */
@@ -150,39 +149,42 @@ export function isPrereleaseVersion(version) {
 }
 
 /**
- * @brief 发现全部主版本别名 / Discover every major-version alias.
+ * @brief 发现全部规范精确版本 / Discover every canonical exact release.
  * @param {string} versionsRoot 包含版本目录的根目录 / Root containing version directories.
- * @return {Promise<Array<{alias:string,version:string,baseUrl:string}>>} 按数值排序的别名 / Numerically sorted aliases.
- * @note 纯数字目录是别名的事实来源；其 manifest 决定目标精确版本。
- *       Numeric directories are the source of truth; their manifest selects the exact version.
+ * @return {Promise<Array<{version:string,baseUrl:string,manifestUrl:string}>>} 排序后的版本描述 / Sorted release descriptors.
+ * @note 仅 vX.Y.Z 目录属于发布集合；latest 和默认资源均不是独立版本。
+ *       Only vX.Y.Z directories belong to the release set; latest and defaults are not releases.
  */
-export async function discoverMajorAliases(versionsRoot) {
+export async function discoverExactReleases(versionsRoot) {
   /** @brief 版本目录项 / Version directory entries. */
   const entries = await readdir(versionsRoot, { withFileTypes: true });
-  /** @brief 发现的别名 / Discovered aliases. */
-  const aliases = [];
+  /** @brief 发现的精确版本 / Discovered exact releases. */
+  const releases = [];
   for (const entry of entries) {
-    if (!entry.isDirectory() || !/^v\d+$/.test(entry.name)) continue;
-    /** @brief 别名目录清单 / Alias-directory manifest. */
+    if (!entry.isDirectory() || !/^v\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(entry.name)) {
+      continue;
+    }
+    /** @brief 精确版本清单 / Exact-release manifest. */
     const manifest = await readJson(resolve(versionsRoot, entry.name, "manifest.json"));
     if (
       typeof manifest.version !== "string" ||
-      !/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(manifest.version) ||
-      isPrereleaseVersion(manifest.version) ||
-      `v${manifest.version.split(".")[0]}` !== entry.name
+      `v${manifest.version}` !== entry.name ||
+      manifest.baseUrl !== `/${entry.name}`
     ) {
       throw new Error(
-        `主版本别名 ${entry.name} 的 manifest 版本无效 / Major alias manifest has an invalid version.`,
+        `精确版本 ${entry.name} 的 manifest 无效 / Exact release has an invalid manifest.`,
       );
     }
-    aliases.push({ alias: entry.name, version: manifest.version, baseUrl: `/${entry.name}` });
+    releases.push({
+      version: manifest.version,
+      baseUrl: `/${entry.name}`,
+      manifestUrl: `/${entry.name}/manifest.json`,
+    });
   }
-  aliases.sort((left, right) => {
-    /** @brief 任意精度主版本比较结果 / Arbitrary-precision major comparison. */
-    const numericOrder = BigInt(left.alias.slice(1)) - BigInt(right.alias.slice(1));
-    return numericOrder < 0n ? -1 : numericOrder > 0n ? 1 : left.alias.localeCompare(right.alias);
-  });
-  return aliases;
+  /** @brief 数值感知的语义版本排序器 / Numeric-aware semantic-version sorter. */
+  const collator = new Intl.Collator("en", { numeric: true, sensitivity: "base" });
+  releases.sort((left, right) => collator.compare(left.version, right.version));
+  return releases;
 }
 
 /**

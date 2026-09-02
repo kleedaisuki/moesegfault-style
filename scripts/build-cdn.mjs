@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 import {
   describeContents,
   describeFile,
-  discoverMajorAliases,
+  discoverExactReleases,
   isDirectory,
   isPrereleaseVersion,
   jsonText,
@@ -29,6 +29,8 @@ const DIST = resolve(ROOT, "packages/style/dist");
 const RELEASES = resolve(ROOT, "static-releases");
 /** @brief Astro 公共资源目录 / Astro public directory. */
 const PUBLIC = resolve(ROOT, "pages/public");
+/** @brief 根发现清单格式版本 / Root discovery-manifest schema version. */
+const ROOT_SCHEMA_VERSION = 2;
 
 /**
  * @brief 生成待发布文件清单 / Build the publishable file inventory.
@@ -190,8 +192,26 @@ async function writeRedirect(target, destination) {
   await mkdir(dirname(target), { recursive: true });
   await writeFile(
     target,
-    `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><meta http-equiv="refresh" content="0;url=${destination}"><link rel="canonical" href="${destination}"><title>正在前往颜色资源 / Redirecting to colors</title><script>location.replace(${encoded}+location.search+location.hash)</script></head><body><p>正在前往 <a href="${destination}">${destination}</a> / Redirecting…</p></body></html>\n`,
+    `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><meta http-equiv="refresh" content="0;url=${destination}"><link rel="canonical" href="${destination}"><title>正在跳转 / Redirecting</title><script>location.replace(${encoded}+location.search+location.hash)</script></head><body><p>正在前往 <a href="${destination}">${destination}</a> / Redirecting…</p></body></html>\n`,
   );
+}
+
+/**
+ * @brief 移除未发布的旧嵌套路径和主版本别名 / Remove unpublished legacy nesting and major aliases.
+ * @param {string} root 发布树根目录 / Release-tree root.
+ * @return {Promise<void>} 完成信号 / Completion signal.
+ * @note 精确版本 vX.Y.Z 不匹配此规则，因而不会被删除。
+ *       Exact vX.Y.Z releases do not match this rule and are never removed.
+ */
+async function removeObsoleteVersionDirectories(root) {
+  if (!(await isDirectory(root))) return;
+  /** @brief Windows 友好的清理选项 / Windows-friendly cleanup options. */
+  const cleanup = { recursive: true, force: true, maxRetries: 5, retryDelay: 100 };
+  for (const entry of await readdir(root, { withFileTypes: true })) {
+    if (entry.isDirectory() && (entry.name === "v" || /^v\d+$/.test(entry.name))) {
+      await rm(resolve(root, entry.name), cleanup);
+    }
+  }
 }
 
 /**
@@ -199,8 +219,9 @@ async function writeRedirect(target, destination) {
  * @return {Promise<void>} 完成信号 / Completion signal.
  */
 async function mirrorPublic() {
+  await removeObsoleteVersionDirectories(PUBLIC);
   /** @brief 受分发器管理的顶层目录 / Top-level directories managed by the distributor. */
-  const managed = /^(?:v|v\d+(?:\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)?|latest|css|tokens|colors)$/;
+  const managed = /^(?:v\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?|latest|css|tokens|colors)$/;
   for (const entry of await readdir(RELEASES, { withFileTypes: true })) {
     if (entry.isDirectory() && managed.test(entry.name)) {
       await replaceDirectory(resolve(RELEASES, entry.name), resolve(PUBLIC, entry.name));
@@ -221,8 +242,6 @@ async function main() {
   if (!/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(version)) {
     throw new Error(`不支持的版本 ${version} / Unsupported semantic version.`);
   }
-  /** @brief 主版本别名 / Major-version alias. */
-  const major = `v${version.split(".")[0]}`;
   /** @brief 发布文件 / Release files. */
   const files = await inventory(version);
   /** @brief 精确版本清单 / Exact-version manifest. */
@@ -235,44 +254,44 @@ async function main() {
   const exact = resolve(RELEASES, exactName);
 
   await mkdir(RELEASES, { recursive: true });
+  await removeObsoleteVersionDirectories(RELEASES);
   if (!(await exactReleaseMatches(exact, files, manifestText))) {
     await createExactRelease(exact, files, manifestText);
   }
+  /** @brief 根清单中记录的最新稳定版本 / Latest stable version recorded by the root manifest. */
+  let latestVersion = version;
   if (!isPrereleaseVersion(version)) {
-    await replaceDirectory(exact, resolve(RELEASES, major));
     await replaceDirectory(exact, resolve(RELEASES, "latest"));
+    await writeRedirect(resolve(RELEASES, "latest", "index.html"), `/${exactName}/`);
     await replaceDirectory(resolve(exact, "css"), resolve(RELEASES, "css"));
     await replaceDirectory(resolve(exact, "tokens"), resolve(RELEASES, "tokens"));
     await replaceDirectory(resolve(exact, "colors"), resolve(RELEASES, "colors"));
     await writeRedirect(resolve(RELEASES, "colors", "index.html"), `/${exactName}/colors/`);
-
-    /** @brief 全部已发布主版本别名 / All published major-version aliases. */
-    const majorAliases = await discoverMajorAliases(RELEASES);
-    /** @brief 别名到精确版本的映射 / Alias-to-exact-version map. */
-    const aliases = Object.fromEntries(majorAliases.map((alias) => [alias.alias, alias.version]));
-    /** @brief 别名到基础 URL 的映射 / Alias-to-base-URL map. */
-    const aliasBaseUrls = Object.fromEntries(
-      majorAliases.map((alias) => [alias.alias, alias.baseUrl]),
-    );
-    aliases.latest = version;
-    aliasBaseUrls.latest = "/latest";
-
-    /** @brief 根发现清单 / Root discovery manifest. */
-    const rootManifest = {
-      ...manifest,
-      aliases,
-      aliasBaseUrls,
-      defaultVersion: version,
-      defaultResources: {
-        styles: "/css/all.css",
-        colors: "/colors/",
-        colorsCss: "/colors/colors.css",
-        colorsJson: "/colors/colors.json",
-        tokensJson: "/tokens/tokens.json",
-      },
-    };
-    await writeFile(resolve(RELEASES, "manifest.json"), jsonText(rootManifest));
+  } else {
+    /** @brief 预发布版本不移动 latest / Prereleases do not move latest. */
+    const existingRoot = await readJson(resolve(RELEASES, "manifest.json"));
+    latestVersion = existingRoot.latestVersion;
   }
+
+  /** @brief 全部已发布精确版本 / Every published exact release. */
+  const publishedVersions = await discoverExactReleases(RELEASES);
+  /** @brief 根发现清单 / Root discovery manifest. */
+  const rootManifest = {
+    schemaVersion: ROOT_SCHEMA_VERSION,
+    package: packageJson.name,
+    publishedVersions,
+    latestVersion,
+    latestBaseUrl: "/latest",
+    defaultVersion: latestVersion,
+    defaultResources: {
+      styles: "/css/all.css",
+      colors: "/colors/",
+      colorsCss: "/colors/colors.css",
+      colorsJson: "/colors/colors.json",
+      tokensJson: "/tokens/tokens.json",
+    },
+  };
+  await writeFile(resolve(RELEASES, "manifest.json"), jsonText(rootManifest));
 
   await mkdir(PUBLIC, { recursive: true });
   await mirrorPublic();
