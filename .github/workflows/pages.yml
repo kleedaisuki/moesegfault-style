@@ -17,6 +17,7 @@ concurrency:
 jobs:
   build:
     name: Build Pages artifact
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -48,7 +49,7 @@ jobs:
 
       - name: Protect immutable release history
         env:
-          RELEASE_BASE: ${{ github.event.before }}
+          RELEASE_BASE: ${{ github.event.before || format('{0}^', github.sha) }}
         run: pnpm release:verify-history "$RELEASE_BASE"
 
       - name: Build versioned static assets

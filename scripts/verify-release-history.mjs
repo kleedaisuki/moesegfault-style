@@ -5,8 +5,13 @@ const base = process.argv[2];
 /** @brief 全零提交标识检测器 / All-zero commit identifier matcher. */
 const zeroSha = /^0+$/;
 
-if (!base || zeroSha.test(base)) {
-  console.log("No comparison base was supplied; skipping release history comparison.");
+if (!base) {
+  console.error("A Git comparison base is required to protect immutable releases.");
+  process.exit(1);
+}
+
+if (zeroSha.test(base)) {
+  console.log("Initial repository push detected; no release history exists to compare.");
   process.exit(0);
 }
 
