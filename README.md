@@ -202,7 +202,7 @@ GitHub Pages 同时承载便于普通 HTML 或无法安装 npm 包的消费方�
 ```html
 <link
   rel="stylesheet"
-  href="https://style.moesegfault.dev/v/0.1.1/css/all.css"
+  href="https://style.moesegfault.dev/v0.1.1/css/all.css"
 />
 ```
 
@@ -210,15 +210,22 @@ GitHub Pages 同时承载便于普通 HTML 或无法安装 npm 包的消费方�
 
 ```text
 https://style.moesegfault.dev/manifest.json
-https://style.moesegfault.dev/v/<exact-semver>/manifest.json
-https://style.moesegfault.dev/v/<exact-semver>/...
-https://style.moesegfault.dev/v/<major>/...
-https://style.moesegfault.dev/v/latest/...
+https://style.moesegfault.dev/v<exact-semver>/manifest.json
+https://style.moesegfault.dev/v<exact-semver>/...
+https://style.moesegfault.dev/v<major>/...
+https://style.moesegfault.dev/latest/...
+https://style.moesegfault.dev/colors
+https://style.moesegfault.dev/colors/colors.css
+https://style.moesegfault.dev/colors/colors.json
+https://style.moesegfault.dev/css/all.css
 ```
 
-- `/v/<exact-semver>/` 是不可变发布契约：已发布文件不得被覆盖。
-- `/v/<major>/` 与 `/v/latest/` 都是会随发布移动的可变别名，只适合文档、原型或明确接受
+- `/v<exact-semver>/` 是不可变发布契约：已发布文件不得被覆盖。
+- `/v<major>/` 与 `/latest/` 都是会随发布移动的可变别名，只适合文档、原型或明确接受
   版本漂移的场景。
+- `/colors` 是可导航的默认入口，并跳转到当前稳定版本（当前为 `/v0.1.1/colors/`）。
+  `/colors/colors.css`、`/colors/colors.json` 与 `/css/all.css` 是无需跳转的最新稳定机器资源；
+  如需可复现构建，请改用对应的 `/v0.1.1/...` 路径。
 - React/Astro 组件默认通过包管理器消费；远程分发重点是 CSS 与 token JSON，避免浏览器裸
   ESM 的 React runtime 解析与重复实例问题。
 

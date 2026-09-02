@@ -5,7 +5,7 @@
       "**",
       "!!**/dist",
       "!!**/.astro",
-      "!!**/public/v",
+      "!!pages/public",
       "!!static-releases",
       "!!**/test-results",
       "!!**/playwright-report"

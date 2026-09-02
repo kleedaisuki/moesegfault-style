@@ -18,6 +18,7 @@ const MEDIA_TYPES = new Map([
   [".avif", "image/avif"],
   [".css", "text/css; charset=utf-8"],
   [".gif", "image/gif"],
+  [".html", "text/html; charset=utf-8"],
   [".ico", "image/x-icon"],
   [".jpeg", "image/jpeg"],
   [".jpg", "image/jpeg"],
@@ -93,19 +94,30 @@ export function mediaTypeFor(path) {
  * @return {Promise<object>} 包含摘要和大小的元数据 / Metadata with digests and size.
  */
 export async function describeFile(path, releasePath, version) {
-  /** @brief 原始文件内容 / Raw file contents. */
-  const contents = await readFile(path);
+  return describeContents(await readFile(path), releasePath, version);
+}
+
+/**
+ * @brief 计算内存内容的发布元数据 / Compute release metadata for in-memory contents.
+ * @param {Uint8Array|string} value 原始内容 / Raw contents.
+ * @param {string} releasePath 发布内相对路径 / Release-relative path.
+ * @param {string} version 语义版本 / Semantic version.
+ * @return {object} 包含摘要和大小的元数据 / Metadata with digests and size.
+ */
+export function describeContents(value, releasePath, version) {
+  /** @brief 统一的二进制内容 / Normalized binary contents. */
+  const contents = Buffer.isBuffer(value) ? value : Buffer.from(value);
   /** @brief SHA-256 十六进制摘要 / SHA-256 hexadecimal digest. */
   const sha256 = createHash("sha256").update(contents).digest("hex");
   /** @brief SHA-384 子资源完整性值 / SHA-384 Subresource Integrity value. */
   const integrity = `sha384-${createHash("sha384").update(contents).digest("base64")}`;
   return {
     path: releasePath,
-    url: `/v/${version}/${releasePath}`,
+    url: `/v${version}/${releasePath}`,
     sha256,
     integrity,
     bytes: contents.byteLength,
-    mediaType: mediaTypeFor(path),
+    mediaType: mediaTypeFor(releasePath),
   };
 }
 
@@ -149,24 +161,24 @@ export async function discoverMajorAliases(versionsRoot) {
   /** @brief 发现的别名 / Discovered aliases. */
   const aliases = [];
   for (const entry of entries) {
-    if (!entry.isDirectory() || !/^\d+$/.test(entry.name)) continue;
+    if (!entry.isDirectory() || !/^v\d+$/.test(entry.name)) continue;
     /** @brief 别名目录清单 / Alias-directory manifest. */
     const manifest = await readJson(resolve(versionsRoot, entry.name, "manifest.json"));
     if (
       typeof manifest.version !== "string" ||
       !/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(manifest.version) ||
       isPrereleaseVersion(manifest.version) ||
-      manifest.version.split(".")[0] !== entry.name
+      `v${manifest.version.split(".")[0]}` !== entry.name
     ) {
       throw new Error(
         `主版本别名 ${entry.name} 的 manifest 版本无效 / Major alias manifest has an invalid version.`,
       );
     }
-    aliases.push({ alias: entry.name, version: manifest.version, baseUrl: `/v/${entry.name}` });
+    aliases.push({ alias: entry.name, version: manifest.version, baseUrl: `/${entry.name}` });
   }
   aliases.sort((left, right) => {
     /** @brief 任意精度主版本比较结果 / Arbitrary-precision major comparison. */
-    const numericOrder = BigInt(left.alias) - BigInt(right.alias);
+    const numericOrder = BigInt(left.alias.slice(1)) - BigInt(right.alias.slice(1));
     return numericOrder < 0n ? -1 : numericOrder > 0n ? 1 : left.alias.localeCompare(right.alias);
   });
   return aliases;

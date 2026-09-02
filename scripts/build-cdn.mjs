@@ -3,10 +3,11 @@
  */
 
 import { randomUUID } from "node:crypto";
-import { cp, mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+import { cp, mkdir, readFile, readdir, rename, rm, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  describeContents,
   describeFile,
   discoverMajorAliases,
   isDirectory,
@@ -46,6 +47,37 @@ async function inventory(version) {
       result.push({ source, path, metadata: await describeFile(source, path, version) });
     }
   }
+  /** @brief 精确版本的可导航颜色索引 / Navigable exact-version color index. */
+  const colorIndex = `<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>MoeSegFault Colors ${version}</title><link rel="stylesheet" href="../css/all.css"></head>
+<body class="moe-surface"><main class="moe-container moe-stack" style="padding-block:var(--moe-space-8)">
+<p class="moe-badge">v${version}</p><h1>颜色资源 / Color resources</h1>
+<p>此页面固定指向版本 v${version}。This page is pinned to version v${version}.</p>
+<ul><li><a href="colors.css">CSS 颜色令牌 / CSS color tokens</a></li><li><a href="colors.json">JSON 设计令牌 / JSON design tokens</a></li><li><a href="../manifest.json">发布清单 / Release manifest</a></li></ul>
+</main></body></html>
+`;
+  result.push({
+    contents: Buffer.from(colorIndex),
+    path: "colors/index.html",
+    metadata: describeContents(colorIndex, "colors/index.html", version),
+  });
+  /** @brief 为颜色命名空间提供的机器资源 / Machine resources in the color namespace. */
+  const tokenCss = result.find((file) => file.path === "css/tokens.css");
+  const tokenJson = result.find((file) => file.path === "tokens/tokens.json");
+  if (!tokenCss || !tokenJson) {
+    throw new Error("缺少颜色令牌构建产物 / Missing built color-token assets.");
+  }
+  result.push({
+    source: tokenCss.source,
+    path: "colors/colors.css",
+    metadata: await describeFile(tokenCss.source, "colors/colors.css", version),
+  });
+  result.push({
+    source: tokenJson.source,
+    path: "colors/colors.json",
+    metadata: await describeFile(tokenJson.source, "colors/colors.json", version),
+  });
   result.sort((left, right) => left.path.localeCompare(right.path, "en"));
   if (result.length === 0) {
     throw new Error(
@@ -66,7 +98,7 @@ function releaseManifest(packageJson, files) {
     schemaVersion: SCHEMA_VERSION,
     package: packageJson.name,
     version: packageJson.version,
-    baseUrl: `/v/${packageJson.version}`,
+    baseUrl: `/v${packageJson.version}`,
     files: files.map((file) => file.metadata),
   };
 }
@@ -91,7 +123,7 @@ async function exactReleaseMatches(target, files, manifestText) {
   }
   for (const file of files) {
     /** @brief 源文件内容 / Source contents. */
-    const source = await readFile(file.source);
+    const source = file.contents ?? (await readFile(file.source));
     /** @brief 已发布文件内容 / Published contents. */
     const published = await readFile(resolve(target, file.path));
     if (!source.equals(published)) {
@@ -119,7 +151,8 @@ async function createExactRelease(target, files, manifestText) {
       /** @brief 临时目标文件 / Temporary destination file. */
       const destination = resolve(temporary, file.path);
       await mkdir(dirname(destination), { recursive: true });
-      await cp(file.source, destination);
+      if (file.contents) await writeFile(destination, file.contents);
+      else await cp(file.source, destination);
     }
     await writeFile(resolve(temporary, "manifest.json"), manifestText);
     await rename(temporary, target);
@@ -145,6 +178,38 @@ async function replaceDirectory(source, target) {
 }
 
 /**
+ * @brief 写入 GitHub Pages 可执行的客户端跳转页 / Write a client redirect that works on GitHub Pages.
+ * @param {string} target 输出文件 / Output file.
+ * @param {string} destination 规范目标 URL / Canonical destination URL.
+ * @return {Promise<void>} 完成信号 / Completion signal.
+ */
+async function writeRedirect(target, destination) {
+  /** @brief HTML 属性与脚本安全使用的目标字符串 / Destination safe for HTML and script use. */
+  const encoded = JSON.stringify(destination);
+  await mkdir(dirname(target), { recursive: true });
+  await writeFile(
+    target,
+    `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><meta http-equiv="refresh" content="0;url=${destination}"><link rel="canonical" href="${destination}"><title>正在前往颜色资源 / Redirecting to colors</title><script>location.replace(${encoded}+location.search+location.hash)</script></head><body><p>正在前往 <a href="${destination}">${destination}</a> / Redirecting…</p></body></html>\n`,
+  );
+}
+
+/**
+ * @brief 将持久发布树镜像进 Astro public 且保留站点文件 / Mirror release entries into Astro public.
+ * @return {Promise<void>} 完成信号 / Completion signal.
+ */
+async function mirrorPublic() {
+  await rm(resolve(PUBLIC, "v"), { recursive: true, force: true });
+  /** @brief 受分发器管理的顶层目录 / Top-level directories managed by the distributor. */
+  const managed = /^(?:v\d+(?:\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)?|latest|css|tokens|colors)$/;
+  for (const entry of await readdir(RELEASES, { withFileTypes: true })) {
+    if (entry.isDirectory() && managed.test(entry.name)) {
+      await replaceDirectory(resolve(RELEASES, entry.name), resolve(PUBLIC, entry.name));
+    }
+  }
+  await cp(resolve(RELEASES, "manifest.json"), resolve(PUBLIC, "manifest.json"));
+}
+
+/**
  * @brief 执行 CDN 构建 / Run the CDN build.
  * @return {Promise<void>} 完成信号 / Completion signal.
  */
@@ -157,7 +222,7 @@ async function main() {
     throw new Error(`不支持的版本 ${version} / Unsupported semantic version.`);
   }
   /** @brief 主版本别名 / Major-version alias. */
-  const major = version.split(".")[0];
+  const major = `v${version.split(".")[0]}`;
   /** @brief 发布文件 / Release files. */
   const files = await inventory(version);
   /** @brief 精确版本清单 / Exact-version manifest. */
@@ -165,18 +230,25 @@ async function main() {
   /** @brief 稳定清单文本 / Stable manifest text. */
   const manifestText = jsonText(manifest);
   /** @brief 精确版本目标 / Exact-version target. */
-  const exact = resolve(RELEASES, "v", version);
+  const exactName = `v${version}`;
+  /** @brief 精确版本目标 / Exact-version target. */
+  const exact = resolve(RELEASES, exactName);
 
-  await mkdir(resolve(RELEASES, "v"), { recursive: true });
+  await mkdir(RELEASES, { recursive: true });
+  await rm(resolve(RELEASES, "v"), { recursive: true, force: true });
   if (!(await exactReleaseMatches(exact, files, manifestText))) {
     await createExactRelease(exact, files, manifestText);
   }
   if (!isPrereleaseVersion(version)) {
-    await replaceDirectory(exact, resolve(RELEASES, "v", major));
-    await replaceDirectory(exact, resolve(RELEASES, "v", "latest"));
+    await replaceDirectory(exact, resolve(RELEASES, major));
+    await replaceDirectory(exact, resolve(RELEASES, "latest"));
+    await replaceDirectory(resolve(exact, "css"), resolve(RELEASES, "css"));
+    await replaceDirectory(resolve(exact, "tokens"), resolve(RELEASES, "tokens"));
+    await replaceDirectory(resolve(exact, "colors"), resolve(RELEASES, "colors"));
+    await writeRedirect(resolve(RELEASES, "colors", "index.html"), `/${exactName}/colors/`);
 
     /** @brief 全部已发布主版本别名 / All published major-version aliases. */
-    const majorAliases = await discoverMajorAliases(resolve(RELEASES, "v"));
+    const majorAliases = await discoverMajorAliases(RELEASES);
     /** @brief 别名到精确版本的映射 / Alias-to-exact-version map. */
     const aliases = Object.fromEntries(majorAliases.map((alias) => [alias.alias, alias.version]));
     /** @brief 别名到基础 URL 的映射 / Alias-to-base-URL map. */
@@ -184,26 +256,29 @@ async function main() {
       majorAliases.map((alias) => [alias.alias, alias.baseUrl]),
     );
     aliases.latest = version;
-    aliasBaseUrls.latest = "/v/latest";
+    aliasBaseUrls.latest = "/latest";
+    aliases.default = version;
+    aliasBaseUrls.default = "/";
 
     /** @brief 根发现清单 / Root discovery manifest. */
     const rootManifest = {
       ...manifest,
       aliases,
       aliasBaseUrls,
+      defaultResources: {
+        styles: "/css/all.css",
+        colors: "/colors/",
+        colorsCss: "/colors/colors.css",
+        colorsJson: "/colors/colors.json",
+        tokensJson: "/tokens/tokens.json",
+      },
     };
     await writeFile(resolve(RELEASES, "manifest.json"), jsonText(rootManifest));
   }
 
   await mkdir(PUBLIC, { recursive: true });
-  await replaceDirectory(resolve(RELEASES, "v"), resolve(PUBLIC, "v"));
-  try {
-    await cp(resolve(RELEASES, "manifest.json"), resolve(PUBLIC, "manifest.json"));
-  } catch (error) {
-    if (error?.code !== "ENOENT") throw error;
-    await rm(resolve(PUBLIC, "manifest.json"), { force: true });
-  }
-  process.stdout.write(`CDN ${version}: ${files.length} files -> pages/public/v\n`);
+  await mirrorPublic();
+  process.stdout.write(`CDN v${version}: ${files.length} files -> pages/public\n`);
 }
 
 await main();

@@ -3,7 +3,7 @@
  */
 
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -52,7 +52,7 @@ async function assertDirectoryEqual(expected, actual) {
  */
 async function verifyExactRelease(rootManifest) {
   /** @brief 精确版本目录 / Exact-version directory. */
-  const exact = resolve(RELEASES, "v", rootManifest.version);
+  const exact = resolve(RELEASES, `v${rootManifest.version}`);
   /** @brief 精确版本清单 / Exact-version manifest. */
   const manifest = await readJson(resolve(exact, "manifest.json"));
   assert.equal(manifest.version, rootManifest.version);
@@ -88,8 +88,27 @@ async function main() {
   const manifest = await readJson(resolve(RELEASES, "manifest.json"));
   assert.equal(isPrereleaseVersion(manifest.version), false, "root manifest must remain stable");
   await verifyExactRelease(manifest);
+  /** @brief 磁盘中的全部精确版本目录 / Every exact-version directory on disk. */
+  const exactNames = (await readdir(RELEASES, { withFileTypes: true }))
+    .filter(
+      (entry) => entry.isDirectory() && /^v\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(entry.name),
+    )
+    .map((entry) => entry.name)
+    .sort();
+  for (const exactName of exactNames) {
+    /** @brief 当前精确版本清单 / Current exact-version manifest. */
+    const exactManifest = await readJson(resolve(RELEASES, exactName, "manifest.json"));
+    assert.equal(
+      exactName,
+      `v${exactManifest.version}`,
+      `${exactName} has the wrong manifest version`,
+    );
+    assert.equal(exactManifest.baseUrl, `/${exactName}`, `${exactName} has the wrong base URL`);
+    await verifyExactRelease(exactManifest);
+    await assertDirectoryEqual(resolve(RELEASES, exactName), resolve(PUBLIC, exactName));
+  }
   /** @brief 从磁盘发现的主版本别名 / Major-version aliases discovered from disk. */
-  const majorAliases = await discoverMajorAliases(resolve(RELEASES, "v"));
+  const majorAliases = await discoverMajorAliases(RELEASES);
   /** @brief 期望的完整别名映射 / Expected complete alias map. */
   const expectedAliases = Object.fromEntries(
     majorAliases.map((alias) => [alias.alias, alias.version]),
@@ -99,7 +118,9 @@ async function main() {
     majorAliases.map((alias) => [alias.alias, alias.baseUrl]),
   );
   expectedAliases.latest = manifest.version;
-  expectedAliasBaseUrls.latest = "/v/latest";
+  expectedAliasBaseUrls.latest = "/latest";
+  expectedAliases.default = manifest.version;
+  expectedAliasBaseUrls.default = "/";
   assert.deepEqual(
     manifest.aliases,
     expectedAliases,
@@ -113,16 +134,52 @@ async function main() {
 
   for (const { alias, version } of majorAliases) {
     /** @brief 主版本别名自身的清单 / Major alias's own manifest. */
-    const aliasManifest = await readJson(resolve(RELEASES, "v", alias, "manifest.json"));
+    const aliasManifest = await readJson(resolve(RELEASES, alias, "manifest.json"));
     assert.equal(aliasManifest.version, version, `${alias} manifest version differs`);
     await verifyExactRelease(aliasManifest);
-    await assertDirectoryEqual(resolve(RELEASES, "v", version), resolve(RELEASES, "v", alias));
+    await assertDirectoryEqual(resolve(RELEASES, `v${version}`), resolve(RELEASES, alias));
   }
   await assertDirectoryEqual(
-    resolve(RELEASES, "v", manifest.version),
-    resolve(RELEASES, "v", "latest"),
+    resolve(RELEASES, `v${manifest.version}`),
+    resolve(RELEASES, "latest"),
   );
-  await assertDirectoryEqual(resolve(RELEASES, "v"), resolve(PUBLIC, "v"));
+  for (const name of [
+    "latest",
+    ...majorAliases.map(({ alias }) => alias),
+    "css",
+    "tokens",
+    "colors",
+  ]) {
+    await assertDirectoryEqual(resolve(RELEASES, name), resolve(PUBLIC, name));
+  }
+  await assertDirectoryEqual(
+    resolve(RELEASES, "css"),
+    resolve(RELEASES, `v${manifest.version}`, "css"),
+  );
+  await assertDirectoryEqual(
+    resolve(RELEASES, "tokens"),
+    resolve(RELEASES, `v${manifest.version}`, "tokens"),
+  );
+  assert.deepEqual(
+    await readFile(resolve(RELEASES, "colors", "colors.css")),
+    await readFile(resolve(RELEASES, `v${manifest.version}`, "colors", "colors.css")),
+  );
+  assert.deepEqual(
+    await readFile(resolve(RELEASES, "colors", "colors.json")),
+    await readFile(resolve(RELEASES, `v${manifest.version}`, "colors", "colors.json")),
+  );
+  assert.match(
+    await readFile(resolve(RELEASES, "colors", "index.html"), "utf8"),
+    new RegExp(`/v${manifest.version}/colors/`),
+    "default /colors must redirect to the current exact version",
+  );
+  assert.deepEqual(manifest.defaultResources, {
+    styles: "/css/all.css",
+    colors: "/colors/",
+    colorsCss: "/colors/colors.css",
+    colorsJson: "/colors/colors.json",
+    tokensJson: "/tokens/tokens.json",
+  });
   assert.deepEqual(
     await readFile(resolve(PUBLIC, "manifest.json")),
     await readFile(resolve(RELEASES, "manifest.json")),

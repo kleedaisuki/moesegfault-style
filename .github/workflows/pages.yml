@@ -60,8 +60,8 @@ jobs:
 
       - name: Require committed release assets
         run: |
-          git diff --exit-code -- static-releases pages/public/manifest.json pages/public/v
-          test -z "$(git status --porcelain --untracked-files=all -- static-releases pages/public/manifest.json pages/public/v)"
+          git diff --exit-code -- static-releases pages/public
+          test -z "$(git status --porcelain --untracked-files=all -- static-releases pages/public)"
 
       - name: Build documentation and showcase
         run: pnpm build:pages

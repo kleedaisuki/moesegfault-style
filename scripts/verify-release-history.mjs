@@ -20,7 +20,7 @@ let output;
 try {
   output = execFileSync(
     "git",
-    ["diff", "--name-status", `${base}...HEAD`, "--", "static-releases/v"],
+    ["diff", "--name-status", `${base}...HEAD`, "--", "static-releases"],
     {
       encoding: "utf8",
     },
@@ -31,7 +31,7 @@ try {
 }
 
 /** @brief 精确语义版本发布路径检测器 / Exact semantic-version release path matcher. */
-const exactRelease = /^(static-releases\/v\/v?\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)\//;
+const exactRelease = /^(static-releases\/v\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)\//;
 /** @brief 不可变发布违规项 / Immutable release violations. */
 const violations = [];
 /** @brief 基线中已存在的精确版本目录缓存 / Cache of exact-version directories present at the base. */
@@ -55,7 +55,9 @@ for (const line of output.trim().split("\n")) {
         existedAtBase.set(releaseRoot, false);
       }
     }
-    if (status !== "A" || existedAtBase.get(releaseRoot)) violations.push(`${status}\t${path}`);
+    /** @brief 新目录可由新增、复制或重命名首次引入 / A new release may first appear via add, copy, or rename. */
+    const introducesNewPath = /^[ACR]/.test(status);
+    if (!introducesNewPath || existedAtBase.get(releaseRoot)) violations.push(`${status}\t${path}`);
   }
 }
 

@@ -76,22 +76,5 @@
       "bytes": 7232,
       "mediaType": "application/json; charset=utf-8"
     }
-  ],
-  "aliases": {
-    "v0": "0.1.1",
-    "latest": "0.1.1",
-    "default": "0.1.1"
-  },
-  "aliasBaseUrls": {
-    "v0": "/v0",
-    "latest": "/latest",
-    "default": "/"
-  },
-  "defaultResources": {
-    "styles": "/css/all.css",
-    "colors": "/colors/",
-    "colorsCss": "/colors/colors.css",
-    "colorsJson": "/colors/colors.json",
-    "tokensJson": "/tokens/tokens.json"
-  }
+  ]
 }
