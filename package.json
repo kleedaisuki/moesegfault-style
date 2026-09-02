@@ -16,10 +16,11 @@
     "format:check": "biome format .",
     "lint": "biome lint .",
     "check": "pnpm build && pnpm test && pnpm lint && pnpm format:check",
-    "test": "pnpm --filter @moesegfault/style test && pnpm --filter @moesegfault/pages test",
+    "test": "pnpm --filter @moesegfault/style test && pnpm --filter @moesegfault/pages test && node --test scripts/cdn-lib.test.mjs",
     "test:e2e": "pnpm --filter @moesegfault/pages test:e2e",
     "cdn:build": "node scripts/build-cdn.mjs",
     "cdn:verify": "node scripts/verify-cdn.mjs",
+    "release:verify-history": "node scripts/verify-release-history.mjs",
     "pack:check": "pnpm --filter @moesegfault/style pack:check"
   },
   "devDependencies": {

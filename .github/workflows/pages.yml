@@ -22,6 +22,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
@@ -44,14 +46,39 @@ jobs:
       - name: Build library
         run: pnpm build:library
 
+      - name: Protect immutable release history
+        env:
+          RELEASE_BASE: ${{ github.event.before }}
+        run: pnpm release:verify-history "$RELEASE_BASE"
+
       - name: Build versioned static assets
         run: pnpm cdn:build
 
       - name: Verify versioned static assets
         run: pnpm cdn:verify
 
+      - name: Require committed release assets
+        run: |
+          git diff --exit-code -- static-releases pages/public/manifest.json pages/public/v
+          test -z "$(git status --porcelain --untracked-files=all -- static-releases pages/public/manifest.json pages/public/v)"
+
       - name: Build documentation and showcase
         run: pnpm build:pages
+
+      - name: Test libraries and documentation
+        run: pnpm test
+
+      - name: Install Playwright browser
+        run: pnpm --filter @moesegfault/pages exec playwright install --with-deps chromium
+
+      - name: Test documentation in a production server
+        run: pnpm test:e2e
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Check formatting
+        run: pnpm format:check
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
