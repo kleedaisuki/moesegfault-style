@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Build, test, lint, and format
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build library
+        run: pnpm build:library
+
+      - name: Build and verify versioned assets
+        run: pnpm cdn:build && pnpm cdn:verify
+
+      - name: Build documentation and showcase
+        run: pnpm build:pages
+
+      - name: Test
+        run: pnpm test
+
+      - name: Install Playwright browser
+        run: pnpm --filter @moesegfault/pages exec playwright install --with-deps chromium
+
+      - name: Test documentation in a production server
+        run: pnpm test:e2e
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Check formatting
+        run: pnpm format:check
