@@ -11,14 +11,16 @@ import {
   describeFile,
   discoverExactReleases,
   isDirectory,
-  isPrereleaseVersion,
+  isValidVersion,
   jsonText,
   listFiles,
+  latestStableRelease,
   RELEASE_DIRECTORIES,
   readJson,
   replaceDirectory,
   relativeUrl,
   SCHEMA_VERSION,
+  versionFromExactDirectory,
 } from "./cdn-lib.mjs";
 
 /** @brief 仓库根目录 / Repository root. */
@@ -215,15 +217,46 @@ async function removeObsoleteVersionDirectories(root) {
 }
 
 /**
+ * @brief 删除 Pages 中没有发布源的孤儿精确版本 / Remove public exact releases with no release source.
+ * @param {string} sourceRoot 持久发布树 / Persistent release tree.
+ * @param {string} publicRoot Pages 公共树 / Pages public tree.
+ * @return {Promise<void>} 完成信号 / Completion signal.
+ */
+async function removeOrphanPublicReleases(sourceRoot, publicRoot) {
+  if (!(await isDirectory(publicRoot))) return;
+  /** @brief 受信任的精确版本目录名 / Trusted exact-release directory names. */
+  const sourceNames = new Set(
+    (await readdir(sourceRoot, { withFileTypes: true }))
+      .filter((entry) => entry.isDirectory() && versionFromExactDirectory(entry.name))
+      .map((entry) => entry.name),
+  );
+  /** @brief Windows 友好的清理选项 / Windows-friendly cleanup options. */
+  const cleanup = { recursive: true, force: true, maxRetries: 5, retryDelay: 100 };
+  for (const entry of await readdir(publicRoot, { withFileTypes: true })) {
+    if (
+      entry.isDirectory() &&
+      /^v\d+\./.test(entry.name) &&
+      (!versionFromExactDirectory(entry.name) || !sourceNames.has(entry.name))
+    ) {
+      await rm(resolve(publicRoot, entry.name), cleanup);
+    }
+  }
+}
+
+/**
  * @brief 将持久发布树镜像进 Astro public 且保留站点文件 / Mirror release entries into Astro public.
  * @return {Promise<void>} 完成信号 / Completion signal.
  */
 async function mirrorPublic() {
   await removeObsoleteVersionDirectories(PUBLIC);
-  /** @brief 受分发器管理的顶层目录 / Top-level directories managed by the distributor. */
-  const managed = /^(?:v\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?|latest|css|tokens|colors)$/;
+  await removeOrphanPublicReleases(RELEASES, PUBLIC);
+  /** @brief 可变分发目录名 / Mutable distribution directory names. */
+  const mutableNames = new Set(["latest", "css", "tokens", "colors"]);
   for (const entry of await readdir(RELEASES, { withFileTypes: true })) {
-    if (entry.isDirectory() && managed.test(entry.name)) {
+    if (
+      entry.isDirectory() &&
+      (versionFromExactDirectory(entry.name) || mutableNames.has(entry.name))
+    ) {
       await replaceDirectory(resolve(RELEASES, entry.name), resolve(PUBLIC, entry.name));
     }
   }
@@ -239,7 +272,7 @@ async function main() {
   const packageJson = await readJson(resolve(ROOT, "packages/style/package.json"));
   /** @brief 语义版本 / Semantic version. */
   const version = packageJson.version;
-  if (!/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(version)) {
+  if (!isValidVersion(version)) {
     throw new Error(`不支持的版本 ${version} / Unsupported semantic version.`);
   }
   /** @brief 发布文件 / Release files. */
@@ -258,23 +291,27 @@ async function main() {
   if (!(await exactReleaseMatches(exact, files, manifestText))) {
     await createExactRelease(exact, files, manifestText);
   }
-  /** @brief 根清单中记录的最新稳定版本 / Latest stable version recorded by the root manifest. */
-  let latestVersion = version;
-  if (!isPrereleaseVersion(version)) {
-    await replaceDirectory(exact, resolve(RELEASES, "latest"));
-    await writeRedirect(resolve(RELEASES, "latest", "index.html"), `/${exactName}/`);
-    await replaceDirectory(resolve(exact, "css"), resolve(RELEASES, "css"));
-    await replaceDirectory(resolve(exact, "tokens"), resolve(RELEASES, "tokens"));
-    await replaceDirectory(resolve(exact, "colors"), resolve(RELEASES, "colors"));
-    await writeRedirect(resolve(RELEASES, "colors", "index.html"), `/${exactName}/colors/`);
-  } else {
-    /** @brief 预发布版本不移动 latest / Prereleases do not move latest. */
-    const existingRoot = await readJson(resolve(RELEASES, "manifest.json"));
-    latestVersion = existingRoot.latestVersion;
-  }
-
   /** @brief 全部已发布精确版本 / Every published exact release. */
   const publishedVersions = await discoverExactReleases(RELEASES);
+  /** @brief 最大稳定版本描述 / Greatest stable release descriptor. */
+  const latestRelease = latestStableRelease(publishedVersions);
+  if (!latestRelease) {
+    throw new Error(
+      "至少需要一个稳定版本才能生成 latest / At least one stable release is required.",
+    );
+  }
+  /** @brief 最大稳定语义版本 / Greatest stable semantic version. */
+  const latestVersion = latestRelease.version;
+  /** @brief 最大稳定版本目录名 / Greatest stable release directory name. */
+  const latestName = `v${latestVersion}`;
+  /** @brief 最大稳定版本目录 / Greatest stable release directory. */
+  const latestExact = resolve(RELEASES, latestName);
+  await replaceDirectory(latestExact, resolve(RELEASES, "latest"));
+  await writeRedirect(resolve(RELEASES, "latest", "index.html"), `/${latestName}/`);
+  await replaceDirectory(resolve(latestExact, "css"), resolve(RELEASES, "css"));
+  await replaceDirectory(resolve(latestExact, "tokens"), resolve(RELEASES, "tokens"));
+  await replaceDirectory(resolve(latestExact, "colors"), resolve(RELEASES, "colors"));
+  await writeRedirect(resolve(RELEASES, "colors", "index.html"), `/${latestName}/colors/`);
   /** @brief 根发现清单 / Root discovery manifest. */
   const rootManifest = {
     schemaVersion: ROOT_SCHEMA_VERSION,

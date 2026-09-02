@@ -10,6 +10,7 @@ import {
   describeFile,
   discoverExactReleases,
   isPrereleaseVersion,
+  latestStableRelease,
   listFiles,
   readJson,
   relativeUrl,
@@ -106,9 +107,20 @@ async function main() {
   /** @brief 磁盘中的全部精确版本 / Every exact release on disk. */
   const exactReleases = await discoverExactReleases(RELEASES);
   assert.deepEqual(manifest.publishedVersions, exactReleases);
-  assert.ok(
-    exactReleases.some(({ version }) => version === manifest.latestVersion),
-    "latestVersion must name a published exact release",
+  /** @brief Pages 中发现的精确版本 / Exact releases discovered in Pages public. */
+  const publicExactReleases = await discoverExactReleases(PUBLIC);
+  assert.deepEqual(
+    publicExactReleases,
+    exactReleases,
+    "Pages public exact releases differ from the root manifest",
+  );
+  /** @brief 最大稳定版本描述 / Greatest stable release descriptor. */
+  const latestRelease = latestStableRelease(exactReleases);
+  assert.ok(latestRelease, "at least one stable release is required");
+  assert.equal(
+    manifest.latestVersion,
+    latestRelease.version,
+    "latestVersion must be the greatest published stable SemVer",
   );
   await assertNoObsoleteVersionDirectories(RELEASES);
   await assertNoObsoleteVersionDirectories(PUBLIC);
@@ -127,10 +139,11 @@ async function main() {
       `latest/${file.path} differs from its exact release`,
     );
   }
-  assert.match(
-    await readFile(resolve(RELEASES, "latest", "index.html"), "utf8"),
-    new RegExp(`/v${manifest.latestVersion}/`),
-    "latest landing page must redirect to the latest exact release",
+  assert.ok(
+    (await readFile(resolve(RELEASES, "latest", "index.html"), "utf8")).includes(
+      `/v${manifest.latestVersion}/`,
+    ),
+    "latest landing page must redirect to the exact latest version",
   );
   for (const name of ["latest", "css", "tokens", "colors"]) {
     await assertDirectoryEqual(resolve(RELEASES, name), resolve(PUBLIC, name));
@@ -151,9 +164,10 @@ async function main() {
     await readFile(resolve(RELEASES, "colors", "colors.json")),
     await readFile(resolve(RELEASES, `v${manifest.latestVersion}`, "colors", "colors.json")),
   );
-  assert.match(
-    await readFile(resolve(RELEASES, "colors", "index.html"), "utf8"),
-    new RegExp(`/v${manifest.latestVersion}/colors/`),
+  assert.ok(
+    (await readFile(resolve(RELEASES, "colors", "index.html"), "utf8")).includes(
+      `/v${manifest.latestVersion}/colors/`,
+    ),
     "default /colors must redirect to the latest exact version",
   );
   assert.equal(manifest.defaultVersion, manifest.latestVersion);

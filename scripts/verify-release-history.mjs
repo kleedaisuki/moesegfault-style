@@ -31,7 +31,8 @@ try {
 }
 
 /** @brief 精确语义版本发布路径检测器 / Exact semantic-version release path matcher. */
-const exactRelease = /^(static-releases\/v\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)\//;
+const exactRelease =
+  /^(static-releases\/v\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?)\//;
 /** @brief 不可变发布违规项 / Immutable release violations. */
 const violations = [];
 /** @brief 基线中已存在的精确版本目录缓存 / Cache of exact-version directories present at the base. */

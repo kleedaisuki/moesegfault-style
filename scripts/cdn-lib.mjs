@@ -6,6 +6,7 @@
 import { createHash, randomUUID } from "node:crypto";
 import { cp, readdir, readFile, rename, rm, stat } from "node:fs/promises";
 import { extname, relative, resolve, sep } from "node:path";
+import semver from "semver";
 
 /** @brief 清单格式版本 / Manifest schema version. */
 export const SCHEMA_VERSION = 1;
@@ -145,7 +146,65 @@ export async function readJson(path) {
  * @return {boolean} 含有预发布标识符时为真 / True when a prerelease identifier is present.
  */
 export function isPrereleaseVersion(version) {
-  return version.includes("-");
+  return semver.prerelease(version) !== null;
+}
+
+/**
+ * @brief 判断字符串是否为严格语义版本 / Determine whether a string is a strict semantic version.
+ * @param {string} version 候选版本 / Candidate version.
+ * @return {boolean} 严格有效时为真 / True when strictly valid.
+ */
+export function isValidVersion(version) {
+  /** @brief node-semver 解析结果 / Parsed node-semver value. */
+  const parsed = semver.parse(version);
+  if (!parsed) return false;
+  /** @brief 含构建元数据的规范字符串 / Canonical text including build metadata. */
+  const canonical = `${parsed.version}${parsed.build.length > 0 ? `+${parsed.build.join(".")}` : ""}`;
+  return canonical === version;
+}
+
+/**
+ * @brief 按 SemVer 优先级和规范字符串比较版本 / Compare by SemVer precedence and canonical text.
+ * @param {string} left 左版本 / Left version.
+ * @param {string} right 右版本 / Right version.
+ * @return {number} 确定性的负数、零或正数 / Deterministic negative, zero, or positive.
+ * @note 构建元数据不影响 SemVer 优先级；规范字符串作为跨平台稳定的最终裁决。
+ *       Build metadata does not affect SemVer precedence; canonical text is a stable tie-breaker.
+ */
+export function compareVersions(left, right) {
+  /** @brief SemVer 规定的优先级比较 / Precedence comparison defined by SemVer. */
+  const precedence = semver.compare(left, right);
+  if (precedence !== 0) return precedence;
+  return left < right ? -1 : left > right ? 1 : 0;
+}
+
+/**
+ * @brief 从规范目录名提取精确版本 / Extract an exact version from a canonical directory name.
+ * @param {string} name 顶层目录名 / Top-level directory name.
+ * @return {string|null} 版本或空值 / Version or null.
+ */
+export function versionFromExactDirectory(name) {
+  if (!name.startsWith("v")) return null;
+  /** @brief 去除 v 前缀的候选版本 / Candidate version without the v prefix. */
+  const version = name.slice(1);
+  return isValidVersion(version) ? version : null;
+}
+
+/**
+ * @brief 选择最大稳定精确版本 / Select the greatest stable exact release.
+ * @param {Array<{version:string}>} releases 已发布版本 / Published releases.
+ * @return {{version:string}|null} 最大稳定版本或空值 / Greatest stable release or null.
+ */
+export function latestStableRelease(releases) {
+  return (
+    releases
+      .filter(({ version }) => !isPrereleaseVersion(version))
+      .reduce(
+        (latest, candidate) =>
+          !latest || compareVersions(candidate.version, latest.version) > 0 ? candidate : latest,
+        null,
+      ) ?? null
+  );
 }
 
 /**
@@ -161,16 +220,18 @@ export async function discoverExactReleases(versionsRoot) {
   /** @brief 发现的精确版本 / Discovered exact releases. */
   const releases = [];
   for (const entry of entries) {
-    if (!entry.isDirectory() || !/^v\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(entry.name)) {
+    if (!entry.isDirectory()) continue;
+    /** @brief 目录名携带的严格版本 / Strict version encoded by the directory name. */
+    const version = versionFromExactDirectory(entry.name);
+    if (!version) {
+      if (/^v\d+\./.test(entry.name)) {
+        throw new Error(`非法精确版本目录 ${entry.name} / Invalid exact-release directory.`);
+      }
       continue;
     }
     /** @brief 精确版本清单 / Exact-release manifest. */
     const manifest = await readJson(resolve(versionsRoot, entry.name, "manifest.json"));
-    if (
-      typeof manifest.version !== "string" ||
-      `v${manifest.version}` !== entry.name ||
-      manifest.baseUrl !== `/${entry.name}`
-    ) {
+    if (manifest.version !== version || manifest.baseUrl !== `/${entry.name}`) {
       throw new Error(
         `精确版本 ${entry.name} 的 manifest 无效 / Exact release has an invalid manifest.`,
       );
@@ -181,9 +242,7 @@ export async function discoverExactReleases(versionsRoot) {
       manifestUrl: `/${entry.name}/manifest.json`,
     });
   }
-  /** @brief 数值感知的语义版本排序器 / Numeric-aware semantic-version sorter. */
-  const collator = new Intl.Collator("en", { numeric: true, sensitivity: "base" });
-  releases.sort((left, right) => collator.compare(left.version, right.version));
+  releases.sort((left, right) => compareVersions(left.version, right.version));
   return releases;
 }
 

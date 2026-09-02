@@ -14,6 +14,7 @@ import {
   discoverExactReleases,
   isPrereleaseVersion,
   jsonText,
+  latestStableRelease,
   replaceDirectory,
 } from "./cdn-lib.mjs";
 
@@ -76,6 +77,34 @@ test("discoverExactReleases rejects a directory and manifest version mismatch", 
   }
 });
 
+test("discoverExactReleases applies strict SemVer prerelease ordering", async () => {
+  /** @brief 隔离测试目录 / Isolated test directory. */
+  const root = await mkdtemp(resolve(tmpdir(), "moesegfault-cdn-"));
+  try {
+    await writeVersion(root, "v0.1.2", "0.1.2");
+    await writeVersion(root, "v0.1.2+build.1", "0.1.2+build.1");
+    await writeVersion(root, "v0.1.2-beta.10", "0.1.2-beta.10");
+    await writeVersion(root, "v0.1.2-beta.2", "0.1.2-beta.2");
+    assert.deepEqual(
+      (await discoverExactReleases(root)).map(({ version }) => version),
+      ["0.1.2-beta.2", "0.1.2-beta.10", "0.1.2", "0.1.2+build.1"],
+    );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("discoverExactReleases rejects an invalid SemVer directory", async () => {
+  /** @brief 隔离测试目录 / Isolated test directory. */
+  const root = await mkdtemp(resolve(tmpdir(), "moesegfault-cdn-"));
+  try {
+    await writeVersion(root, "v0.1.2-beta..1", "0.1.2-beta..1");
+    await assert.rejects(discoverExactReleases(root), /Invalid exact-release directory/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test("prereleases are identified independently from exact release discovery", async () => {
   assert.equal(isPrereleaseVersion("3.0.0-beta.2"), true);
   assert.equal(isPrereleaseVersion("3.0.0"), false);
@@ -93,6 +122,19 @@ test("prereleases are identified independently from exact release discovery", as
   } finally {
     await rm(root, { recursive: true, force: true });
   }
+});
+
+test("latestStableRelease cannot roll back behind a newer stable version", () => {
+  assert.deepEqual(
+    latestStableRelease([
+      { version: "0.1.2-beta.4" },
+      { version: "0.1.1" },
+      { version: "0.1.2" },
+      { version: "0.1.2+build.1" },
+      { version: "0.1.0" },
+    ]),
+    { version: "0.1.2+build.1" },
+  );
 });
 
 test("replaceDirectory rolls back a failed swap without leaving staging directories", async () => {
