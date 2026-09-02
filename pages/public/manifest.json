@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "package": "@moesegfault/style",
-  "version": "0.1.0",
-  "baseUrl": "/v/0.1.0",
+  "version": "0.1.1",
+  "baseUrl": "/v/0.1.1",
   "files": [
     {
       "path": "css/all.css",
-      "url": "/v/0.1.0/css/all.css",
+      "url": "/v/0.1.1/css/all.css",
       "sha256": "4c06049cea97198f6f6166691d7015542ef0ff04c5b56c7a9f0d1f8c29faf19a",
       "integrity": "sha384-sAbt4aFsZmeAtLPp+2KJShrwxa3361+DAzHTcDNGRVCNw+KNoYQH0JIIpdTddTjh",
       "bytes": 18631,
@@ -14,7 +14,7 @@
     },
     {
       "path": "css/components.css",
-      "url": "/v/0.1.0/css/components.css",
+      "url": "/v/0.1.1/css/components.css",
       "sha256": "9a817340d59cf7dc24cf06981bb29b60a37b142da24a1e8ee2accd54ead6f2f8",
       "integrity": "sha384-AUKdnRYjz9ZgC5ICFvbbzuwWFo4gIwQskC1KTk97PAycEyxbXGoG89o2RPCIukDt",
       "bytes": 9822,
@@ -22,7 +22,7 @@
     },
     {
       "path": "css/foundation.css",
-      "url": "/v/0.1.0/css/foundation.css",
+      "url": "/v/0.1.1/css/foundation.css",
       "sha256": "f2435c179e91f0b172e28b23769086f7ed57260526ca483047e4368b4bf115f2",
       "integrity": "sha384-z2Lb+dAxcCYir/gstQkRTWI+AzShmXNSNjytEmmiyqvyANEf545R/Ic6hyTnP7cK",
       "bytes": 3838,
@@ -30,7 +30,7 @@
     },
     {
       "path": "css/tokens.css",
-      "url": "/v/0.1.0/css/tokens.css",
+      "url": "/v/0.1.1/css/tokens.css",
       "sha256": "412a87a3acb64b46e61a8b854bd55d94a4cc87a6790e8512f3e18f2d948923fe",
       "integrity": "sha384-aHikKbaggxTZGHGGPUL0WNsC/MID1OPOTRpcYouSAE0dwBZCYG7Yk3HcTetjYk1z",
       "bytes": 4969,
@@ -38,15 +38,15 @@
     },
     {
       "path": "tokens/tokens.dtcg.json",
-      "url": "/v/0.1.0/tokens/tokens.dtcg.json",
-      "sha256": "8946e4dd1efa538bbcf6027d347597816c2186589ba2d2610692a32a9f239cc1",
-      "integrity": "sha384-YOMtYD+kjLtmP9uchno4g6sTUoixnpcKqI8RWG2HWSQ1pAYIUEclGWgCQeYZN4sw",
-      "bytes": 7828,
+      "url": "/v/0.1.1/tokens/tokens.dtcg.json",
+      "sha256": "bd9544a88cf36ce64b8a84bd2851a67929a1ac34dd7d049eb515d42ad338eb34",
+      "integrity": "sha384-mbgz4uSFl6+LA4VG9ouPSaIxb58Znvrh5t9HafPXJNEr7YwBRRw5ZeU9i6VzliBm",
+      "bytes": 15771,
       "mediaType": "application/json; charset=utf-8"
     },
     {
       "path": "tokens/tokens.json",
-      "url": "/v/0.1.0/tokens/tokens.json",
+      "url": "/v/0.1.1/tokens/tokens.json",
       "sha256": "56a2e3f099aa123a69acc8ec7be278352a9b4d5e273be137fc8e1b0d0fcbdf50",
       "integrity": "sha384-T511tiI6k00hIkkkdKlunRzgzazghLLSq8HoNYgkjCWAmeQjieew/RiVTuFAwCT9",
       "bytes": 7232,
@@ -54,8 +54,8 @@
     }
   ],
   "aliases": {
-    "0": "0.1.0",
-    "latest": "0.1.0"
+    "0": "0.1.1",
+    "latest": "0.1.1"
   },
   "aliasBaseUrls": {
     "0": "/v/0",
