@@ -119,8 +119,6 @@ async function main() {
   );
   expectedAliases.latest = manifest.version;
   expectedAliasBaseUrls.latest = "/latest";
-  expectedAliases.default = manifest.version;
-  expectedAliasBaseUrls.default = "/";
   assert.deepEqual(
     manifest.aliases,
     expectedAliases,
@@ -180,6 +178,7 @@ async function main() {
     colorsJson: "/colors/colors.json",
     tokensJson: "/tokens/tokens.json",
   });
+  assert.equal(manifest.defaultVersion, manifest.version);
   assert.deepEqual(
     await readFile(resolve(PUBLIC, "manifest.json")),
     await readFile(resolve(RELEASES, "manifest.json")),

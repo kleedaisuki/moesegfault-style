@@ -2,8 +2,8 @@
  * @file 构建不可变 CDN 发布物并同步到 Astro public / Build immutable CDN releases and sync Astro public.
  */
 
-import { randomUUID } from "node:crypto";
 import { cp, mkdir, readFile, readdir, rename, rm, writeFile } from "node:fs/promises";
+import { randomUUID } from "node:crypto";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -16,6 +16,7 @@ import {
   listFiles,
   RELEASE_DIRECTORIES,
   readJson,
+  replaceDirectory,
   relativeUrl,
   SCHEMA_VERSION,
 } from "./cdn-lib.mjs";
@@ -47,6 +48,21 @@ async function inventory(version) {
       result.push({ source, path, metadata: await describeFile(source, path, version) });
     }
   }
+  /** @brief 精确版本的可导航入口 / Navigable exact-version landing page. */
+  const versionIndex = `<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>MoeSegFault Style ${version}</title><link rel="stylesheet" href="css/all.css"></head>
+<body class="moe-surface"><main class="moe-container moe-stack" style="padding-block:var(--moe-space-8)">
+<p class="moe-badge">v${version}</p><h1>MoeSegFault Style 静态资源 / Static assets</h1>
+<p>此目录固定为不可变版本 v${version}。This directory is pinned to immutable version v${version}.</p>
+<ul><li><a href="manifest.json">发布清单 / Release manifest</a></li><li><a href="colors/">颜色资源 / Color resources</a></li><li><a href="css/all.css">完整样式 / Complete stylesheet</a></li><li><a href="tokens/tokens.json">设计令牌 / Design tokens</a></li></ul>
+</main></body></html>
+`;
+  result.push({
+    contents: Buffer.from(versionIndex),
+    path: "index.html",
+    metadata: describeContents(versionIndex, "index.html", version),
+  });
   /** @brief 精确版本的可导航颜色索引 / Navigable exact-version color index. */
   const colorIndex = `<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
@@ -163,21 +179,6 @@ async function createExactRelease(target, files, manifestText) {
 }
 
 /**
- * @brief 以目录替换方式同步可变别名 / Sync a mutable alias by directory replacement.
- * @param {string} source 精确版本源目录 / Exact-version source directory.
- * @param {string} target 别名目标目录 / Alias destination directory.
- * @return {Promise<void>} 完成信号 / Completion signal.
- */
-async function replaceDirectory(source, target) {
-  /** @brief 同级临时目录 / Sibling temporary directory. */
-  const temporary = `${target}.tmp-${randomUUID()}`;
-  await rm(temporary, { recursive: true, force: true });
-  await cp(source, temporary, { recursive: true });
-  await rm(target, { recursive: true, force: true });
-  await rename(temporary, target);
-}
-
-/**
  * @brief 写入 GitHub Pages 可执行的客户端跳转页 / Write a client redirect that works on GitHub Pages.
  * @param {string} target 输出文件 / Output file.
  * @param {string} destination 规范目标 URL / Canonical destination URL.
@@ -198,9 +199,8 @@ async function writeRedirect(target, destination) {
  * @return {Promise<void>} 完成信号 / Completion signal.
  */
 async function mirrorPublic() {
-  await rm(resolve(PUBLIC, "v"), { recursive: true, force: true });
   /** @brief 受分发器管理的顶层目录 / Top-level directories managed by the distributor. */
-  const managed = /^(?:v\d+(?:\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)?|latest|css|tokens|colors)$/;
+  const managed = /^(?:v|v\d+(?:\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)?|latest|css|tokens|colors)$/;
   for (const entry of await readdir(RELEASES, { withFileTypes: true })) {
     if (entry.isDirectory() && managed.test(entry.name)) {
       await replaceDirectory(resolve(RELEASES, entry.name), resolve(PUBLIC, entry.name));
@@ -235,7 +235,6 @@ async function main() {
   const exact = resolve(RELEASES, exactName);
 
   await mkdir(RELEASES, { recursive: true });
-  await rm(resolve(RELEASES, "v"), { recursive: true, force: true });
   if (!(await exactReleaseMatches(exact, files, manifestText))) {
     await createExactRelease(exact, files, manifestText);
   }
@@ -257,14 +256,13 @@ async function main() {
     );
     aliases.latest = version;
     aliasBaseUrls.latest = "/latest";
-    aliases.default = version;
-    aliasBaseUrls.default = "/";
 
     /** @brief 根发现清单 / Root discovery manifest. */
     const rootManifest = {
       ...manifest,
       aliases,
       aliasBaseUrls,
+      defaultVersion: version,
       defaultResources: {
         styles: "/css/all.css",
         colors: "/colors/",

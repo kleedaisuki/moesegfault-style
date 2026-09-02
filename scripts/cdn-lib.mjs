@@ -4,7 +4,8 @@
  */
 
 import { createHash } from "node:crypto";
-import { readdir, readFile, stat } from "node:fs/promises";
+import { cp, readdir, readFile, rename, rm, stat } from "node:fs/promises";
+import { randomUUID } from "node:crypto";
 import { extname, relative, resolve, sep } from "node:path";
 
 /** @brief 清单格式版本 / Manifest schema version. */
@@ -195,6 +196,63 @@ export async function isDirectory(path) {
   } catch (error) {
     if (error?.code === "ENOENT") return false;
     throw error;
+  }
+}
+
+/**
+ * @brief 以可回滚事务替换可变目录 / Replace a mutable directory transactionally with rollback.
+ * @param {string} source 精确版本源目录 / Exact-version source directory.
+ * @param {string} target 可变别名目标目录 / Mutable alias destination directory.
+ * @param {{renamePath?:(source:string,target:string)=>Promise<void>}} [options] 测试注入选项 / Test injection options.
+ * @return {Promise<void>} 完成信号 / Completion signal.
+ * @note 目标先改名为同级备份；若新目录切换失败，则恢复最后一个良好版本。
+ *       The target is first renamed to a sibling backup; a failed swap restores the last good version.
+ */
+export async function replaceDirectory(source, target, options = {}) {
+  /** @brief 可注入的重命名操作 / Injectable rename operation. */
+  const renamePath = options.renamePath ?? rename;
+  /** @brief 同级暂存目录 / Sibling staging directory. */
+  const temporary = `${target}.tmp-${randomUUID()}`;
+  /** @brief 同级回滚备份 / Sibling rollback backup. */
+  const backup = `${target}.backup-${randomUUID()}`;
+  /** @brief Windows 友好的清理选项 / Windows-friendly cleanup options. */
+  const cleanup = { recursive: true, force: true, maxRetries: 5, retryDelay: 100 };
+  /** @brief 是否已经创建目标备份 / Whether the target backup has been created. */
+  let backedUp = false;
+
+  await rm(temporary, cleanup);
+  await rm(backup, cleanup);
+  try {
+    await cp(source, temporary, { recursive: true });
+    if (await isDirectory(target)) {
+      await renamePath(target, backup);
+      backedUp = true;
+    }
+    await renamePath(temporary, target);
+    if (backedUp) await rm(backup, cleanup);
+  } catch (error) {
+    /** @brief 回滚期间出现的错误 / Error raised while rolling back. */
+    let rollbackError;
+    try {
+      await rm(temporary, cleanup);
+      if (backedUp) {
+        if (await isDirectory(target)) await rm(target, cleanup);
+        await renamePath(backup, target);
+        backedUp = false;
+      }
+    } catch (caught) {
+      rollbackError = caught;
+    }
+    if (rollbackError) {
+      throw new AggregateError(
+        [error, rollbackError],
+        `目录替换和回滚均失败；备份保留在 ${backup} / Directory replacement and rollback both failed; backup retained.`,
+      );
+    }
+    throw error;
+  } finally {
+    await rm(temporary, cleanup);
+    if (!backedUp) await rm(backup, cleanup);
   }
 }
 

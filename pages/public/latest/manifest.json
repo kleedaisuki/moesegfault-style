@@ -61,6 +61,14 @@
       "mediaType": "text/css; charset=utf-8"
     },
     {
+      "path": "index.html",
+      "url": "/v0.1.1/index.html",
+      "sha256": "ae60e2ed2dd4f23f864e3828e077b6da9a7fa4a88333db328cece8e8db1b8889",
+      "integrity": "sha384-bozD1MPe1f+h94k3ofkc3aex8zO8UycgC/FTkyHNR7YPbIp7ekZGx8EfJ9AbJAUH",
+      "bytes": 800,
+      "mediaType": "text/html; charset=utf-8"
+    },
+    {
       "path": "tokens/tokens.dtcg.json",
       "url": "/v0.1.1/tokens/tokens.dtcg.json",
       "sha256": "bd9544a88cf36ce64b8a84bd2851a67929a1ac34dd7d049eb515d42ad338eb34",
