@@ -1,0 +1,27 @@
+---
+import Container from "@moesegfault/style/astro/Container.astro";
+import CodeBlock from "../../../components/CodeBlock.astro";
+import DocsLayout from "../../../layouts/DocsLayout.astro";
+const colors = [
+  ["Background", "--moe-color-background", "var(--docs-paper)"],
+  ["Strong surface", "--moe-color-surface-strong", "var(--docs-paper-raised)"],
+  ["Text", "--moe-color-text", "var(--docs-ink)"],
+  ["Soft text", "--moe-color-text-soft", "var(--docs-muted)"],
+  ["Accent", "--moe-color-accent", "var(--docs-accent)"],
+  ["Accent wash", "--moe-color-accent-wash", "var(--docs-accent-soft)"],
+  ["Success", "--moe-color-success", "var(--docs-leaf)"],
+  ["Border", "--moe-color-border", "var(--docs-line)"],
+] as const;
+const spaces = [1, 2, 3, 4, 6, 8] as const;
+---
+<DocsLayout title="Foundations" description="Colors, typography, spacing, radii, and themes in MoeSegFault Style." currentPath="/en/foundations/" locale="en">
+  <header class="page-intro"><Container><p class="kicker">FOUNDATIONS</p><h1>Order you can feel.</h1><p class="lede">Warm paper is not a yellow filter, and moe is not decorative clutter. Semantic tokens keep the character coherent across themes and products.</p></Container></header>
+  <section class="section section-tint" aria-labelledby="color-title"><Container><div class="section-heading"><div><p class="eyebrow">Color</p><h2 id="color-title">Semantic color</h2></div><p>Components consume purpose, not guessed values. Toggle the theme in the header and watch each role preserve its relationships.</p></div><div class="token-grid">{colors.map(([name, token, color]) => <article class="swatch"><div class="swatch-color" style={`--swatch: ${color}`}></div><div class="swatch-copy"><strong>{name}</strong><code>{token}</code></div></article>)}</div></Container></section>
+  <section class="section" aria-labelledby="rhythm-title"><Container><div class="section-heading"><div><p class="eyebrow">Rhythm</p><h2 id="rhythm-title">Spacing and typography</h2></div><p>A limited spacing scale creates rhythm; readable line length matters more than filling every pixel.</p></div><ul class="scale-list">{spaces.map((step) => <li><code>space-{step}</code><span class="scale-bar" style={`width: min(100%, ${step * 9}%);`}></span><code>{step * 4}px</code></li>)}</ul><div class="callout"><h3>Typography strategy</h3><p>Headings use a local serif stack; body text, controls, and annotations use the system sans-serif stack. A failed web font never makes the page unreadable or causes a major layout shift.</p></div></Container></section>
+  <section class="section section-tint" aria-labelledby="token-title"><Container><div class="section-heading"><div><p class="eyebrow">Tokens</p><h2 id="token-title">Tokens in three forms</h2></div></div><div class="guide-grid">
+    <div class="guide-card"><h3>CSS custom properties</h3><p>For web pages and cross-framework use.</p><CodeBlock label="CSS" code={`@import "@moesegfault/style/tokens.css";\n\n.panel {\n  color: var(--moe-color-text);\n  border-radius: var(--moe-radius-lg);\n}`} /></div>
+    <div class="guide-card"><h3>TypeScript</h3><p>For charts, Canvas, and runtime code that needs concrete values.</p><CodeBlock label="TypeScript" code={`import { tokens } from "@moesegfault/style";\n\nconst accent = tokens.color.accent;`} /></div>
+    <div class="guide-card"><h3>JSON / DTCG</h3><p>For design tools and generation pipelines; DTCG is the Design Tokens Community Group format.</p><CodeBlock label="JSON" code={`import tokens from "@moesegfault/style/tokens.json";\n// or fetch /v0.1.1/tokens/tokens.dtcg.json`} /></div>
+    <div class="guide-card"><h3>Dark theme</h3><p>The root-element attribute controls the theme, while the first visit respects the system preference.</p><CodeBlock label="HTML" code={`<html data-moe-theme="dark">\n  …\n</html>`} /></div>
+  </div></Container></section>
+</DocsLayout>

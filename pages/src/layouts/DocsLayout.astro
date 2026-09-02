@@ -3,26 +3,36 @@ import "@moesegfault/style/all.css";
 import BrandMark from "@moesegfault/style/astro/BrandMark.astro";
 import Container from "@moesegfault/style/astro/Container.astro";
 import { ThemeToggle } from "../components/ThemeToggle";
-import { isCurrentPath, NAV_ITEMS } from "../lib/site";
+import { getAlternatePath, getNavItems, isCurrentPath, type SiteLocale } from "../lib/site";
 import "../styles/docs.css";
 
 interface Props {
   title: string;
   description: string;
   currentPath: string;
+  locale?: SiteLocale;
 }
 
-const { title, description, currentPath } = Astro.props;
+const { title, description, currentPath, locale = "zh-CN" } = Astro.props;
+const isEnglish = locale === "en";
+const navItems = getNavItems(locale);
+const alternatePath = getAlternatePath(currentPath, locale);
+const canonicalUrl = new URL(currentPath, Astro.site);
+const alternateUrl = new URL(alternatePath, Astro.site);
 ---
 
 <!doctype html>
-<html lang="zh-CN">
+<html lang={locale}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#f5efe3" />
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22><text y=%22.9em%22 font-size=%2290%22>✦</text></svg>" />
+    <meta name="theme-color" content="#fff6ea" />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="alternate" hreflang={isEnglish ? "zh-CN" : "en"} href={alternateUrl} />
+    <link rel="alternate" hreflang={locale} href={canonicalUrl} />
+    <link rel="alternate" hreflang="x-default" href={isEnglish ? alternateUrl : canonicalUrl} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title} · MoeSegFault Style</title>
     <script is:inline>
       (() => {
@@ -31,26 +41,32 @@ const { title, description, currentPath } = Astro.props;
         const theme = dark ? "dark" : "light";
         document.documentElement.dataset.moeTheme = theme;
         document.documentElement.style.colorScheme = theme;
+        document.querySelector('meta[name="theme-color"]')?.setAttribute("content", dark ? "#21130f" : "#fff6ea");
       })();
     </script>
   </head>
   <body>
-    <a class="skip-link" href="#main-content">跳到主要内容</a>
+    <a class="skip-link" href="#main-content">{isEnglish ? "Skip to main content" : "跳到主要内容"}</a>
     <header class="site-header">
       <Container>
         <div class="header-inner">
-          <a class="brand-link" href="/" aria-label="MoeSegFault Style 首页">
+          <a class="brand-link" href={isEnglish ? "/en/" : "/"} aria-label={isEnglish ? "MoeSegFault Style home" : "MoeSegFault Style 首页"}>
             <BrandMark />
             <span class="brand-copy"><strong>MoeSegFault</strong><small>Style workshop</small></span>
           </a>
-          <nav aria-label="主要导航">
+          <nav aria-label={isEnglish ? "Primary navigation" : "主要导航"}>
             <ul>
-              {NAV_ITEMS.map(({ href, label }) => (
+              {navItems.map(({ href, label }) => (
                 <li><a href={href} aria-current={isCurrentPath(currentPath, href) ? "page" : undefined}>{label}</a></li>
               ))}
             </ul>
           </nav>
-          <ThemeToggle client:load />
+          <div class="header-actions">
+            <a class="language-switch" href={alternatePath} lang={isEnglish ? "zh-CN" : "en"} hreflang={isEnglish ? "zh-CN" : "en"} aria-label={isEnglish ? "Switch to Chinese" : "Read in English"}>
+              {isEnglish ? "中文" : "EN"}
+            </a>
+            <ThemeToggle locale={locale} client:load />
+          </div>
         </div>
       </Container>
     </header>
@@ -60,7 +76,7 @@ const { title, description, currentPath } = Astro.props;
     <footer class="site-footer">
       <Container>
         <div class="footer-inner">
-          <p><strong>MoeSegFault Style</strong> — 给代码一张温暖的纸。</p>
+          <p><strong>MoeSegFault Style</strong> — {isEnglish ? "A warm sheet of paper for your code." : "给代码一张温暖的纸。"}</p>
           <p><a href="https://github.com/kleedaisuki/moesegfault-style">Source</a> · GPL-3.0-or-later</p>
         </div>
       </Container>

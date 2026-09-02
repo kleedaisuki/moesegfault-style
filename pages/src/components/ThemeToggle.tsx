@@ -16,7 +16,7 @@ function readTheme(): Theme {
  * @return 无返回值。No return value.
  * @note 该组件使用库内 Button，以持续检验 React 入口。This component dogfoods the library Button.
  */
-export function ThemeToggle() {
+export function ThemeToggle({ locale = "zh-CN" }: { locale?: "zh-CN" | "en" }) {
   const [theme, setTheme] = useState<Theme>("light");
   const [ready, setReady] = useState(false);
 
@@ -29,20 +29,31 @@ export function ThemeToggle() {
     const next = readTheme() === "dark" ? "light" : "dark";
     document.documentElement.dataset.moeTheme = next;
     document.documentElement.style.colorScheme = next;
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute("content", next === "dark" ? "#21130f" : "#fff6ea");
     localStorage.setItem("moe-theme", next);
     setTheme(next);
   };
 
+  const nextLabel = theme === "dark" ? "light" : "dark";
+  const visibleLabel =
+    locale === "en" ? (theme === "dark" ? "Light" : "Dark") : theme === "dark" ? "浅色" : "深色";
+
   return (
     <Button
-      aria-label={`切换至${theme === "dark" ? "浅色" : "深色"}主题`}
+      aria-label={
+        locale === "en"
+          ? `Switch to ${nextLabel} theme`
+          : `切换至${theme === "dark" ? "浅色" : "深色"}主题`
+      }
       data-ready={ready}
       onClick={toggle}
       size="sm"
       variant="ghost"
     >
       <span aria-hidden="true">{theme === "dark" ? "☀" : "☾"}</span>
-      <span>{theme === "dark" ? "浅色" : "深色"}</span>
+      <span>{visibleLabel}</span>
     </Button>
   );
 }

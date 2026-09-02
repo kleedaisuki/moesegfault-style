@@ -28,12 +28,12 @@ const root = "https://style.moesegfault.dev";
         <table>
           <thead><tr><th>资源</th><th>固定版本 URL</th><th>用途</th></tr></thead>
           <tbody>
-            <tr><td>全量样式</td><td><code>{root}/v/0.1.1/css/all.css</code></td><td>默认接入</td></tr>
-            <tr><td>设计令牌</td><td><code>{root}/v/0.1.1/css/tokens.css</code></td><td>自定义界面</td></tr>
-            <tr><td>基础样式</td><td><code>{root}/v/0.1.1/css/foundation.css</code></td><td>元素与主题基础</td></tr>
-            <tr><td>组件样式</td><td><code>{root}/v/0.1.1/css/components.css</code></td><td>库组件外观</td></tr>
-            <tr><td>Token JSON</td><td><code>{root}/v/0.1.1/tokens/tokens.json</code></td><td>程序化消费</td></tr>
-            <tr><td>DTCG JSON</td><td><code>{root}/v/0.1.1/tokens/tokens.dtcg.json</code></td><td>设计工具交换</td></tr>
+            <tr><td>全量样式</td><td><code>{root}/v0.1.1/css/all.css</code></td><td>默认接入</td></tr>
+            <tr><td>设计令牌</td><td><code>{root}/v0.1.1/css/tokens.css</code></td><td>自定义界面</td></tr>
+            <tr><td>基础样式</td><td><code>{root}/v0.1.1/css/foundation.css</code></td><td>元素与主题基础</td></tr>
+            <tr><td>组件样式</td><td><code>{root}/v0.1.1/css/components.css</code></td><td>库组件外观</td></tr>
+            <tr><td>Token JSON</td><td><code>{root}/v0.1.1/tokens/tokens.json</code></td><td>程序化消费</td></tr>
+            <tr><td>DTCG JSON</td><td><code>{root}/v0.1.1/tokens/tokens.dtcg.json</code></td><td>设计工具交换</td></tr>
           </tbody>
         </table>
       </div>
@@ -48,19 +48,24 @@ const root = "https://style.moesegfault.dev";
       <div class="asset-grid">
         <article class="asset-card">
           <h3>固定版本：生产默认</h3>
-          <p><code>/v/0.1.1/…</code> 内容保持不变，可以长时间缓存；升级通过代码评审显式发生。</p>
-          <CodeBlock label="HTML" code={`<link rel="stylesheet"\n  href="${root}/v/0.1.1/css/all.css">`} />
+          <p><code>/v0.1.1/…</code> 内容保持不变，可以长时间缓存；升级通过代码评审显式发生。</p>
+          <CodeBlock label="HTML" code={`<link rel="stylesheet"\n  href="${root}/v0.1.1/css/all.css">`} />
+        </article>
+        <article class="asset-card">
+          <h3>默认路径：自动跟随稳定版</h3>
+          <p><code>/colors</code> 会导航到当前固定版本 <code>/v0.1.1/colors/</code>；机器消费者可直接读取 <code>/colors/colors.css</code> 或 <code>/colors/colors.json</code>。</p>
+          <CodeBlock label="HTML" code={`<link rel="stylesheet"\n  href="${root}/css/all.css">`} />
         </article>
         <article class="asset-card">
           <h3>Latest：受控漂移</h3>
-          <p><code>/v/latest/…</code> 跟随最新稳定版本，适合 showcase 与希望自动跟进的内部工具。</p>
-          <CodeBlock label="HTML" code={`<link rel="stylesheet"\n  href="${root}/v/latest/css/all.css">`} />
+          <p><code>/latest/…</code> 跟随最新稳定版本，适合 showcase 与希望自动跟进的内部工具。</p>
+          <CodeBlock label="HTML" code={`<link rel="stylesheet"\n  href="${root}/latest/css/all.css">`} />
         </article>
       </div>
       <div class="callout">
         <h3>缓存契约</h3>
         <p>
-          固定版本可使用长期缓存与 <code>immutable</code>；latest 应短缓存并可重新验证。
+          固定版本 URL 永不改写，但 GitHub Pages 的缓存头不可自定义；latest 与默认路径仍应视为可变并重新验证。
           CSS 和 JSON 是公开静态资产，不包含环境配置或应用秘密。
         </p>
       </div>

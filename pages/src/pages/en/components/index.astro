@@ -1,0 +1,10 @@
+---
+import Container from "@moesegfault/style/astro/Container.astro";
+import { ComponentGallery } from "../../../components/ComponentGallery";
+import CodeBlock from "../../../components/CodeBlock.astro";
+import DocsLayout from "../../../layouts/DocsLayout.astro";
+---
+<DocsLayout title="Component showcase" description="React components and composition patterns from MoeSegFault Style." currentPath="/en/components/" locale="en">
+  <header class="page-intro"><Container><p class="kicker">COMPONENTS</p><h1>A small but complete toolbox.</h1><p class="lede">The primitives stay honest: native semantics, composable props, and no hidden state invented for a demo.</p></Container></header>
+  <section class="section section-tint" aria-label="Component showcase"><Container><ComponentGallery locale="en" client:load /><CodeBlock label="React · composition.tsx" code={`import { Badge, Button, Card, StatusDot } from "@moesegfault/style/react";\nimport "@moesegfault/style/all.css";\n\nexport function ProjectCard() {\n  return (\n    <Card>\n      <Badge tone="success">Stable</Badge>\n      <h2><StatusDot label="Online" status="online" /> Style service</h2>\n      <Button variant="secondary">Open</Button>\n    </Card>\n  );\n}`} /></Container></section>
+</DocsLayout>

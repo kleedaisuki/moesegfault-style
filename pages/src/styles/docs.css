@@ -1,27 +1,15 @@
 :root {
-  --docs-paper: var(--moe-color-paper, #f5efe3);
-  --docs-paper-raised: var(--moe-color-surface, #fffaf0);
-  --docs-ink: var(--moe-color-ink, #302b2a);
-  --docs-muted: var(--moe-color-ink-muted, #706764);
-  --docs-line: var(--moe-color-border, #d8cbbd);
-  --docs-accent: var(--moe-color-accent, #bd5365);
-  --docs-accent-soft: var(--moe-color-accent-soft, #f3d9dc);
-  --docs-leaf: var(--moe-color-success, #637c60);
-  --docs-shadow: 0 16px 48px rgb(63 45 38 / 10%);
-  --docs-radius: var(--moe-radius-lg, 1.25rem);
+  --docs-paper: var(--moe-color-background);
+  --docs-paper-raised: var(--moe-color-surface-strong);
+  --docs-ink: var(--moe-color-text);
+  --docs-muted: var(--moe-color-text-soft);
+  --docs-line: var(--moe-color-border);
+  --docs-accent: var(--moe-color-accent);
+  --docs-accent-soft: var(--moe-color-accent-wash);
+  --docs-leaf: var(--moe-color-success);
+  --docs-shadow: var(--moe-shadow-md);
+  --docs-radius: var(--moe-radius-lg);
   --docs-width: 74rem;
-}
-
-[data-moe-theme="dark"] {
-  --docs-paper: #211e1e;
-  --docs-paper-raised: #2a2525;
-  --docs-ink: #f1e7da;
-  --docs-muted: #bdb0a6;
-  --docs-line: #554a46;
-  --docs-accent: #ed8495;
-  --docs-accent-soft: #4a2d34;
-  --docs-leaf: #9db795;
-  --docs-shadow: 0 18px 52px rgb(0 0 0 / 24%);
 }
 
 * {
@@ -52,7 +40,7 @@ body {
     )
     0 0 / 2.5rem 2.5rem,
     var(--docs-paper);
-  font-family: "Noto Serif SC", "Source Han Serif SC", ui-serif, Georgia, serif;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   line-height: 1.72;
 }
 
@@ -191,6 +179,12 @@ main {
   height: 1px;
   background: currentColor;
   content: "";
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Noto Serif SC", "Source Han Serif SC", ui-serif, Georgia, serif;
 }
 
 h1,
@@ -528,6 +522,31 @@ tr:last-child td {
 
 .footer-inner p {
   margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.language-switch {
+  display: inline-flex;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--docs-line);
+  border-radius: 999px;
+  color: var(--docs-ink);
+  font: 700 0.75rem / 1 var(--moe-font-family-sans);
+  letter-spacing: 0.04em;
+  text-decoration: none;
+}
+
+.language-switch:hover {
+  border-color: var(--docs-accent);
+  background: var(--docs-accent-soft);
 }
 
 @media (max-width: 52rem) {

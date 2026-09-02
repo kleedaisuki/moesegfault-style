@@ -4,12 +4,12 @@ import CodeBlock from "../../components/CodeBlock.astro";
 import DocsLayout from "../../layouts/DocsLayout.astro";
 
 const colors = [
-  ["Paper", "--moe-color-paper", "var(--docs-paper)"],
-  ["Surface", "--moe-color-surface", "var(--docs-paper-raised)"],
-  ["Ink", "--moe-color-ink", "var(--docs-ink)"],
-  ["Muted ink", "--moe-color-ink-muted", "var(--docs-muted)"],
+  ["Background", "--moe-color-background", "var(--docs-paper)"],
+  ["Strong surface", "--moe-color-surface-strong", "var(--docs-paper-raised)"],
+  ["Text", "--moe-color-text", "var(--docs-ink)"],
+  ["Soft text", "--moe-color-text-soft", "var(--docs-muted)"],
   ["Accent", "--moe-color-accent", "var(--docs-accent)"],
-  ["Accent soft", "--moe-color-accent-soft", "var(--docs-accent-soft)"],
+  ["Accent wash", "--moe-color-accent-wash", "var(--docs-accent-soft)"],
   ["Success", "--moe-color-success", "var(--docs-leaf)"],
   ["Border", "--moe-color-border", "var(--docs-line)"],
 ] as const;
@@ -64,7 +64,7 @@ const spaces = [1, 2, 3, 4, 6, 8] as const;
       <div class="callout">
         <h3>字体策略</h3>
         <p>
-          标题与长文使用本地衬线字体栈（serif stack），控件和标注使用系统无衬线字体；
+          正文、控件和标注使用系统无衬线字体栈（sans-serif stack），仅标题与展示文字使用本地衬线字体；
           不因网络字体失败产生不可读或大幅布局偏移。
         </p>
       </div>
@@ -80,7 +80,7 @@ const spaces = [1, 2, 3, 4, 6, 8] as const;
         <div class="guide-card">
           <h3>CSS 自定义属性</h3>
           <p>适合网页和跨框架消费。</p>
-          <CodeBlock label="CSS" code={`@import "@moesegfault/style/tokens.css";\n\n.panel {\n  color: var(--moe-color-ink);\n  border-radius: var(--moe-radius-lg);\n}`} />
+          <CodeBlock label="CSS" code={`@import "@moesegfault/style/tokens.css";\n\n.panel {\n  color: var(--moe-color-text);\n  border-radius: var(--moe-radius-lg);\n}`} />
         </div>
         <div class="guide-card">
           <h3>TypeScript</h3>
@@ -90,7 +90,7 @@ const spaces = [1, 2, 3, 4, 6, 8] as const;
         <div class="guide-card">
           <h3>JSON / DTCG</h3>
           <p>适合设计工具与生成流水线；DTCG 为 Design Tokens Community Group 格式。</p>
-          <CodeBlock label="JSON" code={`import tokens from "@moesegfault/style/tokens.json";\n// 或远程获取 /v/0.1.1/tokens/tokens.dtcg.json`} />
+          <CodeBlock label="JSON" code={`import tokens from "@moesegfault/style/tokens.json";\n// 或远程获取 /v0.1.1/tokens/tokens.dtcg.json`} />
         </div>
         <div class="guide-card">
           <h3>暗色主题</h3>

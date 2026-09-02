@@ -1,0 +1,43 @@
+---
+import Button from "@moesegfault/style/astro/Button.astro";
+import Card from "@moesegfault/style/astro/Card.astro";
+import Cluster from "@moesegfault/style/astro/Cluster.astro";
+import Container from "@moesegfault/style/astro/Container.astro";
+import Stack from "@moesegfault/style/astro/Stack.astro";
+import DocsLayout from "../../layouts/DocsLayout.astro";
+---
+
+<DocsLayout title="A warm interface workshop" description="A warm editorial design system for TypeScript, React, and Astro." currentPath="/en/" locale="en">
+  <section class="hero">
+    <Container>
+      <div class="hero-grid">
+        <div>
+          <p class="kicker">DESIGN SYSTEM · 0.1</p>
+          <h1>A warm sheet of paper for your code.</h1>
+          <p class="lede">A visual language distilled from MoeSegFault blogs, tools, and bots: clear tokens, restrained components, and just the right touch of moe warmth.</p>
+          <Cluster>
+            <Button href="/en/components/">Browse components</Button>
+            <Button href="/en/guides/" variant="secondary">Get started</Button>
+          </Cluster>
+        </div>
+        <aside class="paper-note" aria-label="Design manifesto">
+          <blockquote>“An interface is not a stage set, but the beam of light that lets content be read with care.”</blockquote>
+          <p>Warm editorial · Soft moe · Production ready</p>
+        </aside>
+      </div>
+    </Container>
+  </section>
+
+  <section class="section section-tint" aria-labelledby="principles-title">
+    <Container>
+      <div class="section-heading"><div><p class="eyebrow">Principles</p><h2 id="principles-title">One language, three levels of adoption</h2></div><p>Adopt progressively—from plain CSS to stateful React islands—without rewriting your application around the design system.</p></div>
+      <div class="feature-grid">
+        <Card><span class="feature-number">01</span><h3>Tokens first</h3><p>Colors, spacing, radii, and shadows have semantic names; themes change without changing component structure.</p><a href="/en/foundations/">Explore foundations →</a></Card>
+        <Card><span class="feature-number">02</span><h3>Framework friendly</h3><p>Use the same foundational CSS with static Astro components or interactive React components.</p><a href="/en/guides/">See integration guides →</a></Card>
+        <Card><span class="feature-number">03</span><h3>Progressive distribution</h3><p>The npm package fits build-time dependencies; versioned remote assets serve static pages without a bundler.</p><a href="/en/distribution/">Explore distribution →</a></Card>
+      </div>
+    </Container>
+  </section>
+
+  <section class="section" aria-labelledby="composition-title"><Container><div class="section-heading"><div><p class="eyebrow">Dogfood</p><h2 id="composition-title">This page is itself a component example</h2></div></div><Stack><p class="lede">Its containers, cards, buttons, clusters, and rhythm all come from <code>@moesegfault/style</code>. The docs do not maintain a shadow implementation just for display.</p><Cluster><Button href="/en/components/">Open the full showcase</Button><Button href="/en/distribution/" variant="ghost">Choose a distribution channel</Button></Cluster></Stack></Container></section>
+</DocsLayout>
