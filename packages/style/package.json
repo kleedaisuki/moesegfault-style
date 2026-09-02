@@ -1,0 +1,68 @@
+{
+  "name": "@moesegfault/style",
+  "version": "0.1.0",
+  "description": "Warm editorial design system for Astro, React and the web.",
+  "license": "GPL-3.0-or-later",
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist",
+    "astro",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./react": {
+      "types": "./dist/react/index.d.ts",
+      "import": "./dist/react/index.js",
+      "default": "./dist/react/index.js"
+    },
+    "./astro": "./astro/index.ts",
+    "./astro/BrandMark.astro": "./astro/BrandMark.astro",
+    "./astro/Button.astro": "./astro/Button.astro",
+    "./astro/Card.astro": "./astro/Card.astro",
+    "./astro/Cluster.astro": "./astro/Cluster.astro",
+    "./astro/Container.astro": "./astro/Container.astro",
+    "./astro/Stack.astro": "./astro/Stack.astro",
+    "./tokens.css": "./dist/css/tokens.css",
+    "./foundation.css": "./dist/css/foundation.css",
+    "./components.css": "./dist/css/components.css",
+    "./all.css": "./dist/css/all.css",
+    "./tokens.json": "./dist/tokens/tokens.json",
+    "./tokens.dtcg.json": "./dist/tokens/tokens.dtcg.json",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "node scripts/build-tokens.mjs && vite build && tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "pack:check": "pnpm pack --dry-run"
+  },
+  "peerDependencies": {
+    "react": ">=19.0.0",
+    "react-dom": ">=19.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.3",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@types/node": "^24.10.0",
+    "@vitejs/plugin-react": "^6.0.0",
+    "jsdom": "^28.0.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "typescript": "^6.0.3",
+    "vite": "^8.2.2",
+    "vitest": "^4.1.11"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

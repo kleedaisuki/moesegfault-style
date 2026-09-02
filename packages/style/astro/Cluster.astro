@@ -1,0 +1,60 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+/** @brief 聚类布局可用的语义元素 / Semantic elements available to a cluster layout. */
+export type ClusterElement = "div" | "nav" | "section" | "header" | "footer" | "ul" | "ol";
+
+/** @brief 弹性布局对齐值 / Flex layout alignment values. */
+export type ClusterAlignment = "stretch" | "start" | "center" | "end" | "baseline";
+
+/** @brief 弹性布局分布值 / Flex layout distribution values. */
+export type ClusterJustification =
+  | "start"
+  | "center"
+  | "end"
+  | "space-between"
+  | "space-around"
+  | "space-evenly";
+
+/**
+ * @brief 自动换行的水平聚类布局属性 / Wrapping horizontal cluster layout properties.
+ */
+export interface Props extends Omit<HTMLAttributes<"div">, "class"> {
+  /** @brief 根节点语义元素 / Semantic root element. */
+  as?: ClusterElement;
+  /** @brief 子项间距 CSS 值 / CSS gap value between children. */
+  gap?: string;
+  /** @brief 交叉轴对齐方式 / Cross-axis alignment. */
+  align?: ClusterAlignment;
+  /** @brief 主轴分布方式 / Main-axis distribution. */
+  justify?: ClusterJustification;
+  /** @brief 是否允许换行 / Whether wrapping is enabled. */
+  wrap?: "wrap" | "nowrap" | "wrap-reverse";
+  /** @brief 自定义 CSS 类 / Custom CSS class. */
+  class?: string;
+}
+
+/** @brief 组件属性 / Component properties. */
+const {
+  as: Tag = "div",
+  gap,
+  align,
+  justify,
+  wrap,
+  class: className,
+  style,
+  ...rest
+} = Astro.props;
+
+/** @brief 通过自定义属性连接聚类布局契约 / Connects cluster layout through custom properties. */
+const layoutStyle = {
+  "--moe-cluster-gap": gap,
+  "--moe-cluster-align": align,
+  "--moe-cluster-justify": justify,
+  "--moe-cluster-wrap": wrap,
+};
+---
+
+<Tag {...rest} class:list={["moe-cluster", className]} style:list={[style, layoutStyle]}>
+  <slot />
+</Tag>

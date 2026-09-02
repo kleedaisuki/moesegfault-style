@@ -1,0 +1,73 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+/** @brief 按钮视觉变体 / Button visual variants. */
+export type ButtonVariant = "primary" | "secondary" | "ghost";
+
+/** @brief 按钮尺寸 / Button sizes. */
+export type ButtonSize = "sm" | "md" | "lg";
+
+/**
+ * @brief 按钮共享属性 / Shared button properties.
+ */
+interface ButtonBaseProps {
+  /** @brief 视觉变体 / Visual variant. */
+  variant?: ButtonVariant;
+  /** @brief 控件尺寸 / Control size. */
+  size?: ButtonSize;
+  /** @brief 自定义 CSS 类 / Custom CSS class. */
+  class?: string;
+}
+
+/**
+ * @brief 链接按钮属性 / Link button properties.
+ * @note 提供 `href` 时组件保证输出 `<a>` / Providing `href` guarantees an `<a>` element.
+ */
+export type LinkButtonProps = ButtonBaseProps &
+  Omit<HTMLAttributes<"a">, "class"> & {
+    /** @brief 链接目标地址 / Link destination URL. */
+    href: string;
+  };
+
+/**
+ * @brief 原生按钮属性 / Native button properties.
+ * @note 不提供 `href` 时组件保证输出 `<button>` / Omitting `href` guarantees a `<button>` element.
+ */
+export type NativeButtonProps = ButtonBaseProps &
+  Omit<HTMLAttributes<"button">, "class"> & {
+    /** @brief 原生按钮不接受链接地址 / Native buttons do not accept a link URL. */
+    href?: undefined;
+  };
+
+/** @brief 多态按钮属性 / Polymorphic button properties. */
+export type Props = LinkButtonProps | NativeButtonProps;
+
+/** @brief 组件属性 / Component properties. */
+const {
+  href,
+  variant = "primary",
+  size = "md",
+  class: className,
+  type = "button",
+  ...rest
+} = Astro.props;
+
+/** @brief 按钮的契约类集合 / Contract class collection for the button. */
+const classes = ["moe-button", `moe-button--${variant}`, `moe-button--${size}`, className];
+---
+
+{
+  href ? (
+    <a {...rest} href={href} class:list={classes}>
+      {Astro.slots.has("leading") && <span class="moe-button__leading"><slot name="leading" /></span>}
+      <span class="moe-button__label"><slot /></span>
+      {Astro.slots.has("trailing") && <span class="moe-button__trailing"><slot name="trailing" /></span>}
+    </a>
+  ) : (
+    <button {...rest} type={type} class:list={classes}>
+      {Astro.slots.has("leading") && <span class="moe-button__leading"><slot name="leading" /></span>}
+      <span class="moe-button__label"><slot /></span>
+      {Astro.slots.has("trailing") && <span class="moe-button__trailing"><slot name="trailing" /></span>}
+    </button>
+  )
+}

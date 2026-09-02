@@ -1,0 +1,90 @@
+---
+import Button from "@moesegfault/style/astro/Button.astro";
+import Card from "@moesegfault/style/astro/Card.astro";
+import Cluster from "@moesegfault/style/astro/Cluster.astro";
+import Container from "@moesegfault/style/astro/Container.astro";
+import Stack from "@moesegfault/style/astro/Stack.astro";
+import DocsLayout from "../layouts/DocsLayout.astro";
+---
+
+<DocsLayout
+  title="温暖的界面工坊"
+  description="面向 TypeScript、React 与 Astro 的暖纸编辑风格设计系统。"
+  currentPath="/"
+>
+  <section class="hero">
+    <Container>
+      <div class="hero-grid">
+        <div>
+          <p class="kicker">DESIGN SYSTEM · 0.1</p>
+          <h1>给代码一张温暖的纸。</h1>
+          <p class="lede">
+            从 MoeSegFault 的博客、工具与机器人里提炼出的视觉语言。清晰的令牌、克制的组件，
+            以及刚刚好的萌系温度。
+          </p>
+          <Cluster>
+            <Button href="/components/">浏览组件</Button>
+            <Button href="/guides/" variant="secondary">开始接入</Button>
+          </Cluster>
+        </div>
+        <aside class="paper-note" aria-label="设计宣言">
+          <blockquote>“界面不是舞台布景，而是让内容被温柔读到的那一束光。”</blockquote>
+          <p>Warm editorial · Soft moe · Production ready</p>
+        </aside>
+      </div>
+    </Container>
+  </section>
+
+  <section class="section section-tint" aria-labelledby="principles-title">
+    <Container>
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Principles</p>
+          <h2 id="principles-title">一套语言，三种使用尺度</h2>
+        </div>
+        <p>从纯 CSS 到有状态的 React 岛，逐层采用，不必为了设计系统重写应用架构。</p>
+      </div>
+      <div class="feature-grid">
+        <Card>
+          <span class="feature-number">01</span>
+          <h3>令牌先行</h3>
+          <p>颜色、间距、圆角与阴影均有语义名称；主题切换不改变组件结构。</p>
+          <a href="/foundations/">查看视觉规范 →</a>
+        </Card>
+        <Card>
+          <span class="feature-number">02</span>
+          <h3>框架友好</h3>
+          <p>同一套基础 CSS，搭配 Astro 静态组件或 React 交互组件。</p>
+          <a href="/guides/">查看接入方式 →</a>
+        </Card>
+        <Card>
+          <span class="feature-number">03</span>
+          <h3>渐进分发</h3>
+          <p>npm 包适合构建时依赖，版本化 CDN 资产适合无需打包的静态页面。</p>
+          <a href="/distribution/">查看版本资源 →</a>
+        </Card>
+      </div>
+    </Container>
+  </section>
+
+  <section class="section" aria-labelledby="composition-title">
+    <Container>
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Dogfood</p>
+          <h2 id="composition-title">这页本身，就是组件示例</h2>
+        </div>
+      </div>
+      <Stack>
+        <p class="lede">
+          页面的容器、卡片、按钮、集群与节奏都来自 <code>@moesegfault/style</code>。
+          文档不维护一套“只供展示”的影子实现。
+        </p>
+        <Cluster>
+          <Button href="/components/">打开完整 Showcase</Button>
+          <Button href="/distribution/" variant="ghost">选择分发通道</Button>
+        </Cluster>
+      </Stack>
+    </Container>
+  </section>
+</DocsLayout>

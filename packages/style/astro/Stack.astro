@@ -1,0 +1,33 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+/** @brief 堆叠布局可用的语义元素 / Semantic elements available to a stack layout. */
+export type StackElement = "div" | "section" | "article" | "ul" | "ol";
+
+/**
+ * @brief 垂直堆叠布局属性 / Vertical stack layout properties.
+ */
+export interface Props extends Omit<HTMLAttributes<"div">, "class"> {
+  /** @brief 根节点语义元素 / Semantic root element. */
+  as?: StackElement;
+  /** @brief 子项间距 CSS 值 / CSS gap value between children. */
+  gap?: string;
+  /** @brief 交叉轴对齐 CSS 值 / Cross-axis alignment CSS value. */
+  align?: "stretch" | "start" | "center" | "end";
+  /** @brief 自定义 CSS 类 / Custom CSS class. */
+  class?: string;
+}
+
+/** @brief 组件属性 / Component properties. */
+const { as: Tag = "div", gap, align, class: className, style, ...rest } = Astro.props;
+
+/** @brief 通过自定义属性连接堆叠布局契约 / Connects stack layout through custom properties. */
+const layoutStyle = {
+  "--moe-stack-gap": gap,
+  "--moe-stack-align": align,
+};
+---
+
+<Tag {...rest} class:list={["moe-stack", className]} style:list={[style, layoutStyle]}>
+  <slot />
+</Tag>

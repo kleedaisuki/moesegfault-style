@@ -1,0 +1,33 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+/** @brief 容器可用的语义元素 / Semantic elements available to a container. */
+export type ContainerElement = "div" | "main" | "section" | "article" | "header" | "footer";
+
+/**
+ * @brief 页面容器属性 / Page container properties.
+ */
+export interface Props extends Omit<HTMLAttributes<"div">, "class"> {
+  /** @brief 根节点语义元素 / Semantic root element. */
+  as?: ContainerElement;
+  /** @brief 最大内容宽度 CSS 值 / Maximum content-width CSS value. */
+  maxWidth?: string;
+  /** @brief 水平留白 CSS 值 / Horizontal gutter CSS value. */
+  gutter?: string;
+  /** @brief 自定义 CSS 类 / Custom CSS class. */
+  class?: string;
+}
+
+/** @brief 组件属性 / Component properties. */
+const { as: Tag = "div", maxWidth, gutter, class: className, style, ...rest } = Astro.props;
+
+/** @brief 通过自定义属性连接容器布局契约 / Connects container layout through custom properties. */
+const layoutStyle = {
+  "--moe-container-max-width": maxWidth,
+  "--moe-container-gutter": gutter,
+};
+---
+
+<Tag {...rest} class:list={["moe-container", className]} style:list={[style, layoutStyle]}>
+  <slot />
+</Tag>

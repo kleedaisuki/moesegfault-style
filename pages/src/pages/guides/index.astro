@@ -1,0 +1,79 @@
+---
+import Container from "@moesegfault/style/astro/Container.astro";
+import CodeBlock from "../../components/CodeBlock.astro";
+import DocsLayout from "../../layouts/DocsLayout.astro";
+---
+
+<DocsLayout
+  title="接入指南"
+  description="在 React、Astro 和无构建工具网页中接入 MoeSegFault Style。"
+  currentPath="/guides/"
+>
+  <header class="page-intro">
+    <Container>
+      <p class="kicker">GUIDES</p>
+      <h1>从一行 CSS 开始。</h1>
+      <p class="lede">选择与项目匹配的入口。没有 React 就不下载 React；只要令牌就不引入组件样式。</p>
+    </Container>
+  </header>
+
+  <section class="section section-tint" aria-labelledby="install-title">
+    <Container>
+      <div class="section-heading">
+        <div><p class="eyebrow">Install</p><h2 id="install-title">包管理器接入</h2></div>
+      </div>
+      <CodeBlock label="Terminal" code="pnpm add @moesegfault/style" />
+      <div class="guide-grid">
+        <article class="guide-card">
+          <h3>React / TypeScript</h3>
+          <p>在应用入口加载一次 CSS，在功能模块按需导入组件。</p>
+          <CodeBlock
+            label="src/App.tsx"
+            code={`import "@moesegfault/style/all.css";\nimport { Button, Notice } from "@moesegfault/style/react";\n\nexport function App() {\n  return <Notice title="你好"><Button>继续</Button></Notice>;\n}`}
+          />
+        </article>
+        <article class="guide-card">
+          <h3>Astro</h3>
+          <p>Astro 组件默认输出静态 HTML，不需要客户端 JavaScript。</p>
+          <CodeBlock
+            label="src/pages/index.astro"
+            code={`---\nimport "@moesegfault/style/all.css";\nimport Button from "@moesegfault/style/astro/Button.astro";\nimport Card from "@moesegfault/style/astro/Card.astro";\n---\n<Card><h2>静态优先</h2><Button href="/start">开始</Button></Card>`}
+          />
+        </article>
+        <article class="guide-card">
+          <h3>Astro + React island</h3>
+          <p>只对确实需要交互的组件添加客户端指令（client directive）。</p>
+          <CodeBlock
+            label="src/pages/chat.astro"
+            code={`---\nimport { Composer } from "../components/Composer";\n---\n<Composer client:visible />`}
+          />
+        </article>
+        <article class="guide-card">
+          <h3>分层 CSS</h3>
+          <p>全量入口最省心；对尺寸敏感时可以明确选择层级。</p>
+          <CodeBlock
+            label="src/styles/app.css"
+            code={`@import "@moesegfault/style/tokens.css";\n@import "@moesegfault/style/foundation.css";\n@import "@moesegfault/style/components.css";`}
+          />
+        </article>
+      </div>
+    </Container>
+  </section>
+
+  <section class="section" aria-labelledby="cdn-title">
+    <Container>
+      <div class="section-heading">
+        <div><p class="eyebrow">No build</p><h2 id="cdn-title">CDN / 原生 HTML</h2></div>
+        <p>固定版本用于生产；latest 仅适合原型、文档预览或受控的自动更新场景。</p>
+      </div>
+      <CodeBlock
+        label="index.html"
+        code={`<!doctype html>\n<html lang="zh-CN">\n  <head>\n    <link rel="stylesheet" href="https://style.moesegfault.dev/v/0.1.0/css/all.css">\n  </head>\n  <body class="moe-surface">\n    <button class="moe-button">开始创作</button>\n  </body>\n</html>`}
+      />
+      <div class="callout">
+        <h3>主题初始化</h3>
+        <p>在首屏样式计算前设置 <code>data-theme</code>，可以避免主题闪烁；本 documentation 就采用该方式。</p>
+      </div>
+    </Container>
+  </section>
+</DocsLayout>

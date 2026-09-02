@@ -1,0 +1,103 @@
+---
+import Container from "@moesegfault/style/astro/Container.astro";
+import CodeBlock from "../../components/CodeBlock.astro";
+import DocsLayout from "../../layouts/DocsLayout.astro";
+
+const colors = [
+  ["Paper", "--moe-color-paper", "var(--docs-paper)"],
+  ["Surface", "--moe-color-surface", "var(--docs-paper-raised)"],
+  ["Ink", "--moe-color-ink", "var(--docs-ink)"],
+  ["Muted ink", "--moe-color-ink-muted", "var(--docs-muted)"],
+  ["Accent", "--moe-color-accent", "var(--docs-accent)"],
+  ["Accent soft", "--moe-color-accent-soft", "var(--docs-accent-soft)"],
+  ["Success", "--moe-color-success", "var(--docs-leaf)"],
+  ["Border", "--moe-color-border", "var(--docs-line)"],
+] as const;
+const spaces = [1, 2, 3, 4, 6, 8] as const;
+---
+
+<DocsLayout
+  title="视觉规范"
+  description="MoeSegFault Style 的颜色、字体、间距、圆角与主题规范。"
+  currentPath="/foundations/"
+>
+  <header class="page-intro">
+    <Container>
+      <p class="kicker">FOUNDATIONS</p>
+      <h1>有手感的秩序。</h1>
+      <p class="lede">暖纸不是泛黄滤镜；萌系也不是装饰堆叠。语义令牌让气质在主题和产品之间保持一致。</p>
+    </Container>
+  </header>
+
+  <section class="section section-tint" aria-labelledby="color-title">
+    <Container>
+      <div class="section-heading">
+        <div><p class="eyebrow">Color</p><h2 id="color-title">语义色彩</h2></div>
+        <p>组件只消费用途，不猜测具体色值。切换右上角主题，观察每个角色如何保持关系。</p>
+      </div>
+      <div class="token-grid">
+        {colors.map(([name, token, color]) => (
+          <article class="swatch">
+            <div class="swatch-color" style={`--swatch: ${color}`}></div>
+            <div class="swatch-copy"><strong>{name}</strong><code>{token}</code></div>
+          </article>
+        ))}
+      </div>
+    </Container>
+  </section>
+
+  <section class="section" aria-labelledby="rhythm-title">
+    <Container>
+      <div class="section-heading">
+        <div><p class="eyebrow">Rhythm</p><h2 id="rhythm-title">间距与排版</h2></div>
+        <p>使用有限的间距阶梯形成节奏；正文优先保证可读行长，而不是塞满屏幕。</p>
+      </div>
+      <ul class="scale-list">
+        {spaces.map((step) => (
+          <li>
+            <code>space-{step}</code>
+            <span class="scale-bar" style={`width: min(100%, ${step * 9}%);`}></span>
+            <code>{step * 4}px</code>
+          </li>
+        ))}
+      </ul>
+      <div class="callout">
+        <h3>字体策略</h3>
+        <p>
+          标题与长文使用本地衬线字体栈（serif stack），控件和标注使用系统无衬线字体；
+          不因网络字体失败产生不可读或大幅布局偏移。
+        </p>
+      </div>
+    </Container>
+  </section>
+
+  <section class="section section-tint" aria-labelledby="token-title">
+    <Container>
+      <div class="section-heading">
+        <div><p class="eyebrow">Tokens</p><h2 id="token-title">令牌的三种形态</h2></div>
+      </div>
+      <div class="guide-grid">
+        <div class="guide-card">
+          <h3>CSS 自定义属性</h3>
+          <p>适合网页和跨框架消费。</p>
+          <CodeBlock label="CSS" code={`@import "@moesegfault/style/tokens.css";\n\n.panel {\n  color: var(--moe-color-ink);\n  border-radius: var(--moe-radius-lg);\n}`} />
+        </div>
+        <div class="guide-card">
+          <h3>TypeScript</h3>
+          <p>适合图表、Canvas 和需要具体值的运行时代码。</p>
+          <CodeBlock label="TypeScript" code={`import { tokens } from "@moesegfault/style";\n\nconst accent = tokens.color.accent;`} />
+        </div>
+        <div class="guide-card">
+          <h3>JSON / DTCG</h3>
+          <p>适合设计工具与生成流水线；DTCG 为 Design Tokens Community Group 格式。</p>
+          <CodeBlock label="JSON" code={`import tokens from "@moesegfault/style/tokens.json";\n// 或远程获取 /v/0.1.0/tokens/tokens.dtcg.json`} />
+        </div>
+        <div class="guide-card">
+          <h3>暗色主题</h3>
+          <p>主题由根元素属性控制，并尊重首次访问时的系统偏好。</p>
+          <CodeBlock label="HTML" code={`<html data-theme="dark">\n  …\n</html>`} />
+        </div>
+      </div>
+    </Container>
+  </section>
+</DocsLayout>

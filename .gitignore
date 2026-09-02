@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.astro/
+coverage/
+playwright-report/
+test-results/
+*.tgz
+.DS_Store
+Thumbs.db

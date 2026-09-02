@@ -1,0 +1,40 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+/**
+ * @brief 品牌标记属性 / Brand mark properties.
+ * @note `href` 存在时使用链接语义，否则渲染为行内容器。
+ *       Renders with link semantics when `href` is present, otherwise as an inline container.
+ */
+export interface Props extends Omit<HTMLAttributes<"a">, "class"> {
+  /** @brief 可选目标地址 / Optional destination URL. */
+  href?: string;
+  /** @brief 辅助技术读取的品牌名称 / Brand name exposed to assistive technology. */
+  label?: string;
+  /** @brief 自定义 CSS 类 / Custom CSS class. */
+  class?: string;
+}
+
+/** @brief 组件属性 / Component properties. */
+const { href, label = "Moe Segfault", class: className, ...rest } = Astro.props;
+
+/** @brief 根据链接是否存在选择语义元素 / Selects the semantic element from link presence. */
+const Tag = href ? "a" : "span";
+---
+
+<Tag
+  {...rest}
+  href={href}
+  class:list={["moe-brand-mark", className]}
+  aria-label={rest["aria-label"] ?? label}
+>
+  <span class="moe-brand-mark__symbol" aria-hidden="true"><slot name="symbol">M</slot></span>
+  <span class="moe-brand-mark__text">
+    <span class="moe-brand-mark__name"><slot>{label}</slot></span>
+    {
+      Astro.slots.has("tagline") && (
+        <span class="moe-brand-mark__tagline"><slot name="tagline" /></span>
+      )
+    }
+  </span>
+</Tag>

@@ -1,0 +1,28 @@
+{
+  "name": "moesegfault-style-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.17.0",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "build": "pnpm --filter @moesegfault/style build && pnpm --filter @moesegfault/pages build",
+    "build:library": "pnpm --filter @moesegfault/style build",
+    "build:pages": "pnpm --filter @moesegfault/pages build",
+    "dev": "pnpm --filter @moesegfault/pages dev",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "lint": "biome lint .",
+    "check": "pnpm build && pnpm test && pnpm lint && pnpm format:check",
+    "test": "pnpm --filter @moesegfault/style test && pnpm --filter @moesegfault/pages test",
+    "test:e2e": "pnpm --filter @moesegfault/pages test:e2e",
+    "cdn:build": "node scripts/build-cdn.mjs",
+    "cdn:verify": "node scripts/verify-cdn.mjs",
+    "pack:check": "pnpm --filter @moesegfault/style pack:check"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.11"
+  }
+}

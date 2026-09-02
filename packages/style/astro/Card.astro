@@ -1,0 +1,61 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+/** @brief 卡片可用的语义元素 / Semantic elements available to a card. */
+export type CardElement = "article" | "section" | "div";
+
+/** @brief 卡片标题层级 / Card heading levels. */
+export type CardHeading = "h2" | "h3" | "h4" | "h5" | "h6";
+
+/**
+ * @brief 卡片属性 / Card properties.
+ */
+export interface Props extends Omit<HTMLAttributes<"article">, "class" | "title"> {
+  /** @brief 根节点语义元素 / Semantic root element. */
+  as?: CardElement;
+  /** @brief 可选眉题 / Optional eyebrow text. */
+  eyebrow?: string;
+  /** @brief 可选标题 / Optional title. */
+  title?: string;
+  /** @brief 可选说明文本 / Optional description text. */
+  description?: string;
+  /** @brief 标题元素层级 / Heading element level. */
+  headingAs?: CardHeading;
+  /** @brief 自定义 CSS 类 / Custom CSS class. */
+  class?: string;
+}
+
+/** @brief 组件属性 / Component properties. */
+const {
+  as: Tag = "article",
+  eyebrow,
+  title,
+  description,
+  headingAs: Heading = "h2",
+  class: className,
+  ...rest
+} = Astro.props;
+
+/** @brief 卡片是否包含头部内容 / Whether the card contains header content. */
+const hasHeader = eyebrow || title || description || Astro.slots.has("header");
+---
+
+<Tag {...rest} class:list={["moe-card", className]}>
+  {
+    hasHeader && (
+      <header class="moe-card__header">
+        {Astro.slots.has("header") ? (
+          <slot name="header" />
+        ) : (
+          <>
+            {eyebrow && <p class="moe-card__eyebrow">{eyebrow}</p>}
+            {title && <Heading class="moe-card__title">{title}</Heading>}
+            {description && <p class="moe-card__description">{description}</p>}
+          </>
+        )}
+      </header>
+    )
+  }
+  <div class="moe-card__content"><slot /></div>
+  {Astro.slots.has("footer") && <footer class="moe-card__footer"><slot name="footer" /></footer>}
+</Tag>

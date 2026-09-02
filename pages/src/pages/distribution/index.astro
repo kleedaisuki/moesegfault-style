@@ -1,0 +1,82 @@
+---
+import Container from "@moesegfault/style/astro/Container.astro";
+import CodeBlock from "../../components/CodeBlock.astro";
+import DocsLayout from "../../layouts/DocsLayout.astro";
+
+const root = "https://style.moesegfault.dev";
+---
+
+<DocsLayout
+  title="版本资源"
+  description="MoeSegFault Style 的版本化静态资源路径和更新策略。"
+  currentPath="/distribution/"
+>
+  <header class="page-intro">
+    <Container>
+      <p class="kicker">DISTRIBUTION</p>
+      <h1>可缓存，也可预测。</h1>
+      <p class="lede">同一构建产出同时服务 npm 与静态站点；版本路径不可变，可变别名明确表达更新意图。</p>
+    </Container>
+  </header>
+
+  <section class="section section-tint" aria-labelledby="paths-title">
+    <Container>
+      <div class="section-heading">
+        <div><p class="eyebrow">Asset map</p><h2 id="paths-title">资源目录</h2></div>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>资源</th><th>固定版本 URL</th><th>用途</th></tr></thead>
+          <tbody>
+            <tr><td>全量样式</td><td><code>{root}/v/0.1.0/css/all.css</code></td><td>默认接入</td></tr>
+            <tr><td>设计令牌</td><td><code>{root}/v/0.1.0/css/tokens.css</code></td><td>自定义界面</td></tr>
+            <tr><td>基础样式</td><td><code>{root}/v/0.1.0/css/foundation.css</code></td><td>元素与主题基础</td></tr>
+            <tr><td>组件样式</td><td><code>{root}/v/0.1.0/css/components.css</code></td><td>库组件外观</td></tr>
+            <tr><td>Token JSON</td><td><code>{root}/v/0.1.0/tokens/tokens.json</code></td><td>程序化消费</td></tr>
+            <tr><td>DTCG JSON</td><td><code>{root}/v/0.1.0/tokens/tokens.dtcg.json</code></td><td>设计工具交换</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </Container>
+  </section>
+
+  <section class="section" aria-labelledby="strategy-title">
+    <Container>
+      <div class="section-heading">
+        <div><p class="eyebrow">Strategy</p><h2 id="strategy-title">选择更新策略</h2></div>
+      </div>
+      <div class="asset-grid">
+        <article class="asset-card">
+          <h3>固定版本：生产默认</h3>
+          <p><code>/v/0.1.0/…</code> 内容保持不变，可以长时间缓存；升级通过代码评审显式发生。</p>
+          <CodeBlock label="HTML" code={`<link rel="stylesheet"\n  href="${root}/v/0.1.0/css/all.css">`} />
+        </article>
+        <article class="asset-card">
+          <h3>Latest：受控漂移</h3>
+          <p><code>/v/latest/…</code> 跟随最新稳定版本，适合 showcase 与希望自动跟进的内部工具。</p>
+          <CodeBlock label="HTML" code={`<link rel="stylesheet"\n  href="${root}/v/latest/css/all.css">`} />
+        </article>
+      </div>
+      <div class="callout">
+        <h3>缓存契约</h3>
+        <p>
+          固定版本可使用长期缓存与 <code>immutable</code>；latest 应短缓存并可重新验证。
+          CSS 和 JSON 是公开静态资产，不包含环境配置或应用秘密。
+        </p>
+      </div>
+    </Container>
+  </section>
+
+  <section class="section section-tint" aria-labelledby="release-title">
+    <Container>
+      <div class="section-heading">
+        <div><p class="eyebrow">Release</p><h2 id="release-title">发布不变量</h2></div>
+      </div>
+      <div class="feature-grid">
+        <article class="feature-card"><span class="feature-number">01</span><h3>一次构建</h3><p>npm 和 CDN 复用同一令牌生成结果，避免两套真相。</p></article>
+        <article class="feature-card"><span class="feature-number">02</span><h3>先验证</h3><p>类型检查、单测、静态构建和浏览器冒烟测试通过后才发布。</p></article>
+        <article class="feature-card"><span class="feature-number">03</span><h3>不可覆盖</h3><p>已发布版本目录不被后续流水线改写；修复通过新版本交付。</p></article>
+      </div>
+    </Container>
+  </section>
+</DocsLayout>
