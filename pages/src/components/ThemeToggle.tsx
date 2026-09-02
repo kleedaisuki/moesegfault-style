@@ -8,7 +8,7 @@ type Theme = "light" | "dark";
  * @return 当前主题。The active theme.
  */
 function readTheme(): Theme {
-  return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+  return document.documentElement.dataset.moeTheme === "dark" ? "dark" : "light";
 }
 
 /**
@@ -27,7 +27,7 @@ export function ThemeToggle() {
 
   const toggle = () => {
     const next = readTheme() === "dark" ? "light" : "dark";
-    document.documentElement.dataset.theme = next;
+    document.documentElement.dataset.moeTheme = next;
     document.documentElement.style.colorScheme = next;
     localStorage.setItem("moe-theme", next);
     setTheme(next);

@@ -26,7 +26,7 @@ import DocsLayout from "../../layouts/DocsLayout.astro";
       <div class="guide-grid">
         <article class="guide-card">
           <h3>React / TypeScript</h3>
-          <p>在应用入口加载一次 CSS，在功能模块按需导入组件。</p>
+          <p>先安装 <code>react</code> 与 <code>react-dom</code> 19+，再在应用入口加载一次 CSS，并按需导入组件。</p>
           <CodeBlock
             label="src/App.tsx"
             code={`import "@moesegfault/style/all.css";\nimport { Button, Notice } from "@moesegfault/style/react";\n\nexport function App() {\n  return <Notice title="你好"><Button>继续</Button></Notice>;\n}`}
@@ -68,11 +68,11 @@ import DocsLayout from "../../layouts/DocsLayout.astro";
       </div>
       <CodeBlock
         label="index.html"
-        code={`<!doctype html>\n<html lang="zh-CN">\n  <head>\n    <link rel="stylesheet" href="https://style.moesegfault.dev/v/0.1.0/css/all.css">\n  </head>\n  <body class="moe-surface">\n    <button class="moe-button">开始创作</button>\n  </body>\n</html>`}
+        code={`<!doctype html>\n<html lang="zh-CN">\n  <head>\n    <link rel="stylesheet" href="https://style.moesegfault.dev/v/0.1.1/css/all.css">\n  </head>\n  <body class="moe-surface">\n    <button class="moe-button">开始创作</button>\n  </body>\n</html>`}
       />
       <div class="callout">
         <h3>主题初始化</h3>
-        <p>在首屏样式计算前设置 <code>data-theme</code>，可以避免主题闪烁；本 documentation 就采用该方式。</p>
+        <p>在首屏样式计算前设置 <code>data-moe-theme</code>，可以避免主题闪烁；本 documentation 就采用该方式。</p>
       </div>
     </Container>
   </section>

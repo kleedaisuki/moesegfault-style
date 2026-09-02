@@ -1,5 +1,6 @@
 ---
 import type { HTMLAttributes } from "astro/types";
+import { mergeLayoutStyles } from "./_style";
 
 /** @brief 堆叠布局可用的语义元素 / Semantic elements available to a stack layout. */
 export type StackElement = "div" | "section" | "article" | "ul" | "ol";
@@ -22,12 +23,12 @@ export interface Props extends Omit<HTMLAttributes<"div">, "class"> {
 const { as: Tag = "div", gap, align, class: className, style, ...rest } = Astro.props;
 
 /** @brief 通过自定义属性连接堆叠布局契约 / Connects stack layout through custom properties. */
-const layoutStyle = {
+const layoutStyle = mergeLayoutStyles(style, {
   "--moe-stack-gap": gap,
   "--moe-stack-align": align,
-};
+});
 ---
 
-<Tag {...rest} class:list={["moe-stack", className]} style:list={[style, layoutStyle]}>
+<Tag {...rest} class:list={["moe-stack", className]} style={layoutStyle}>
   <slot />
 </Tag>

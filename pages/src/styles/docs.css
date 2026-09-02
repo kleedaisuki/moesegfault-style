@@ -12,7 +12,7 @@
   --docs-width: 74rem;
 }
 
-[data-theme="dark"] {
+[data-moe-theme="dark"] {
   --docs-paper: #211e1e;
   --docs-paper-raised: #2a2525;
   --docs-ink: #f1e7da;

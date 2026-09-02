@@ -57,6 +57,23 @@ export type ClusterAlign = "start" | "center" | "end" | "baseline" | "stretch";
 /** @brief 簇布局的主轴对齐。Main-axis distribution for a cluster. */
 export type ClusterJustify = "start" | "center" | "end" | "between";
 
+/** @brief 将簇布局对齐契约转换为 CSS 值。Map cluster alignment contracts to CSS values. */
+const clusterAlignValues: Record<ClusterAlign, string> = {
+  start: "flex-start",
+  center: "center",
+  end: "flex-end",
+  baseline: "baseline",
+  stretch: "stretch",
+};
+
+/** @brief 将簇布局分布契约转换为 CSS 值。Map cluster distribution contracts to CSS values. */
+const clusterJustifyValues: Record<ClusterJustify, string> = {
+  start: "flex-start",
+  center: "center",
+  end: "flex-end",
+  between: "space-between",
+};
+
 /** @brief 自动换行的水平簇布局属性。Wrapping horizontal cluster props. */
 export interface ClusterProps extends HTMLAttributes<HTMLDivElement> {
   /** @brief 交叉轴对齐。Cross-axis alignment. */
@@ -90,6 +107,8 @@ export function Cluster({
         {
           ...style,
           "--moe-cluster-space": gap === "none" ? "0px" : `var(--moe-space-${gap})`,
+          "--moe-cluster-align": clusterAlignValues[align],
+          "--moe-cluster-justify": clusterJustifyValues[justify],
         } as CSSProperties
       }
     />

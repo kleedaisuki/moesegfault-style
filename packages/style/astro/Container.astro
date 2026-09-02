@@ -1,5 +1,6 @@
 ---
 import type { HTMLAttributes } from "astro/types";
+import { mergeLayoutStyles } from "./_style";
 
 /** @brief 容器可用的语义元素 / Semantic elements available to a container. */
 export type ContainerElement = "div" | "main" | "section" | "article" | "header" | "footer";
@@ -22,12 +23,12 @@ export interface Props extends Omit<HTMLAttributes<"div">, "class"> {
 const { as: Tag = "div", maxWidth, gutter, class: className, style, ...rest } = Astro.props;
 
 /** @brief 通过自定义属性连接容器布局契约 / Connects container layout through custom properties. */
-const layoutStyle = {
+const layoutStyle = mergeLayoutStyles(style, {
   "--moe-container-max-width": maxWidth,
   "--moe-container-gutter": gutter,
-};
+});
 ---
 
-<Tag {...rest} class:list={["moe-container", className]} style:list={[style, layoutStyle]}>
+<Tag {...rest} class:list={["moe-container", className]} style={layoutStyle}>
   <slot />
 </Tag>

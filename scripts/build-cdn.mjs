@@ -8,7 +8,9 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   describeFile,
+  discoverMajorAliases,
   isDirectory,
+  isPrereleaseVersion,
   jsonText,
   listFiles,
   RELEASE_DIRECTORIES,
@@ -169,26 +171,38 @@ async function main() {
   if (!(await exactReleaseMatches(exact, files, manifestText))) {
     await createExactRelease(exact, files, manifestText);
   }
-  await replaceDirectory(exact, resolve(RELEASES, "v", major));
-  await replaceDirectory(exact, resolve(RELEASES, "v", "latest"));
+  if (!isPrereleaseVersion(version)) {
+    await replaceDirectory(exact, resolve(RELEASES, "v", major));
+    await replaceDirectory(exact, resolve(RELEASES, "v", "latest"));
 
-  /** @brief 根发现清单 / Root discovery manifest. */
-  const rootManifest = {
-    ...manifest,
-    aliases: {
-      latest: version,
-      [major]: version,
-    },
-    aliasBaseUrls: {
-      latest: "/v/latest",
-      [major]: `/v/${major}`,
-    },
-  };
-  await writeFile(resolve(RELEASES, "manifest.json"), jsonText(rootManifest));
+    /** @brief 全部已发布主版本别名 / All published major-version aliases. */
+    const majorAliases = await discoverMajorAliases(resolve(RELEASES, "v"));
+    /** @brief 别名到精确版本的映射 / Alias-to-exact-version map. */
+    const aliases = Object.fromEntries(majorAliases.map((alias) => [alias.alias, alias.version]));
+    /** @brief 别名到基础 URL 的映射 / Alias-to-base-URL map. */
+    const aliasBaseUrls = Object.fromEntries(
+      majorAliases.map((alias) => [alias.alias, alias.baseUrl]),
+    );
+    aliases.latest = version;
+    aliasBaseUrls.latest = "/v/latest";
+
+    /** @brief 根发现清单 / Root discovery manifest. */
+    const rootManifest = {
+      ...manifest,
+      aliases,
+      aliasBaseUrls,
+    };
+    await writeFile(resolve(RELEASES, "manifest.json"), jsonText(rootManifest));
+  }
 
   await mkdir(PUBLIC, { recursive: true });
   await replaceDirectory(resolve(RELEASES, "v"), resolve(PUBLIC, "v"));
-  await cp(resolve(RELEASES, "manifest.json"), resolve(PUBLIC, "manifest.json"));
+  try {
+    await cp(resolve(RELEASES, "manifest.json"), resolve(PUBLIC, "manifest.json"));
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw error;
+    await rm(resolve(PUBLIC, "manifest.json"), { force: true });
+  }
   process.stdout.write(`CDN ${version}: ${files.length} files -> pages/public/v\n`);
 }
 

@@ -90,12 +90,12 @@ const spaces = [1, 2, 3, 4, 6, 8] as const;
         <div class="guide-card">
           <h3>JSON / DTCG</h3>
           <p>适合设计工具与生成流水线；DTCG 为 Design Tokens Community Group 格式。</p>
-          <CodeBlock label="JSON" code={`import tokens from "@moesegfault/style/tokens.json";\n// 或远程获取 /v/0.1.0/tokens/tokens.dtcg.json`} />
+          <CodeBlock label="JSON" code={`import tokens from "@moesegfault/style/tokens.json";\n// 或远程获取 /v/0.1.1/tokens/tokens.dtcg.json`} />
         </div>
         <div class="guide-card">
           <h3>暗色主题</h3>
           <p>主题由根元素属性控制，并尊重首次访问时的系统偏好。</p>
-          <CodeBlock label="HTML" code={`<html data-theme="dark">\n  …\n</html>`} />
+          <CodeBlock label="HTML" code={`<html data-moe-theme="dark">\n  …\n</html>`} />
         </div>
       </div>
     </Container>

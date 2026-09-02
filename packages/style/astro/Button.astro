@@ -54,10 +54,13 @@ const {
 
 /** @brief 按钮的契约类集合 / Contract class collection for the button. */
 const classes = ["moe-button", `moe-button--${variant}`, `moe-button--${size}`, className];
+
+/** @brief 表示是否显式提供链接地址 / Whether a link destination was explicitly provided. */
+const hasHref = href !== undefined && href !== null;
 ---
 
 {
-  href ? (
+  hasHref ? (
     <a {...rest} href={href} class:list={classes}>
       {Astro.slots.has("leading") && <span class="moe-button__leading"><slot name="leading" /></span>}
       <span class="moe-button__label"><slot /></span>

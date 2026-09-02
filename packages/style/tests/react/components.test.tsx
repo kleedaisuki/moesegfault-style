@@ -113,7 +113,7 @@ describe("基础 React 组件", () => {
     render(
       <Container aria-label="内容" size="wide">
         <Stack data-testid="stack" gap="lg">
-          <Cluster data-testid="cluster" gap="sm" justify="between">
+          <Cluster data-testid="cluster" align="end" gap="sm" justify="between">
             <span>甲</span>
             <span>乙</span>
           </Cluster>
@@ -122,8 +122,11 @@ describe("基础 React 组件", () => {
     );
 
     expect(screen.getByLabelText("内容").getAttribute("data-size")).toBe("wide");
-    expect(screen.getByTestId("stack").getAttribute("style")).toContain("--moe-stack-space");
-    expect(screen.getByTestId("cluster").getAttribute("data-justify")).toBe("between");
-    expect(screen.getByTestId("cluster").getAttribute("style")).toContain("--moe-cluster-space");
+    const stack = screen.getByTestId("stack");
+    const cluster = screen.getByTestId("cluster");
+    expect(stack.style.getPropertyValue("--moe-stack-space")).toBe("var(--moe-space-lg)");
+    expect(cluster.style.getPropertyValue("--moe-cluster-space")).toBe("var(--moe-space-sm)");
+    expect(cluster.style.getPropertyValue("--moe-cluster-align")).toBe("flex-end");
+    expect(cluster.style.getPropertyValue("--moe-cluster-justify")).toBe("space-between");
   });
 });

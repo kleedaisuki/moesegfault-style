@@ -128,6 +128,51 @@ export async function readJson(path) {
 }
 
 /**
+ * @brief 判断语义版本是否为预发布版本 / Determine whether a semantic version is a prerelease.
+ * @param {string} version 语义版本 / Semantic version.
+ * @return {boolean} 含有预发布标识符时为真 / True when a prerelease identifier is present.
+ */
+export function isPrereleaseVersion(version) {
+  return version.includes("-");
+}
+
+/**
+ * @brief 发现全部主版本别名 / Discover every major-version alias.
+ * @param {string} versionsRoot 包含版本目录的根目录 / Root containing version directories.
+ * @return {Promise<Array<{alias:string,version:string,baseUrl:string}>>} 按数值排序的别名 / Numerically sorted aliases.
+ * @note 纯数字目录是别名的事实来源；其 manifest 决定目标精确版本。
+ *       Numeric directories are the source of truth; their manifest selects the exact version.
+ */
+export async function discoverMajorAliases(versionsRoot) {
+  /** @brief 版本目录项 / Version directory entries. */
+  const entries = await readdir(versionsRoot, { withFileTypes: true });
+  /** @brief 发现的别名 / Discovered aliases. */
+  const aliases = [];
+  for (const entry of entries) {
+    if (!entry.isDirectory() || !/^\d+$/.test(entry.name)) continue;
+    /** @brief 别名目录清单 / Alias-directory manifest. */
+    const manifest = await readJson(resolve(versionsRoot, entry.name, "manifest.json"));
+    if (
+      typeof manifest.version !== "string" ||
+      !/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(manifest.version) ||
+      isPrereleaseVersion(manifest.version) ||
+      manifest.version.split(".")[0] !== entry.name
+    ) {
+      throw new Error(
+        `主版本别名 ${entry.name} 的 manifest 版本无效 / Major alias manifest has an invalid version.`,
+      );
+    }
+    aliases.push({ alias: entry.name, version: manifest.version, baseUrl: `/v/${entry.name}` });
+  }
+  aliases.sort((left, right) => {
+    /** @brief 任意精度主版本比较结果 / Arbitrary-precision major comparison. */
+    const numericOrder = BigInt(left.alias) - BigInt(right.alias);
+    return numericOrder < 0n ? -1 : numericOrder > 0n ? 1 : left.alias.localeCompare(right.alias);
+  });
+  return aliases;
+}
+
+/**
  * @brief 判断路径是否为目录 / Determine whether a path is a directory.
  * @param {string} path 待检查路径 / Path to inspect.
  * @return {Promise<boolean>} 目录存在时为真 / True when a directory exists.

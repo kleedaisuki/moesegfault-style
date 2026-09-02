@@ -1,5 +1,5 @@
-export type { BrandMarkProps } from "./BrandMark";
-export { BrandMark } from "./BrandMark";
+export type { BrandMarkProps } from "./BrandMark.js";
+export { BrandMark } from "./BrandMark.js";
 export type {
   ButtonAnchorProps,
   ButtonCommonProps,
@@ -7,8 +7,8 @@ export type {
   ButtonProps,
   ButtonSize,
   ButtonVariant,
-} from "./Button";
-export { Button } from "./Button";
+} from "./Button.js";
+export { Button } from "./Button.js";
 export type {
   CardContentProps,
   CardDescriptionProps,
@@ -16,10 +16,10 @@ export type {
   CardProps,
   CardTitleProps,
   CardVariant,
-} from "./Card";
-export { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./Card";
-export type { ComposerProps, ComposerSubmitHandler } from "./Composer";
-export { Composer } from "./Composer";
+} from "./Card.js";
+export { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./Card.js";
+export type { ComposerProps, ComposerSubmitHandler } from "./Composer.js";
+export { Composer } from "./Composer.js";
 export type {
   BadgeProps,
   BadgeTone,
@@ -27,8 +27,8 @@ export type {
   NoticeTone,
   StatusDotProps,
   StatusDotStatus,
-} from "./Feedback";
-export { Badge, Notice, StatusDot } from "./Feedback";
+} from "./Feedback.js";
+export { Badge, Notice, StatusDot } from "./Feedback.js";
 export type {
   ClusterAlign,
   ClusterJustify,
@@ -37,7 +37,7 @@ export type {
   ContainerSize,
   LayoutGap,
   StackProps,
-} from "./Layout";
-export { Cluster, Container, Stack } from "./Layout";
-export type { MessageBubbleProps, MessageBubbleRole } from "./MessageBubble";
-export { MessageBubble } from "./MessageBubble";
+} from "./Layout.js";
+export { Cluster, Container, Stack } from "./Layout.js";
+export type { MessageBubbleProps, MessageBubbleRole } from "./MessageBubble.js";
+export { MessageBubble } from "./MessageBubble.js";

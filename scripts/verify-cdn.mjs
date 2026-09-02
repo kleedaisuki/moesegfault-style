@@ -6,7 +6,14 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { describeFile, listFiles, readJson, relativeUrl } from "./cdn-lib.mjs";
+import {
+  describeFile,
+  discoverMajorAliases,
+  isPrereleaseVersion,
+  listFiles,
+  readJson,
+  relativeUrl,
+} from "./cdn-lib.mjs";
 
 /** @brief 仓库根目录 / Repository root. */
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -79,13 +86,42 @@ async function verifyExactRelease(rootManifest) {
 async function main() {
   /** @brief 根发现清单 / Root discovery manifest. */
   const manifest = await readJson(resolve(RELEASES, "manifest.json"));
+  assert.equal(isPrereleaseVersion(manifest.version), false, "root manifest must remain stable");
   await verifyExactRelease(manifest);
-  /** @brief 精确版本目录 / Exact-version directory. */
-  const exact = resolve(RELEASES, "v", manifest.version);
-  for (const [alias, version] of Object.entries(manifest.aliases)) {
-    assert.equal(version, manifest.version, `${alias} points to another version`);
-    await assertDirectoryEqual(exact, resolve(RELEASES, "v", alias));
+  /** @brief 从磁盘发现的主版本别名 / Major-version aliases discovered from disk. */
+  const majorAliases = await discoverMajorAliases(resolve(RELEASES, "v"));
+  /** @brief 期望的完整别名映射 / Expected complete alias map. */
+  const expectedAliases = Object.fromEntries(
+    majorAliases.map((alias) => [alias.alias, alias.version]),
+  );
+  /** @brief 期望的完整别名 URL 映射 / Expected complete alias URL map. */
+  const expectedAliasBaseUrls = Object.fromEntries(
+    majorAliases.map((alias) => [alias.alias, alias.baseUrl]),
+  );
+  expectedAliases.latest = manifest.version;
+  expectedAliasBaseUrls.latest = "/v/latest";
+  assert.deepEqual(
+    manifest.aliases,
+    expectedAliases,
+    "root aliases do not match numeric directories",
+  );
+  assert.deepEqual(
+    manifest.aliasBaseUrls,
+    expectedAliasBaseUrls,
+    "root alias base URLs do not match numeric directories",
+  );
+
+  for (const { alias, version } of majorAliases) {
+    /** @brief 主版本别名自身的清单 / Major alias's own manifest. */
+    const aliasManifest = await readJson(resolve(RELEASES, "v", alias, "manifest.json"));
+    assert.equal(aliasManifest.version, version, `${alias} manifest version differs`);
+    await verifyExactRelease(aliasManifest);
+    await assertDirectoryEqual(resolve(RELEASES, "v", version), resolve(RELEASES, "v", alias));
   }
+  await assertDirectoryEqual(
+    resolve(RELEASES, "v", manifest.version),
+    resolve(RELEASES, "v", "latest"),
+  );
   await assertDirectoryEqual(resolve(RELEASES, "v"), resolve(PUBLIC, "v"));
   assert.deepEqual(
     await readFile(resolve(PUBLIC, "manifest.json")),

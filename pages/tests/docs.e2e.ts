@@ -21,10 +21,19 @@ test("theme preference survives navigation", async ({ page }) => {
   const toggle = page.getByRole("button", { name: /切换至深色主题/ });
   await expect(toggle).toHaveAttribute("data-ready", "true");
   await toggle.click();
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(page.locator("html")).toHaveAttribute("data-moe-theme", "dark");
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        getComputedStyle(document.documentElement)
+          .getPropertyValue("--moe-color-background")
+          .trim(),
+      ),
+    )
+    .toBe("#21130f");
 
   await page.goto("/foundations/");
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(page.locator("html")).toHaveAttribute("data-moe-theme", "dark");
   await expect(page.getByRole("button", { name: /切换至浅色主题/ })).toBeVisible();
 });
 

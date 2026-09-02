@@ -86,7 +86,14 @@ CSS 变量使用 `--moe-` 命名空间。组件样式位于级联层（Cascade L
 
 ### React
 
-React 和 React DOM 是对等依赖（peer dependencies），不会被重复打入组件库：
+React 入口需要宿主提供 React 19+；它被声明为可选对等依赖（optional peer dependency），因此
+只使用 CSS 或 Astro 原生组件的项目不会被迫安装 React。React 应用请显式安装运行时：
+
+```bash
+pnpm add @moesegfault/style react react-dom
+```
+
+随后导入组件：
 
 ```tsx
 import "@moesegfault/style/all.css";
@@ -195,7 +202,7 @@ GitHub Pages 同时承载便于普通 HTML 或无法安装 npm 包的消费方�
 ```html
 <link
   rel="stylesheet"
-  href="https://style.moesegfault.dev/v/0.1.0/css/all.css"
+  href="https://style.moesegfault.dev/v/0.1.1/css/all.css"
 />
 ```
 

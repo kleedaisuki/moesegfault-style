@@ -18,13 +18,19 @@ export interface Props extends Omit<HTMLAttributes<"a">, "class"> {
 /** @brief 组件属性 / Component properties. */
 const { href, label = "Moe Segfault", class: className, ...rest } = Astro.props;
 
+/** @brief 表示是否显式提供链接地址 / Whether a link destination was explicitly provided. */
+const hasHref = href !== undefined && href !== null;
+
 /** @brief 根据链接是否存在选择语义元素 / Selects the semantic element from link presence. */
-const Tag = href ? "a" : "span";
+const Tag = hasHref ? "a" : "span";
+
+/** @brief 仅为链接元素提供链接属性 / Supplies the link attribute only to link elements. */
+const linkProps = hasHref ? { href } : {};
 ---
 
 <Tag
   {...rest}
-  href={href}
+  {...linkProps}
   class:list={["moe-brand-mark", className]}
   aria-label={rest["aria-label"] ?? label}
 >

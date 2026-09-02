@@ -1,0 +1,31 @@
+---
+import BrandMark from "../../../../../../packages/style/astro/BrandMark.astro";
+import Button from "../../../../../../packages/style/astro/Button.astro";
+import Cluster from "../../../../../../packages/style/astro/Cluster.astro";
+import Container from "../../../../../../packages/style/astro/Container.astro";
+import Stack from "../../../../../../packages/style/astro/Stack.astro";
+---
+
+<Container
+  data-contract="container"
+  maxWidth="72rem"
+  gutter="2rem"
+  style="color: red; --moe-container-gutter: ignored"
+>
+  <Stack data-contract="stack" gap="1rem" align="end" style={{ color: "blue" }}>
+    <Cluster
+      data-contract="cluster"
+      gap="0.5rem"
+      align="baseline"
+      justify="space-between"
+      wrap="nowrap"
+      style="color: green"
+    >
+      <span>甲</span><span>乙</span>
+    </Cluster>
+  </Stack>
+</Container>
+<Button data-contract="button-link" href="">空链接</Button>
+<Button data-contract="button-native">原生按钮</Button>
+<BrandMark data-contract="brand-link" href="" />
+<BrandMark data-contract="brand-span" />

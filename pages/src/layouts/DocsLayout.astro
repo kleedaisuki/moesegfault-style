@@ -29,7 +29,7 @@ const { title, description, currentPath } = Astro.props;
         const saved = localStorage.getItem("moe-theme");
         const dark = saved === "dark" || (!saved && matchMedia("(prefers-color-scheme: dark)").matches);
         const theme = dark ? "dark" : "light";
-        document.documentElement.dataset.theme = theme;
+        document.documentElement.dataset.moeTheme = theme;
         document.documentElement.style.colorScheme = theme;
       })();
     </script>

@@ -1,5 +1,6 @@
 ---
 import type { HTMLAttributes } from "astro/types";
+import { mergeLayoutStyles } from "./_style";
 
 /** @brief 聚类布局可用的语义元素 / Semantic elements available to a cluster layout. */
 export type ClusterElement = "div" | "nav" | "section" | "header" | "footer" | "ul" | "ol";
@@ -47,14 +48,14 @@ const {
 } = Astro.props;
 
 /** @brief 通过自定义属性连接聚类布局契约 / Connects cluster layout through custom properties. */
-const layoutStyle = {
+const layoutStyle = mergeLayoutStyles(style, {
   "--moe-cluster-gap": gap,
   "--moe-cluster-align": align,
   "--moe-cluster-justify": justify,
   "--moe-cluster-wrap": wrap,
-};
+});
 ---
 
-<Tag {...rest} class:list={["moe-cluster", className]} style:list={[style, layoutStyle]}>
+<Tag {...rest} class:list={["moe-cluster", className]} style={layoutStyle}>
   <slot />
 </Tag>
