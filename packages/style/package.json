@@ -41,6 +41,12 @@
       "import": "./dist/react/rich-text.js",
       "default": "./dist/react/rich-text.js"
     },
+    "./react/editor": {
+      "types": "./dist/react/editor.d.ts",
+      "import": "./dist/react/editor.js",
+      "default": "./dist/react/editor.js"
+    },
+    "./editor.css": "./dist/css/editor.css",
     "./astro/Markdown.astro": "./astro/Markdown.astro",
     "./astro/Math.astro": "./astro/Math.astro",
     "./markdown.css": "./dist/css/markdown.css",
@@ -73,10 +79,14 @@
     "pack:check": "pnpm pack --dry-run"
   },
   "peerDependencies": {
-    "react": ">=19.0.0"
+    "react": ">=19.0.0",
+    "react-dom": ">=19.0.0"
   },
   "peerDependenciesMeta": {
     "react": {
+      "optional": true
+    },
+    "react-dom": {
       "optional": true
     }
   },
@@ -101,6 +111,13 @@
     "provenance": true
   },
   "dependencies": {
+    "@tiptap/extension-table": "^3.31.3",
+    "@tiptap/extension-task-item": "^3.31.3",
+    "@tiptap/extension-task-list": "^3.31.3",
+    "@tiptap/markdown": "^3.31.3",
+    "@tiptap/pm": "^3.31.3",
+    "@tiptap/react": "^3.31.3",
+    "@tiptap/starter-kit": "^3.31.3",
     "highlight.js": "^11.12.0",
     "katex": "^0.18.6",
     "rehype-katex": "^7.0.1",

@@ -121,3 +121,41 @@ Safe rendering does not make external links or images trustworthy; applications 
 `math.css` after the existing foundations/components. KaTeX fonts and its MIT notice are bundled under
 `dist/assets/katex/` and mirrored to exact-version, latest and default CDN assets—no external font service.
 公式字体随包自托管；不要单独搬走 CSS 而遗漏相邻的 `assets` 目录。
+
+### Rich-text editor / 富文本编辑器
+
+```tsx
+import { useState } from "react";
+import { RichTextEditor } from "@moesegfault/style/react/editor";
+import "@moesegfault/style/all.css";
+
+/** 应用持有 Markdown，保存逻辑由应用实现。The app owns Markdown and implements persistence. */
+export function Draft() {
+  const [markdown, setMarkdown] = useState("## 趁想法还温热\n\n写下一句话。");
+  return <RichTextEditor value={markdown} onChange={setMarkdown} name="body" label="随记" />;
+}
+```
+
+`RichTextEditor` offers visual, source and preview views. `value` / `onChange(markdown)` exchange
+Markdown strings; `defaultValue` supports uncontrolled usage. `readOnly`, `disabled`, `name`,
+`label`, `locale="zh|en"`, and `defaultMode="visual|source|preview"` configure the integration.
+`name` contributes a hidden Markdown form field; disabled editors do not submit it.
+
+支持标题、粗斜体、删除线、列表、任务列表、引用、链接、代码与普通表格，包含撤销/重做。
+表格单元格限定单段单行，使用 Tab 移动，多行粘贴合并为空格。TeX、图片、HTML、脚注、
+对齐表格等超出可视子集的内容保留在源码视图，仍可安全预览。富 HTML 粘贴降为纯文本。
+
+Initialization and mode switches preserve source bytes. Actual visual edits normalize Markdown markers
+and whitespace: this is a semantic format, not an arbitrary lossless HTML/document-layout format.
+The upstream Tiptap Markdown extension is beta; applications should test their own document corpus.
+源码保全优先于强制转换；不承诺任意 Markdown 的无损可视往返。
+
+Visual mounting is limited to 50,000 UTF-16 units, 64 AST levels and 5,000 nodes; larger documents remain
+editable as source. These are responsiveness safeguards, not a strict execution-time guarantee.
+
+Astro can use the React component with `client:visible` or `client:load`. The editor is client-initialized
+and ships a safe read-only SSR fallback. Use `all.css`, or add `editor.css` after the existing content
+styles. The dedicated entry prevents ordinary components and read-only renderers from loading Tiptap.
+
+编辑器不自动保存、不上传、不提供协同冲突处理。输入法组合事件有回归测试，但真实 Windows、
+Android、iOS 输入法仍应结合目标设备验收。Read-only/disabled states do not replace server authorization.

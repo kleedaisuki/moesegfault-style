@@ -12,12 +12,14 @@ export default defineConfig({
         markdown: "src/markdown.ts",
         "react/index": "src/react/index.ts",
         "react/rich-text": "src/react/rich-text.ts",
+        "react/editor": "src/react/editor.ts",
       },
       formats: ["es"],
     },
     rolldownOptions: {
       // 重型内容管线保持包边界与上游许可证，消费端仍可按需拆包。Keep heavy content dependencies external for consumer splitting and upstream notices.
       external: [
+        /^@tiptap\//,
         "react",
         "react-dom",
         "react/jsx-runtime",

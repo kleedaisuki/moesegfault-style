@@ -239,7 +239,7 @@ export async function buildTokens({
   const components = await readFile(join(packageRoot, "src", "styles", "components.css"), "utf8");
   /** @brief 独立样式也并入组件层，保持原有分层导入有效。Standalone styles also join the component bundle to preserve layered imports. */
   const extensions = await Promise.all(
-    ["glass", "motion", "messages", "code", "icons", "markdown"].map(async (name) => ({
+    ["glass", "motion", "messages", "code", "icons", "markdown", "editor"].map(async (name) => ({
       name,
       css: await readFile(join(packageRoot, "src", "styles", `${name}.css`), "utf8"),
     })),

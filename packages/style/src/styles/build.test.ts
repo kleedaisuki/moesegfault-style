@@ -17,11 +17,25 @@ describe("token build artifacts", () => {
     for (const component of ["glass", "motion", "message-attachment", "code-block", "icon"]) {
       expect(css).toContain(`.moe-${component}`);
     }
+    // 无回退的主题变量必须有定义，防止组件误拼令牌名。Theme references without fallbacks must resolve, catching misspelled component tokens.
+    const defined = new Set([...css.matchAll(/(--moe-[a-z0-9-]+)\s*:/gi)].map((match) => match[1]));
+    for (const match of css.matchAll(/var\((--moe-[a-z0-9-]+)\s*\)/gi)) {
+      expect(defined.has(match[1]), `Undefined theme variable: ${match[1]}`).toBe(true);
+    }
   });
 
   it("ships standalone enhancement styles and the original brand asset", async () => {
     const bundle = await readFile(join(packageRoot, "dist", "css", "components.css"), "utf8");
-    for (const name of ["glass", "motion", "messages", "code", "icons", "markdown", "math"]) {
+    for (const name of [
+      "glass",
+      "motion",
+      "messages",
+      "code",
+      "icons",
+      "markdown",
+      "math",
+      "editor",
+    ]) {
       const css = await readFile(join(packageRoot, "dist", "css", `${name}.css`), "utf8");
       expect(bundle).toContain(css);
     }
@@ -31,6 +45,16 @@ describe("token build artifacts", () => {
       "utf8",
     );
     expect(brand).toBe(original);
+  });
+
+  it("isolates editing dependencies from ordinary and read-only content entry points", async () => {
+    for (const entry of ["index.js", "react/index.js", "react/rich-text.js", "markdown.js"]) {
+      const source = await readFile(join(packageRoot, "dist", entry), "utf8");
+      expect(source).not.toMatch(/@tiptap\/|react\/editor/);
+    }
+    const css = await readFile(join(packageRoot, "dist", "css", "editor.css"), "utf8");
+    expect(css).toContain(".moe-editor");
+    await access(join(packageRoot, "dist", "react", "editor.js"));
   });
 
   it("ships every relative math font and keeps rich text out of ordinary entry points", async () => {

@@ -3,6 +3,7 @@ import type { ButtonProps, ClusterProps } from "@moesegfault/style/react";
 import { highlightCode, type CodeLanguage } from "@moesegfault/style/code";
 import { renderMarkdown, renderMath } from "@moesegfault/style/markdown";
 import type { MarkdownProps, MathProps } from "@moesegfault/style/react/rich-text";
+import type { RichTextEditorProps } from "@moesegfault/style/react/editor";
 import type {
   CodeBlockProps,
   GlassProps,
@@ -35,3 +36,13 @@ void [highlightCode(code.code, language), glass, motion, icon, message];
 const prose: MarkdownProps = { content: "**Hello** $E=mc^2$" };
 const formula: MathProps = { tex: "E=mc^2", display: true };
 void [renderMarkdown(prose.content), renderMath(formula.tex), formula];
+
+/** @brief 编辑器以 Markdown 字符串对接应用。The editor exchanges Markdown strings with applications. */
+const editor: RichTextEditorProps = {
+  defaultValue: "**Draft**",
+  name: "body",
+  onChange: (markdown) => {
+    void markdown;
+  },
+};
+void editor;
