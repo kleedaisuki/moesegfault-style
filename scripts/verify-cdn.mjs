@@ -12,6 +12,7 @@ import {
   isPrereleaseVersion,
   latestStableRelease,
   listFiles,
+  isDirectory,
   readJson,
   relativeUrl,
 } from "./cdn-lib.mjs";
@@ -147,6 +148,12 @@ async function main() {
   );
   for (const name of ["latest", "css", "tokens", "colors"]) {
     await assertDirectoryEqual(resolve(RELEASES, name), resolve(PUBLIC, name));
+  }
+  /** @brief 校验默认字体资源，避免根 CSS 相对路径失效。Verify default font assets so root CSS relative URLs remain valid. */
+  const exactAssets = resolve(RELEASES, `v${manifest.latestVersion}`, "assets");
+  if (await isDirectory(exactAssets)) {
+    await assertDirectoryEqual(exactAssets, resolve(RELEASES, "assets"));
+    await assertDirectoryEqual(exactAssets, resolve(PUBLIC, "assets"));
   }
   await assertDirectoryEqual(
     resolve(RELEASES, "css"),

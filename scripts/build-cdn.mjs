@@ -251,7 +251,7 @@ async function mirrorPublic() {
   await removeObsoleteVersionDirectories(PUBLIC);
   await removeOrphanPublicReleases(RELEASES, PUBLIC);
   /** @brief 可变分发目录名 / Mutable distribution directory names. */
-  const mutableNames = new Set(["latest", "css", "tokens", "colors"]);
+  const mutableNames = new Set(["latest", "css", "tokens", "colors", "assets"]);
   for (const entry of await readdir(RELEASES, { withFileTypes: true })) {
     if (
       entry.isDirectory() &&
@@ -311,6 +311,10 @@ async function main() {
   await replaceDirectory(resolve(latestExact, "css"), resolve(RELEASES, "css"));
   await replaceDirectory(resolve(latestExact, "tokens"), resolve(RELEASES, "tokens"));
   await replaceDirectory(resolve(latestExact, "colors"), resolve(RELEASES, "colors"));
+  // 根 CSS 中的相对字体 URL 必须与 latest 指向相同资源。Relative font URLs in root CSS must resolve to the same assets as latest.
+  if (await isDirectory(resolve(latestExact, "assets"))) {
+    await replaceDirectory(resolve(latestExact, "assets"), resolve(RELEASES, "assets"));
+  }
   await writeRedirect(resolve(RELEASES, "colors", "index.html"), `/${latestName}/colors/`);
   /** @brief 根发现清单 / Root discovery manifest. */
   const rootManifest = {

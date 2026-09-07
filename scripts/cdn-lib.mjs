@@ -6,6 +6,7 @@
 import { createHash, randomUUID } from "node:crypto";
 import { cp, readdir, readFile, rename, rm, stat } from "node:fs/promises";
 import { extname, relative, resolve, sep } from "node:path";
+import { setTimeout as delay } from "node:timers/promises";
 import semver from "semver";
 
 /** @brief 清单格式版本 / Manifest schema version. */
@@ -271,7 +272,7 @@ export async function isDirectory(path) {
  */
 export async function replaceDirectory(source, target, options = {}) {
   /** @brief 可注入的重命名操作 / Injectable rename operation. */
-  const renamePath = options.renamePath ?? rename;
+  const renamePath = (from, to) => retryRename(from, to, options.renamePath ?? rename);
   /** @brief 同级暂存目录 / Sibling staging directory. */
   const temporary = `${target}.tmp-${randomUUID()}`;
   /** @brief 同级回滚备份 / Sibling rollback backup. */
@@ -314,6 +315,25 @@ export async function replaceDirectory(source, target, options = {}) {
   } finally {
     await rm(temporary, cleanup);
     if (!backedUp) await rm(backup, cleanup);
+  }
+}
+
+/**
+ * @brief 短暂文件占用时有限重试，不掩盖永久错误。Retry transient sharing conflicts without hiding persistent errors.
+ * @param {string} source 同级源目录。Sibling source directory.
+ * @param {string} target 同级目标目录。Sibling target directory.
+ * @param {(source:string,target:string)=>Promise<void>} renamePath 可注入的重命名操作。Injectable rename operation.
+ * @return {Promise<void>} 完成重命名，耗尽重试后由调用者回滚。Complete rename or let the caller roll back after exhaustion.
+ */
+async function retryRename(source, target, renamePath) {
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      await renamePath(source, target);
+      return;
+    } catch (error) {
+      if (attempt >= 5 || !["EPERM", "EACCES", "EBUSY"].includes(error?.code)) throw error;
+      await delay(100 * (attempt + 1));
+    }
   }
 }
 

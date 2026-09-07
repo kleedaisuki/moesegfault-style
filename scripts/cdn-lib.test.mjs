@@ -156,15 +156,15 @@ test("replaceDirectory rolls back a failed swap without leaving staging director
         async renamePath(from, to) {
           renameCalls += 1;
           if (renameCalls === 2) {
-            /** @brief 模拟的 Windows 共享冲突 / Simulated Windows sharing conflict. */
-            const error = new Error("simulated EPERM");
-            error.code = "EPERM";
+            /** @brief 不可重试的 I/O 错误仍必须回滚。Non-retryable I/O errors must still roll back. */
+            const error = new Error("simulated EIO");
+            error.code = "EIO";
             throw error;
           }
           await rename(from, to);
         },
       }),
-      /simulated EPERM/,
+      /simulated EIO/,
     );
     assert.equal(await readFile(resolve(target, "value.txt"), "utf8"), "old");
     assert.deepEqual(
@@ -175,6 +175,45 @@ test("replaceDirectory rolls back a failed swap without leaving staging director
     await rm(root, { recursive: true, force: true });
   }
 });
+
+for (const persistent of [false, true]) {
+  test(`replaceDirectory ${persistent ? "rolls back exhausted" : "retries transient"} sharing conflicts`, async () => {
+    /** @brief 此测试独占的目录，不涉及仓库发布物。Test-owned directory, never repository releases. */
+    const root = await mkdtemp(resolve(tmpdir(), "moesegfault-sharing-"));
+    const source = resolve(root, "source");
+    const target = resolve(root, "target");
+    try {
+      await mkdir(source);
+      await mkdir(target);
+      await writeFile(resolve(source, "value.txt"), "new");
+      await writeFile(resolve(target, "value.txt"), "old");
+      let conflicts = 0;
+      const result = replaceDirectory(source, target, {
+        async renamePath(from, to) {
+          if (from.includes(".tmp-")) {
+            conflicts += 1;
+            if (persistent || conflicts < 3) {
+              const error = new Error("sharing conflict");
+              error.code = "EPERM";
+              throw error;
+            }
+          }
+          await rename(from, to);
+        },
+      });
+      if (persistent) await assert.rejects(result, /sharing conflict/);
+      else await result;
+      assert.equal(conflicts, persistent ? 6 : 3);
+      assert.equal(
+        await readFile(resolve(target, "value.txt"), "utf8"),
+        persistent ? "old" : "new",
+      );
+      assert.deepEqual((await readdir(root)).sort(), ["source", "target"]);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+}
 
 test("release history rejects deleting a canonical exact release", async () => {
   /** @brief 隔离 Git 仓库 / Isolated Git repository. */
