@@ -1,0 +1,167 @@
+/* 暖纸编辑器；只使用已有语义令牌。Warm paper editor using existing semantic tokens only. */
+@layer moe.components {
+  .moe-editor {
+    overflow: hidden;
+    min-width: 0;
+    border: 1px solid var(--moe-border);
+    border-radius: var(--moe-radius-lg);
+    background: var(--moe-surface);
+    color: var(--moe-text);
+    box-shadow: var(--moe-shadow-sm);
+  }
+  .moe-editor__header,
+  .moe-editor__toolbar,
+  .moe-editor__link {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid var(--moe-border);
+  }
+  .moe-editor__header {
+    justify-content: space-between;
+    background: color-mix(in srgb, var(--moe-accent) 5%, var(--moe-surface));
+  }
+  .moe-editor__label {
+    font-weight: 650;
+  }
+  .moe-editor__modes {
+    display: flex;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .moe-editor__toolbar {
+    min-width: 0;
+    margin: 0;
+    border: 0;
+    border-bottom: 1px solid var(--moe-border);
+  }
+  .moe-editor button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    min-height: 2rem;
+    padding: 0.25rem 0.6rem;
+    border: 1px solid transparent;
+    border-radius: var(--moe-radius-sm);
+    background: transparent;
+    color: var(--moe-text-soft);
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .moe-editor button:hover:not(:disabled),
+  .moe-editor button[aria-pressed="true"] {
+    color: var(--moe-accent-strong);
+    border-color: color-mix(in srgb, var(--moe-accent) 30%, var(--moe-border));
+    background: color-mix(in srgb, var(--moe-accent) 10%, var(--moe-surface));
+  }
+  .moe-editor button:focus-visible,
+  .moe-editor__link input:focus-visible {
+    outline: 2px solid var(--moe-accent);
+    outline-offset: 2px;
+  }
+  .moe-editor button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  .moe-editor__canvas,
+  .moe-editor__source,
+  .moe-editor__preview {
+    box-sizing: border-box;
+    min-height: 17rem;
+    padding: 1.4rem;
+  }
+  .moe-editor__canvas:focus {
+    outline: none;
+    box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--moe-accent) 45%, transparent);
+  }
+  .moe-editor__source {
+    display: block;
+    width: 100%;
+    resize: vertical;
+    border: 0;
+    border-radius: 0;
+    color: var(--moe-text);
+    background: var(--moe-surface);
+    font-family: var(
+      --moe-code-font-family,
+      "JetBrains Mono Variable",
+      "JetBrains Mono",
+      var(--moe-font-family-mono)
+    );
+    font-size: 0.9rem;
+    line-height: 1.8;
+    tab-size: 2;
+  }
+  .moe-editor__source:focus-visible {
+    outline: 2px solid var(--moe-accent);
+    outline-offset: -2px;
+  }
+  .moe-editor__footer,
+  .moe-editor__notice {
+    margin: 0;
+    padding: 0.7rem 1rem;
+    color: var(--moe-text-soft);
+    font-size: 0.75rem;
+    line-height: 1.7;
+    background: var(--moe-surface-muted);
+  }
+  .moe-editor__footer {
+    border-top: 1px solid var(--moe-border);
+  }
+  .moe-editor__link input {
+    flex: 1;
+    min-width: 8rem;
+    border: 1px solid var(--moe-border);
+    border-radius: var(--moe-radius-sm);
+    padding: 0.4rem;
+    color: var(--moe-text);
+    background: var(--moe-surface);
+  }
+  .moe-editor__canvas table {
+    width: 100%;
+    table-layout: fixed;
+  }
+  .moe-editor__canvas td,
+  .moe-editor__canvas th {
+    position: relative;
+    min-width: 2rem;
+  }
+  .moe-editor__canvas .selectedCell {
+    background: color-mix(in srgb, var(--moe-accent) 15%, var(--moe-surface));
+  }
+  .moe-editor__canvas ul[data-type="taskList"] {
+    list-style: none;
+    padding-inline-start: 0;
+  }
+  .moe-editor__canvas li[data-type="taskItem"] {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+  }
+  .moe-editor__canvas li[data-type="taskItem"] > div {
+    flex: 1;
+    min-width: 0;
+  }
+  .moe-editor__canvas li[data-type="taskItem"] p {
+    margin-block: 0.25rem;
+  }
+  .moe-editor__canvas input[type="checkbox"] {
+    accent-color: var(--moe-accent);
+  }
+  .moe-editor[data-disabled] {
+    opacity: 0.65;
+  }
+  @media (max-width: 480px) {
+    .moe-editor__canvas,
+    .moe-editor__source,
+    .moe-editor__preview {
+      padding: 1rem;
+    }
+  }
+}

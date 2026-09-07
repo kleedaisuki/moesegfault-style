@@ -11,11 +11,16 @@
       "version": "0.1.1",
       "baseUrl": "/v0.1.1",
       "manifestUrl": "/v0.1.1/manifest.json"
+    },
+    {
+      "version": "0.1.2",
+      "baseUrl": "/v0.1.2",
+      "manifestUrl": "/v0.1.2/manifest.json"
     }
   ],
-  "latestVersion": "0.1.1",
+  "latestVersion": "0.1.2",
   "latestBaseUrl": "/latest",
-  "defaultVersion": "0.1.1",
+  "defaultVersion": "0.1.2",
   "defaultResources": {
     "styles": "/css/all.css",
     "colors": "/colors/",

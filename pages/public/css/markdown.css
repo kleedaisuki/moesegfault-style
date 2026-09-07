@@ -1,0 +1,119 @@
+@layer moe.tokens, moe.reset, moe.foundation, moe.components, moe.utilities;
+
+/* 文稿继承主题与字体；KaTeX 字体另由 math.css 自托管。Prose inherits theme and typography; math.css self-hosts KaTeX fonts. */
+@layer moe.components {
+  .moe-markdown {
+    min-width: 0;
+    color: var(--moe-text);
+    line-height: 1.85;
+    overflow-wrap: anywhere;
+  }
+  .moe-markdown > :first-child {
+    margin-top: 0;
+  }
+  .moe-markdown > :last-child {
+    margin-bottom: 0;
+  }
+  .moe-markdown :where(h1, h2, h3, h4, h5, h6) {
+    margin-block: 1.8em 0.65em;
+    line-height: 1.35;
+    letter-spacing: -0.025em;
+  }
+  .moe-markdown :where(p, ul, ol, blockquote, pre, table) {
+    margin-block: 1em;
+  }
+  .moe-markdown :where(ul, ol) {
+    padding-inline-start: 1.5em;
+  }
+  .moe-markdown li + li {
+    margin-block-start: 0.3em;
+  }
+  .moe-markdown a {
+    color: var(--moe-accent);
+    text-underline-offset: 0.2em;
+  }
+  .moe-markdown blockquote {
+    margin-inline: 0;
+    padding: 0.4em 1.2em;
+    border-inline-start: 3px solid var(--moe-accent);
+    border-radius: 0 0.75rem 0.75rem 0;
+    background: color-mix(in srgb, var(--moe-accent) 6%, transparent);
+    color: var(--moe-text-soft);
+  }
+  .moe-markdown :not(pre) > code {
+    padding: 0.15em 0.4em;
+    border-radius: 0.35em;
+    background: color-mix(in srgb, var(--moe-accent) 9%, transparent);
+    font-family: var(--moe-font-family-mono);
+    font-size: 0.88em;
+  }
+  .moe-markdown table {
+    display: block;
+    width: fit-content;
+    background: transparent;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: 0.92em;
+  }
+  .moe-markdown :where(th, td) {
+    padding: 0.65em 1em;
+    border: 1px solid var(--moe-border);
+    text-align: start;
+  }
+  .moe-markdown th {
+    background: color-mix(in srgb, var(--moe-accent) 7%, transparent);
+  }
+  /* 保留 GFM 列对齐约定。Preserve GFM column alignment semantics. */
+  .moe-markdown :where(th, td)[align="center"] {
+    text-align: center;
+  }
+  .moe-markdown :where(th, td)[align="right"] {
+    text-align: right;
+  }
+  .moe-markdown :where(th, td)[align="left"] {
+    text-align: left;
+  }
+  .moe-markdown img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--moe-radius-md);
+  }
+  .moe-markdown hr {
+    margin-block: 2em;
+    border: 0;
+    border-top: 1px solid var(--moe-border);
+  }
+  .moe-markdown .task-list-item {
+    list-style: none;
+  }
+  .moe-markdown input[type="checkbox"] {
+    margin-inline-end: 0.5em;
+    accent-color: var(--moe-accent);
+  }
+  .moe-markdown .footnotes {
+    margin-block-start: 2em;
+    border-top: 1px solid var(--moe-border);
+    font-size: 0.85em;
+  }
+  .moe-math {
+    max-width: 100%;
+    color: inherit;
+  }
+  .moe-math[data-display] {
+    display: block;
+  }
+  .moe-markdown .katex-display,
+  .moe-math .katex-display {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-block: 0.35em;
+  }
+  .moe-markdown__fallback,
+  .moe-math__fallback {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font-family: var(--moe-font-family-mono);
+  }
+}
