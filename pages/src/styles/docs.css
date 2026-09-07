@@ -357,7 +357,7 @@ h3 {
   padding: 1rem;
 }
 
-td code {
+.table-scroll :where(td) code {
   color: var(--docs-accent);
 }
 
@@ -446,25 +446,26 @@ td code {
   border-radius: var(--docs-radius);
 }
 
-table {
+/* 仅装饰文档资源表，富文本表格由库样式负责。 / Scope resource-table styling; rich text owns its tables. */
+.table-scroll > table {
   width: 100%;
   border-collapse: collapse;
   background: var(--docs-paper-raised);
   text-align: left;
 }
 
-th,
-td {
+.table-scroll th,
+.table-scroll td {
   padding: 0.9rem 1rem;
   border-bottom: 1px solid var(--docs-line);
 }
 
-th {
+.table-scroll th {
   font-family: ui-sans-serif, system-ui, sans-serif;
   font-size: 0.82rem;
 }
 
-tr:last-child td {
+.table-scroll tr:last-child td {
   border-bottom: 0;
 }
 
@@ -713,4 +714,23 @@ tr:last-child td {
   .specimen-heading {
     flex-wrap: wrap;
   }
+}
+
+/* 让文档内容留在纸面内，不影响公式自身滚动。 / Contain prose without clipping equation scrolling. */
+.rich-text-specimen {
+  margin-top: 1.25rem;
+  min-width: 0;
+}
+
+.rich-text-paper {
+  min-width: 0;
+  padding: clamp(1rem, 3vw, 2rem);
+  border: 1px solid var(--docs-line);
+  border-radius: var(--moe-radius-lg);
+  background: var(--docs-paper);
+}
+
+.rich-text-equation {
+  min-width: 0;
+  margin-top: 1.5rem;
 }

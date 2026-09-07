@@ -4,9 +4,6 @@ import {
   Button,
   Card,
   Composer,
-  GlassCard,
-  GlassPanel,
-  GlassToolbar,
   Icon,
   MessageAction,
   MessageActions,
@@ -18,6 +15,8 @@ import {
   Notice,
   StatusDot,
 } from "@moesegfault/style/react";
+
+import { FrostedScene } from "./FrostedScene";
 
 /** 真实可交互的双语组件组合。 / Interactive bilingual compositions using public APIs. */
 export function ComponentGallery({ locale = "zh-CN" }: { locale?: "zh-CN" | "en" }) {
@@ -35,43 +34,18 @@ export function ComponentGallery({ locale = "zh-CN" }: { locale?: "zh-CN" | "en"
       >
         <div className="specimen-heading">
           <div>
-            <p className="eyebrow">01 / Light through paper</p>
-            <h2 id="glass-title">{en ? "Glass, with a little warmth." : "玻璃，也有温度。"}</h2>
+            <p className="eyebrow">01 / Behind the glass</p>
+            <h2 id="glass-title">
+              {en ? "A softer view of what lies beneath." : "隔着毛玻璃，仍看得见灵感。"}
+            </h2>
           </div>
           <Badge tone="accent">v0.1.2</Badge>
         </div>
-        <div className="material-stage">
-          <GlassCard tone="warm" className="material-card">
-            <Icon name="sparkle" size={32} />
-            <p className="eyebrow">GlassCard / Warm</p>
-            <h3>{en ? "A quiet place for bright ideas." : "给灵感，一处透亮的角落。"}</h3>
-            <p>
-              {en
-                ? "Soft light, familiar paper, a trace of berry. New depth, the same character."
-                : "柔光、熟悉的纸张、一点莓红。多一层景深，不换一种性格。"}
-            </p>
-            <Badge tone="success">{en ? "Theme-aware" : "明暗自适应"}</Badge>
-          </GlassCard>
-          <div className="material-stack">
-            <GlassPanel tone="rose">
-              <p className="eyebrow">GlassPanel / Rose</p>
-              <h3>{en ? "Less noise. More room." : "少一点噪声，多一点余地。"}</h3>
-              <p>
-                {en
-                  ? "A tinted surface for notes, previews, and small moments of focus."
-                  : "为笔记、预览和小小的专注时刻，铺一层有色透光表面。"}
-              </p>
-            </GlassPanel>
-            <GlassToolbar aria-label={en ? "Glass toolbar specimen" : "玻璃工具栏示例"}>
-              <StatusDot status="online" label={en ? "Ready" : "已就绪"} />
-              <span>{en ? "GlassToolbar · Ready to compose" : "GlassToolbar · 创作就绪"}</span>
-            </GlassToolbar>
-          </div>
-        </div>
+        <FrostedScene locale={locale} />
         <p className="material-caption">
           {en
-            ? "Progressive enhancement: readable solid surfaces remain when blur is unavailable or transparency is reduced."
-            : "渐进增强：不支持模糊或偏好降低透明度时，仍保留可读的实色表面。"}
+            ? "The text and curves sit behind the panel, not inside a background image. Switch off the frost to compare. Without blur support, or when reduced transparency is preferred, the surface stays readable."
+            : "文字与曲线真实铺在面板下方，不是背景贴图。关掉雾面，对比遮盖前后的轮廓；不支持背景模糊或偏好降低透明度时，回退为可读的实色表面。"}
         </p>
       </section>
 

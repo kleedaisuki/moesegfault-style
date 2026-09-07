@@ -53,7 +53,7 @@ const alternateUrl = new URL(alternatePath, Astro.site);
         <div class="header-inner">
           <a class="brand-link" href={isEnglish ? "/en/" : "/"} aria-label={isEnglish ? "MoeSegFault Style home" : "MoeSegFault Style 首页"}>
             <BrandMark />
-            <span class="brand-copy"><strong>MoeSegFault</strong><small>Style workshop</small></span>
+            <span class="brand-copy"><strong>MoeSegFault</strong><small>{isEnglish ? "Style workshop" : "暖纸界面工坊"}</small></span>
           </a>
           <nav aria-label={isEnglish ? "Primary navigation" : "主要导航"}>
             <ul>
@@ -78,7 +78,7 @@ const alternateUrl = new URL(alternatePath, Astro.site);
       <Container>
         <div class="footer-inner">
           <p><strong>MoeSegFault Style</strong> — {isEnglish ? "A warm sheet of paper for your code." : "给代码一张温暖的纸。"}</p>
-          <p><a href="https://github.com/kleedaisuki/moesegfault-style">Source</a> · GPL-3.0-or-later</p>
+          <p><a href="https://github.com/kleedaisuki/moesegfault-style">{isEnglish ? "Source" : "查看源码"}</a> · GPL-3.0-or-later</p>
         </div>
       </Container>
     </footer>

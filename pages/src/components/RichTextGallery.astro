@@ -1,0 +1,87 @@
+---
+import Markdown from "@moesegfault/style/astro/Markdown.astro";
+import Formula from "@moesegfault/style/astro/Math.astro";
+
+/** 双语富文本试写页，服务端输出真实公式与文档结构。 / Bilingual server-rendered rich-text specimen. */
+interface Props {
+  /** 展示语言。 / Specimen language. */
+  locale?: "zh-CN" | "en";
+}
+const { locale = "zh-CN" } = Astro.props;
+const en = locale === "en";
+const content = en
+  ? String.raw`### A small note from the workbench
+
+A useful note can hold **an idea**, a little code, and a proof. Inline math such as $e^{i\pi}+1=0$ stays in the sentence.
+
+> Leave room for the next thought. A first draft does not need to be a final answer.
+
+- [x] Keep the paper and berry palette
+- [x] Set equations beside the words
+- [ ] Write the next page
+
+| Material | A place for it |
+| :-- | :-- |
+| Markdown | Notes, links, and checklists |
+| TeX | Derivations and mathematical ideas |
+
+A finite sum, with enough space to read:
+
+$$
+\sum_{k=1}^{n} k = \frac{n(n+1)}{2}
+$$
+
+Read the [integration guide](/en/guides/) when you are ready to take it home.
+
+~~~ts
+const draft = { theme: "warm-paper", ready: true };
+~~~
+`
+  : String.raw`### 工作台上的一页随记
+
+一张便笺，可以放下**一个想法**、几行代码，也可以认真写完一段推导。行内公式 $e^{i\pi}+1=0$ 就留在句子里，不必另起一页。
+
+> 给下一句话留一点空白。初稿不必急着成为定稿。
+
+- [x] 留住暖纸与莓红
+- [x] 让公式和文字坐在一起
+- [ ] 写下下一页
+
+| 材料 | 适合放在哪里 |
+| :-- | :-- |
+| Markdown | 笔记、链接与待办清单 |
+| TeX | 推导过程与数学想法 |
+
+一个有限求和，留出足够的阅读空间：
+
+$$
+\sum_{k=1}^{n} k = \frac{n(n+1)}{2}
+$$
+
+想带回自己的项目，可以翻开[接入指南](/guides/)。
+
+~~~ts
+const draft = { theme: "warm-paper", ready: true };
+~~~
+`;
+const longFormula = String.raw`\underbrace{1 + 2 + 3 + \cdots + n}_{\text{ascending}} + \underbrace{n + (n-1) + (n-2) + \cdots + 1}_{\text{descending}} = \underbrace{(n+1) + (n+1) + \cdots + (n+1)}_{n\text{ pairs}} = n(n+1)`;
+---
+
+<section class="specimen rich-text-specimen" id="rich-text" data-testid="v012-rich-content" aria-labelledby="rich-text-title">
+  <div class="specimen-heading">
+    <div>
+      <p class="eyebrow">07 / Notes, proofs, and little discoveries</p>
+      <h2 id="rich-text-title">{en ? "A page for words and equations." : "文字与公式，共用一张好纸。"}</h2>
+    </div>
+  </div>
+  <p>{en ? "Markdown handles the structure; TeX sets the mathematics. This note is rendered by Astro before it reaches your browser—no client-side rendering step is needed." : "Markdown 整理层次，TeX 安放公式。这一页由 Astro 在服务端完成排版，浏览器无需等待客户端渲染。"}</p>
+  <article class="rich-text-paper" aria-label={en ? "Rendered Markdown and TeX note" : "Markdown 与 TeX 排版便笺"}>
+    <Markdown content={content} />
+  </article>
+  <div class="rich-text-equation">
+    <h3>{en ? "A long derivation stays on its own line." : "推导再长，也不把纸面撑开。"}</h3>
+    <p>{en ? "This standalone TeX specimen scrolls horizontally on narrow screens. The rest of the page stays put." : "独立 TeX 组件在窄屏内横向滚动，长公式留在自己的区域，正文照常阅读。"}</p>
+    <Formula tex={longFormula} display />
+  </div>
+  <p class="material-caption">{en ? "GFM tables and task lists, inline and display math. Raw HTML is disabled by default; Markdown is content, not a place to run scripts." : "支持 GFM（GitHub Flavored Markdown）表格、任务列表，以及行内与块级公式。默认不解析原始 HTML：内容负责表达，不负责执行脚本。"}</p>
+</section>

@@ -13,7 +13,7 @@ import DocsLayout from "../../layouts/DocsLayout.astro";
     <Container>
       <p class="kicker">GUIDES</p>
       <h1>从一行 CSS 开始。</h1>
-      <p class="lede">选择与项目匹配的入口。没有 React 就不下载 React；只要令牌就不引入组件样式。</p>
+      <p class="lede">不用一次搬走整间工坊。从项目需要的那一层开始：只用颜色就拿令牌，需要交互再接 React。</p>
     </Container>
   </header>
 
@@ -72,8 +72,17 @@ import DocsLayout from "../../layouts/DocsLayout.astro";
       />
       <div class="callout">
         <h3>主题初始化</h3>
-        <p>在首屏样式计算前设置 <code>data-moe-theme</code>，可以避免主题闪烁；本 documentation 就采用该方式。</p>
+        <p>在首屏样式计算前设置 <code>data-moe-theme</code>，可以避免主题闪烁；这间工坊的文档页就采用该方式。</p>
       </div>
     </Container>
   </section>
+
+  <section class="section section-tint" aria-labelledby="rich-text-guide-title"><Container>
+    <div class="section-heading"><div><p class="eyebrow">Markdown + TeX</p><h2 id="rich-text-guide-title">把笔记与公式也带上</h2></div></div>
+    <p>React 富文本使用独立入口，普通交互组件无需带上解析器；Astro 可以直接输出静态 HTML。用 String.raw 保留 TeX 反斜杠，避免它们被 JavaScript 字符串转义。</p>
+    <div class="guide-grid">
+      <article class="guide-card"><h3>React</h3><CodeBlock language="tsx" label="notes.tsx" code={"import \"@moesegfault/style/all.css\";\nimport { Markdown, Math } from \"@moesegfault/style/react/rich-text\";\n\nconst note = String.raw`## Notes\n\nEuler: $e^{i\\pi}+1=0$`;\n\n<Markdown content={note} />;\n<Math tex={String.raw`\\sum_{k=1}^{n} k`} display />;"} /></article>
+      <article class="guide-card"><h3>Astro</h3><CodeBlock language="astro" label="notes.astro" code={"---\nimport Markdown from \"@moesegfault/style/astro/Markdown.astro\";\nimport Math from \"@moesegfault/style/astro/Math.astro\";\nconst note = \"## Notes\\n\\nA little room to think.\";\n---\n<Markdown content={note} />\n<Math tex={String.raw`E = mc^2`} display />"} /></article>
+    </div>
+  </Container></section>
 </DocsLayout>

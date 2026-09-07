@@ -16,11 +16,11 @@ import DocsLayout from "../layouts/DocsLayout.astro";
     <Container>
       <div class="hero-grid">
         <div>
-          <p class="kicker">DESIGN SYSTEM · 0.1</p>
+          <p class="kicker">DESIGN SYSTEM · v0.1.2</p>
           <h1>给代码一张温暖的纸。</h1>
           <p class="lede">
-            从 MoeSegFault 的博客、工具与机器人里提炼出的视觉语言。清晰的令牌、克制的组件，
-            以及刚刚好的萌系温度。
+            暖纸打底，莓红落笔。把博客里的长文、工具里的代码、对话里的小想法，
+            放进同一间创作工坊。组件照顾细节，你继续写下去。
           </p>
           <Cluster>
             <Button href="/components/">浏览组件</Button>
@@ -28,8 +28,8 @@ import DocsLayout from "../layouts/DocsLayout.astro";
           </Cluster>
         </div>
         <aside class="paper-note" aria-label="设计宣言">
-          <blockquote>“界面不是舞台布景，而是让内容被温柔读到的那一束光。”</blockquote>
-          <p>Warm editorial · Soft moe · Production ready</p>
+          <blockquote>“纸上写推导，窗边留一点光。认真的东西，也可以很可爱。”</blockquote>
+          <p>暖纸 · 莓红 · 一点星芒</p>
         </aside>
       </div>
     </Container>
@@ -40,26 +40,26 @@ import DocsLayout from "../layouts/DocsLayout.astro";
       <div class="section-heading">
         <div>
           <p class="eyebrow">Principles</p>
-          <h2 id="principles-title">一套语言，三种使用尺度</h2>
+          <h2 id="principles-title">从一枚按钮，到整张工作台</h2>
         </div>
         <p>从纯 CSS 到有状态的 React 岛，逐层采用，不必为了设计系统重写应用架构。</p>
       </div>
       <div class="feature-grid">
         <Card>
           <span class="feature-number">01</span>
-          <h3>令牌先行</h3>
+          <h3>把熟悉的颜色留下</h3>
           <p>颜色、间距、圆角与阴影均有语义名称；主题切换不改变组件结构。</p>
           <a href="/foundations/">查看视觉规范 →</a>
         </Card>
         <Card>
           <span class="feature-number">02</span>
-          <h3>框架友好</h3>
+          <h3>按你的项目搭起来</h3>
           <p>同一套基础 CSS，搭配 Astro 静态组件或 React 交互组件。</p>
           <a href="/guides/">查看接入方式 →</a>
         </Card>
         <Card>
           <span class="feature-number">03</span>
-          <h3>渐进分发</h3>
+          <h3>挑一种顺手的接法</h3>
           <p>npm 包适合构建时依赖，版本化 CDN 资产适合无需打包的静态页面。</p>
           <a href="/distribution/">查看版本资源 →</a>
         </Card>
@@ -71,17 +71,17 @@ import DocsLayout from "../layouts/DocsLayout.astro";
     <Container>
       <div class="section-heading">
         <div>
-          <p class="eyebrow">Dogfood</p>
-          <h2 id="composition-title">这页本身，就是组件示例</h2>
+          <p class="eyebrow">Made with these pieces</p>
+          <h2 id="composition-title">这里没有另搭一套布景</h2>
         </div>
       </div>
       <Stack>
         <p class="lede">
           页面的容器、卡片、按钮、集群与节奏都来自 <code>@moesegfault/style</code>。
-          文档不维护一套“只供展示”的影子实现。
+          你在这里看到的基础组件，也能带回自己的项目。
         </p>
         <Cluster>
-          <Button href="/components/">打开完整 Showcase</Button>
+          <Button href="/components/">到组件工坊逛逛</Button>
           <Button href="/distribution/" variant="ghost">选择分发通道</Button>
         </Cluster>
       </Stack>
