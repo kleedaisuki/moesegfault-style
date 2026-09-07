@@ -3,6 +3,7 @@ import Container from "@moesegfault/style/astro/Container.astro";
 import { ComponentGallery } from "../../components/ComponentGallery";
 import CodeBlock from "../../components/CodeBlock.astro";
 import RichTextGallery from "../../components/RichTextGallery.astro";
+import { EditorGallery } from "../../components/EditorGallery";
 import DocsLayout from "../../layouts/DocsLayout.astro";
 ---
 
@@ -11,7 +12,7 @@ import DocsLayout from "../../layouts/DocsLayout.astro";
     <p class="kicker">COMPONENTS / v0.1.2</p>
     <h1>熟悉的温度，<br />新一层光。</h1>
     <p class="lede">窗后是若隐若现的笔记，纸上是写到一半的推导，旁边留着一段对话。试试这些新零件：暖纸、墨色与莓红都还在，细节多了一点。</p>
-    <div class="showcase-index" aria-label="展示目录"><a href="#glass">毛玻璃</a><a href="#motion">轻量动效</a><a href="#icons">祖传图标</a><a href="#messages">丰富消息</a><a href="#code">代码高亮</a><a href="#rich-text">Markdown 与 TeX</a></div>
+    <div class="showcase-index" aria-label="展示目录"><a href="#glass">毛玻璃</a><a href="#motion">轻量动效</a><a href="#icons">祖传图标</a><a href="#messages">丰富消息</a><a href="#code">代码高亮</a><a href="#rich-text">Markdown 与 TeX</a><a href="#editor">富文本编辑器</a></div>
   </Container></header>
   <section class="section section-tint" aria-label="组件展示"><Container>
     <ComponentGallery client:load />
@@ -22,5 +23,6 @@ import DocsLayout from "../../layouts/DocsLayout.astro";
       <p class="material-caption">支持键盘聚焦滚动与复制。未知语言仍按纯文本安全显示，不把代码当作 HTML 执行。</p>
     </section>
     <RichTextGallery />
+    <EditorGallery client:visible />
   </Container></section>
 </DocsLayout>

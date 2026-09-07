@@ -3,6 +3,7 @@ import Container from "@moesegfault/style/astro/Container.astro";
 import { ComponentGallery } from "../../../components/ComponentGallery";
 import CodeBlock from "../../../components/CodeBlock.astro";
 import RichTextGallery from "../../../components/RichTextGallery.astro";
+import { EditorGallery } from "../../../components/EditorGallery";
 import DocsLayout from "../../../layouts/DocsLayout.astro";
 ---
 
@@ -11,7 +12,7 @@ import DocsLayout from "../../../layouts/DocsLayout.astro";
     <p class="kicker">COMPONENTS / v0.1.2</p>
     <h1>Same warmth.<br />A new light.</h1>
     <p class="lede">A frosted pane over your notes, a sparkle beside a reply, a proof that fits the page. Try the pieces below; the paper, ink, and berry stay familiar.</p>
-    <div class="showcase-index" aria-label="Showcase contents"><a href="#glass">Frosted glass</a><a href="#motion">Motion</a><a href="#icons">Original icons</a><a href="#messages">Messages</a><a href="#code">Code highlighting</a><a href="#rich-text">Markdown &amp; TeX</a></div>
+    <div class="showcase-index" aria-label="Showcase contents"><a href="#glass">Frosted glass</a><a href="#motion">Motion</a><a href="#icons">Original icons</a><a href="#messages">Messages</a><a href="#code">Code highlighting</a><a href="#rich-text">Markdown &amp; TeX</a><a href="#editor">Rich-text editor</a></div>
   </Container></header>
   <section class="section section-tint" aria-label="Component showcase"><Container>
     <ComponentGallery locale="en" client:load />
@@ -22,5 +23,6 @@ import DocsLayout from "../../../layouts/DocsLayout.astro";
       <p class="material-caption">Keyboard-focusable scrolling and copy controls. Unknown languages remain safe plain text; source code is not executed as HTML.</p>
     </section>
     <RichTextGallery locale="en" />
+    <EditorGallery locale="en" client:visible />
   </Container></section>
 </DocsLayout>

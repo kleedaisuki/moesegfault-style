@@ -1,0 +1,89 @@
+/* 展示层只布局，不覆盖编辑器契约。 / Specimen layout does not override editor contracts. */
+.editor-gallery {
+  margin-top: var(--moe-space-6);
+  min-width: 0;
+}
+.editor-gallery__samples,
+.editor-gallery__result-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--moe-space-3);
+  margin-block: var(--moe-space-4);
+}
+.editor-gallery__samples button,
+.editor-gallery__result-heading button {
+  border: 1px solid var(--moe-border);
+  border-radius: var(--moe-radius-md);
+  padding: 0.5rem 0.8rem;
+  color: var(--moe-text);
+  background: var(--moe-surface-strong);
+  font: inherit;
+  cursor: pointer;
+}
+.editor-gallery__samples button:hover,
+.editor-gallery__result-heading button:hover {
+  border-color: var(--moe-accent);
+}
+.editor-gallery__samples button:focus-visible,
+.editor-gallery__result-heading button:focus-visible,
+.editor-gallery__result textarea:focus-visible {
+  outline: 2px solid var(--moe-accent);
+  outline-offset: 3px;
+}
+.editor-gallery__results {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--moe-space-5);
+  margin-top: var(--moe-space-5);
+}
+.editor-gallery__result {
+  min-width: 0;
+  padding: var(--moe-space-4);
+  border: 1px solid var(--moe-border);
+  border-radius: var(--moe-radius-lg);
+  background: var(--moe-surface);
+  overflow-wrap: anywhere;
+}
+.editor-gallery__result-heading {
+  justify-content: space-between;
+  margin-top: 0;
+}
+.editor-gallery__result label,
+.editor-gallery__preview-title {
+  margin: 0 0 var(--moe-space-3);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.editor-gallery__result textarea {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 19rem;
+  resize: vertical;
+  border: 1px solid var(--moe-border);
+  border-radius: var(--moe-radius-md);
+  padding: var(--moe-space-3);
+  color: var(--moe-text);
+  background: var(--moe-surface-strong);
+  font:
+    0.875rem / 1.7
+    var(
+      --moe-code-font-family,
+      "JetBrains Mono Variable",
+      "JetBrains Mono",
+      var(--moe-font-family-mono)
+    );
+  tab-size: 2;
+}
+.editor-gallery__status {
+  min-height: 1.5em;
+  font-size: 0.875rem;
+  margin-bottom: 0;
+}
+/* 窄屏按阅读顺序叠放，避免代码与公式撑宽页面。 / Stack in reading order on narrow screens. */
+@media (max-width: 760px) {
+  .editor-gallery__results {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
