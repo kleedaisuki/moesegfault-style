@@ -1,0 +1,62 @@
+@layer moe.tokens, moe.reset, moe.foundation, moe.components, moe.utilities;
+
+@layer moe.components {
+  /* 实色优先，只有支持时才透明。Opaque first; translucency is progressive enhancement. */
+  .moe-glass {
+    --moe-glass-tint: var(--moe-surface-strong);
+    color: var(--moe-text);
+    background: var(--moe-surface-strong);
+    border: 1px solid var(--moe-border);
+    border-radius: var(--moe-radius-lg);
+    box-shadow:
+      var(--moe-shadow-md),
+      inset 0 1px 0 color-mix(in srgb, var(--moe-surface-strong) 70%, transparent);
+  }
+  .moe-glass[data-tone="warm"] {
+    --moe-glass-tint: color-mix(in srgb, var(--moe-surface-strong) 93%, var(--moe-color-gold));
+  }
+  .moe-glass[data-tone="rose"] {
+    --moe-glass-tint: color-mix(in srgb, var(--moe-surface-strong) 94%, var(--moe-accent));
+  }
+  .moe-glass-panel,
+  .moe-glass-card {
+    padding: var(--moe-space-6);
+  }
+  .moe-glass-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--moe-space-3);
+    padding: var(--moe-space-3);
+    border-radius: var(--moe-radius-md);
+  }
+  /* 不对模糊做动画，也不强制建立永久合成层。Never animate blur or force permanent compositor layers. */
+  @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .moe-glass {
+      background: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--moe-glass-tint) 94%, transparent),
+        color-mix(in srgb, var(--moe-glass-tint) 82%, transparent)
+      );
+      -webkit-backdrop-filter: blur(16px) saturate(115%);
+      backdrop-filter: blur(16px) saturate(115%);
+    }
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    .moe-glass {
+      background: var(--moe-surface-strong);
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+  }
+  @media (forced-colors: active) {
+    .moe-glass {
+      color: CanvasText;
+      background: Canvas;
+      border-color: CanvasText;
+      box-shadow: none;
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+  }
+}

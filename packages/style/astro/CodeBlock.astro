@@ -1,0 +1,71 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import { highlightCode } from "@moesegfault/style/code";
+
+/** 构建时高亮，浏览器只加载复制交互。Build-time highlighting; only clipboard interaction reaches the browser. */
+interface Props extends Omit<HTMLAttributes<"figure">, "children"> {
+  /** 原始代码文本。Raw source text. */
+  code: string;
+  /** 显式语法，未知语言安全回退。Explicit grammar with safe unknown-language fallback. */
+  language?: string;
+  /** 可访问标题。Accessible caption. */
+  label?: string;
+  /** 可选文件名。Optional filename. */
+  filename?: string;
+  /** 是否提供复制按钮。Whether to provide clipboard interaction. */
+  copyable?: boolean;
+  /** 是否对长行换行。Whether long lines wrap. */
+  wrap?: boolean;
+  /** 可本地化按钮名称。Localizable button name. */
+  copyLabel?: string;
+  /** 可本地化成功反馈。Localizable success feedback. */
+  copiedLabel?: string;
+  /** 可本地化失败反馈。Localizable failure feedback. */
+  copyErrorLabel?: string;
+}
+const {
+  code,
+  language = "text",
+  label = "代码示例",
+  filename,
+  copyable = true,
+  wrap = false,
+  copyLabel = "复制",
+  copiedLabel = "已复制",
+  copyErrorLabel = "复制失败，请选择代码复制",
+  class: className,
+  ...props
+} = Astro.props;
+const html = highlightCode(code, language);
+---
+<figure {...props} class:list={["moe-code-block", className]} data-moe-astro-code data-wrap={wrap || undefined}>
+  <figcaption class="moe-code-block__header">
+    <span class="moe-code-block__title">{filename || label}</span>
+    <span class="moe-code-block__language">{language}</span>
+    {copyable && <button type="button" hidden class="moe-code-block__copy" data-copied-label={copiedLabel} data-copy-error-label={copyErrorLabel} aria-label={`${copyLabel}: ${filename || label}`}>{copyLabel}</button>}
+  </figcaption>
+  <pre class="moe-code-block__pre" tabindex="0" role="region" aria-label={filename || label}><code class="moe-code-block__code" set:html={html} /></pre>
+  <span class="moe-code-block__status" role="status"></span>
+</figure>
+<script>
+  /** 渐进增强：无 JS 不显示不可用按钮；导航后重用事件代理。Progressive enhancement with delegated events across navigation. */
+  function revealCopyButtons(): void {
+    document.querySelectorAll<HTMLButtonElement>("[data-moe-astro-code] .moe-code-block__copy[hidden]").forEach((button) => { button.hidden = false; });
+  }
+  revealCopyButtons();
+  document.addEventListener("astro:page-load", revealCopyButtons);
+  document.addEventListener("click", async (event) => {
+    const button = event.target instanceof Element ? event.target.closest<HTMLButtonElement>(".moe-code-block__copy") : null;
+    // React 管理自己的交互；Astro 仅处理当前组件的按钮。React owns its interaction; handle only Astro buttons.
+    if (!button || !button.closest("figure")?.querySelector("code")) return;
+    const figure = button.closest("figure")!;
+    if (!figure.hasAttribute("data-moe-astro-code")) return;
+    const status = figure.querySelector<HTMLElement>(".moe-code-block__status");
+    try {
+      await navigator.clipboard.writeText(figure.querySelector("code")!.textContent || "");
+      if (status) status.textContent = button.dataset.copiedLabel || "已复制";
+    } catch {
+      if (status) status.textContent = button.dataset.copyErrorLabel || "复制失败，请选择代码复制";
+    }
+  });
+</script>

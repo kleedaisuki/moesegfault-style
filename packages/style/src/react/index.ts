@@ -39,5 +39,27 @@ export type {
   StackProps,
 } from "./Layout.js";
 export { Cluster, Container, Stack } from "./Layout.js";
-export type { MessageBubbleProps, MessageBubbleRole } from "./MessageBubble.js";
-export { MessageBubble } from "./MessageBubble.js";
+export type {
+  MessageBubbleProps,
+  MessageBubbleRole,
+  MessageBubbleTone,
+  MessageTypingProps,
+  MessageQuoteProps,
+  MessageAttachmentProps,
+} from "./MessageBubble.js";
+export {
+  MessageBubble,
+  MessageTyping,
+  MessageQuote,
+  MessageAttachment,
+  MessageActions,
+  MessageAction,
+} from "./MessageBubble.js";
+export type { GlassProps, GlassTone } from "./Glass.js";
+export { GlassCard, GlassPanel, GlassToolbar } from "./Glass.js";
+export type { MotionProps, MotionPreset } from "./Motion.js";
+export { Motion } from "./Motion.js";
+export type { IconProps, IconName } from "./Icon.js";
+export { Icon } from "./Icon.js";
+export type { CodeBlockProps } from "./CodeBlock.js";
+export { CodeBlock } from "./CodeBlock.js";

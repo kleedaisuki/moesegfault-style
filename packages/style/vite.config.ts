@@ -8,6 +8,7 @@ export default defineConfig({
     lib: {
       entry: {
         index: "src/index.ts",
+        code: "src/code.ts",
         "react/index": "src/react/index.ts",
       },
       formats: ["es"],

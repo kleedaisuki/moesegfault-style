@@ -1,4 +1,4 @@
-import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -237,6 +237,14 @@ export async function buildTokens({
   );
   const foundation = await readFile(join(packageRoot, "src", "styles", "foundation.css"), "utf8");
   const components = await readFile(join(packageRoot, "src", "styles", "components.css"), "utf8");
+  /** @brief 独立样式也并入组件层，保持原有分层导入有效。Standalone styles also join the component bundle to preserve layered imports. */
+  const extensions = await Promise.all(
+    ["glass", "motion", "messages", "code", "icons"].map(async (name) => ({
+      name,
+      css: await readFile(join(packageRoot, "src", "styles", `${name}.css`), "utf8"),
+    })),
+  );
+  const componentBundle = [components, ...extensions.map((entry) => entry.css)].join("\n");
   await Promise.all([
     mkdir(join(outputRoot, "css"), { recursive: true }),
     mkdir(join(outputRoot, "tokens"), { recursive: true }),
@@ -245,8 +253,12 @@ export async function buildTokens({
   await Promise.all([
     writeFile(join(outputRoot, "css", "tokens.css"), css),
     writeFile(join(outputRoot, "css", "foundation.css"), foundation),
-    writeFile(join(outputRoot, "css", "components.css"), components),
-    writeFile(join(outputRoot, "css", "all.css"), `${css}\n${foundation}\n${components}`),
+    writeFile(join(outputRoot, "css", "components.css"), componentBundle),
+    ...extensions.map((entry) =>
+      writeFile(join(outputRoot, "css", `${entry.name}.css`), entry.css),
+    ),
+    writeFile(join(outputRoot, "css", "all.css"), `${css}\n${foundation}\n${componentBundle}`),
+    cp(join(packageRoot, "src", "icons"), join(outputRoot, "assets", "icons"), { recursive: true }),
     writeFile(join(outputRoot, "tokens", "tokens.json"), `${JSON.stringify(resolved, null, 2)}\n`),
     writeFile(
       join(outputRoot, "tokens", "tokens.dtcg.json"),

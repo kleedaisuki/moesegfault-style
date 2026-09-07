@@ -20,3 +20,5 @@ export { default as Container } from "./Container.astro";
 export type { StackElement } from "./Stack.astro";
 /** @brief 垂直堆叠布局 Astro 组件 / Vertical stack layout Astro component. */
 export { default as Stack } from "./Stack.astro";
+/** @brief 服务端语法高亮代码框。Server-rendered syntax-highlighted code block. */
+export { default as CodeBlock } from "./CodeBlock.astro";

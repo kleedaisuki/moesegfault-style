@@ -1,6 +1,6 @@
 {
   "name": "@moesegfault/style",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Warm editorial design system for Astro, React and the web.",
   "license": "GPL-3.0-or-later",
   "type": "module",
@@ -10,7 +10,8 @@
   "files": [
     "dist",
     "astro",
-    "README.md"
+    "README.md",
+    "THIRD_PARTY_NOTICES.txt"
   ],
   "exports": {
     ".": {
@@ -24,6 +25,13 @@
       "default": "./dist/react/index.js"
     },
     "./astro": "./astro/index.ts",
+    "./code": {
+      "types": "./dist/code.d.ts",
+      "import": "./dist/code.js",
+      "default": "./dist/code.js"
+    },
+    "./icons/*": "./dist/assets/icons/*",
+    "./astro/CodeBlock.astro": "./astro/CodeBlock.astro",
     "./astro/BrandMark.astro": "./astro/BrandMark.astro",
     "./astro/Button.astro": "./astro/Button.astro",
     "./astro/Card.astro": "./astro/Card.astro",
@@ -33,6 +41,11 @@
     "./tokens.css": "./dist/css/tokens.css",
     "./foundation.css": "./dist/css/foundation.css",
     "./components.css": "./dist/css/components.css",
+    "./glass.css": "./dist/css/glass.css",
+    "./motion.css": "./dist/css/motion.css",
+    "./messages.css": "./dist/css/messages.css",
+    "./code.css": "./dist/css/code.css",
+    "./icons.css": "./dist/css/icons.css",
     "./all.css": "./dist/css/all.css",
     "./tokens.json": "./dist/tokens/tokens.json",
     "./tokens.dtcg.json": "./dist/tokens/tokens.dtcg.json",
@@ -56,9 +69,9 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.3",
+    "@types/node": "^24.10.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "@types/node": "^24.10.0",
     "@vitejs/plugin-react": "^6.0.0",
     "jsdom": "^28.0.0",
     "react": "^19.2.8",
@@ -70,5 +83,8 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
+  },
+  "dependencies": {
+    "highlight.js": "^11.12.0"
   }
 }

@@ -14,6 +14,23 @@ describe("token build artifacts", () => {
     expect(css).toContain(':root[data-moe-theme="dark"]');
     expect(css).toContain(".moe-message-bubble");
     expect(css).toContain(".moe-composer");
+    for (const component of ["glass", "motion", "message-attachment", "code-block", "icon"]) {
+      expect(css).toContain(`.moe-${component}`);
+    }
+  });
+
+  it("ships standalone enhancement styles and the original brand asset", async () => {
+    const bundle = await readFile(join(packageRoot, "dist", "css", "components.css"), "utf8");
+    for (const name of ["glass", "motion", "messages", "code", "icons"]) {
+      const css = await readFile(join(packageRoot, "dist", "css", `${name}.css`), "utf8");
+      expect(bundle).toContain(css);
+    }
+    const brand = await readFile(join(packageRoot, "dist", "assets", "icons", "brand.svg"), "utf8");
+    const original = await readFile(
+      join(packageRoot, "..", "..", "pages", "public", "favicon.svg"),
+      "utf8",
+    );
+    expect(brand).toBe(original);
   });
 
   it("preserves the DTCG source and emits resolved JSON", async () => {
