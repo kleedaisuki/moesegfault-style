@@ -21,7 +21,7 @@ describe("token build artifacts", () => {
 
   it("ships standalone enhancement styles and the original brand asset", async () => {
     const bundle = await readFile(join(packageRoot, "dist", "css", "components.css"), "utf8");
-    for (const name of ["glass", "motion", "messages", "code", "icons"]) {
+    for (const name of ["glass", "motion", "messages", "code", "icons", "markdown", "math"]) {
       const css = await readFile(join(packageRoot, "dist", "css", `${name}.css`), "utf8");
       expect(bundle).toContain(css);
     }
@@ -31,6 +31,21 @@ describe("token build artifacts", () => {
       "utf8",
     );
     expect(brand).toBe(original);
+  });
+
+  it("ships every relative math font and keeps rich text out of ordinary entry points", async () => {
+    const css = await readFile(join(packageRoot, "dist", "css", "math.css"), "utf8");
+    const urls = [...css.matchAll(/url\(([^)]+)\)/g)].map((match) => match[1]);
+    expect(urls.length).toBeGreaterThan(0);
+    for (const url of urls) {
+      expect(url).toMatch(/^\.\.\/assets\/katex\/fonts\//);
+      await access(join(packageRoot, "dist", "css", url));
+    }
+    await access(join(packageRoot, "dist", "assets", "katex", "LICENSE.txt"));
+    for (const entry of ["index.js", "react/index.js"]) {
+      const source = await readFile(join(packageRoot, "dist", entry), "utf8");
+      expect(source).not.toMatch(/(?:markdown|katex|unified|remark|rehype)/);
+    }
   });
 
   it("preserves the DTCG source and emits resolved JSON", async () => {

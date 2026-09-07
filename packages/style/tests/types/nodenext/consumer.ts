@@ -1,6 +1,8 @@
 import { tokens, type ThemePreference } from "@moesegfault/style";
 import type { ButtonProps, ClusterProps } from "@moesegfault/style/react";
 import { highlightCode, type CodeLanguage } from "@moesegfault/style/code";
+import { renderMarkdown, renderMath } from "@moesegfault/style/markdown";
+import type { MarkdownProps, MathProps } from "@moesegfault/style/react/rich-text";
 import type {
   CodeBlockProps,
   GlassProps,
@@ -28,3 +30,8 @@ const motion: MotionProps = { preset: "rise", disabled: true };
 const icon: IconProps = { name: "brand", title: "MoeSegfault" };
 const message: MessageBubbleProps = { variant: "assistant", tone: "soft", status: "Done" };
 void [highlightCode(code.code, language), glass, motion, icon, message];
+
+/** @brief 可选富文本入口保持独立且声明可解析。Optional rich text entry remains independent with resolvable declarations. */
+const prose: MarkdownProps = { content: "**Hello** $E=mc^2$" };
+const formula: MathProps = { tex: "E=mc^2", display: true };
+void [renderMarkdown(prose.content), renderMath(formula.tex), formula];

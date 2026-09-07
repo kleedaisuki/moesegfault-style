@@ -1,0 +1,15 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import { renderMath } from "@moesegfault/style/markdown";
+
+/** 服务端公式，视觉 HTML 与可访问 MathML。Server-rendered formula with visual HTML and accessible MathML. */
+interface Props extends Omit<HTMLAttributes<"span">, "children"> {
+  /** 不含美元分隔符的 TeX 源文本。TeX source without dollar delimiters. */
+  tex: string;
+  /** 块级公式，默认行内。Display formula; inline by default. */
+  display?: boolean;
+}
+const { tex, display = false, class: className, ...props } = Astro.props;
+const html = renderMath(tex, display);
+---
+<span {...props} class:list={["moe-math", className]} data-display={display || undefined} set:html={html} />

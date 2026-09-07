@@ -76,3 +76,48 @@ The `messages.css` enhancement expects the existing `components.css` base.
 Static assets: `@moesegfault/style/icons/brand.svg` and `@moesegfault/style/icons/sparkle.svg`;
 CDN: `/v0.1.2/assets/icons/brand.svg`. Use meaningful `alt` text on `<img>` or `alt=""` for decoration.
 祖传品牌路径原样保留；已有 `BrandMark` API 不变。
+
+### Frosted glass / 真正的毛玻璃
+
+```tsx
+<GlassPanel tone="warm" blur={12} tintOpacity={0.42}>
+  <p>背景仍有轮廓，眼前的文字保持清晰。</p>
+</GlassPanel>
+```
+
+Place the panel **over** real content: `backdrop-filter` blurs pixels behind it, not its children.
+The default 42% tint fades toward 30%; `blur` accepts 0–40 px and `tintOpacity` 0–1.
+CSS-only equivalents are `--moe-glass-blur: 12px` and `--moe-glass-opacity: 42%`.
+
+必须让面板与真实文字/画布叠放；只有空白背景时不会凭空出现玻璃效果。模糊不会隐藏私密信息，
+也不保证任意复杂背景上的文字对比度。密集正文可提高染色不透明度或改用普通 `Card`。
+避免祖先元素的 `opacity`、`filter` 意外改变背景采样边界；不支持模糊或要求减少透明度时回退实色。
+
+### Markdown + TeX / 文稿与公式
+
+```tsx
+import "@moesegfault/style/all.css";
+import { Markdown, Math as Formula } from "@moesegfault/style/react/rich-text";
+
+<Markdown content={String.raw`**一页随记**，也放得下一行公式 $E=mc^2$。`} />;
+<Formula tex={String.raw`\int_0^1 x^2\,dx = \frac{1}{3}`} display />;
+```
+
+Astro: import `Markdown.astro` / `Math.astro` from `@moesegfault/style/astro/`.
+Framework-independent: `renderMarkdown(content)` / `renderMath(tex, display)` from
+`@moesegfault/style/markdown`. The dedicated React rich-text entry keeps ordinary controls free of
+parser dependencies. Astro renders at build/server time with no client parser or math runtime.
+
+支持 GFM 表格、任务列表、删除线、代码围栏，以及 `$…$` 行内公式和 `$$…$$` 独立公式。
+Markdown 不接受原始 HTML；URL 先清洗再交给可信高亮/公式渲染器。KaTeX 禁用可信扩展并限制宏展开，
+无任意渲染器选项。公式输出 HTML + MathML，长块级公式支持键盘滚动。
+
+Budgets: 50,000 UTF-16 units per Markdown document, 4,096 per formula, 128 formulas and 64 brace
+levels; excess or failed input falls back to escaped text. These are practical synchronous safeguards,
+not a hard execution-time guarantee. For hostile bulk input, use an application-level worker/time budget.
+Safe rendering does not make external links or images trustworthy; applications still own their content policy.
+
+`all.css` / `components.css` include the new styles. For explicit layering, use `markdown.css` and
+`math.css` after the existing foundations/components. KaTeX fonts and its MIT notice are bundled under
+`dist/assets/katex/` and mirrored to exact-version, latest and default CDN assets—no external font service.
+公式字体随包自托管；不要单独搬走 CSS 而遗漏相邻的 `assets` 目录。

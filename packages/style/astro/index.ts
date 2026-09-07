@@ -22,3 +22,7 @@ export type { StackElement } from "./Stack.astro";
 export { default as Stack } from "./Stack.astro";
 /** @brief 服务端语法高亮代码框。Server-rendered syntax-highlighted code block. */
 export { default as CodeBlock } from "./CodeBlock.astro";
+/** @brief 安全 Markdown 与公式排版。Safe Markdown and math typesetting. */
+export { default as Markdown } from "./Markdown.astro";
+/** @brief TeX 公式排版。TeX math typesetting. */
+export { default as Math } from "./Math.astro";

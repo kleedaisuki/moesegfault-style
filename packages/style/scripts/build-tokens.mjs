@@ -239,15 +239,23 @@ export async function buildTokens({
   const components = await readFile(join(packageRoot, "src", "styles", "components.css"), "utf8");
   /** @brief 独立样式也并入组件层，保持原有分层导入有效。Standalone styles also join the component bundle to preserve layered imports. */
   const extensions = await Promise.all(
-    ["glass", "motion", "messages", "code", "icons"].map(async (name) => ({
+    ["glass", "motion", "messages", "code", "icons", "markdown"].map(async (name) => ({
       name,
       css: await readFile(join(packageRoot, "src", "styles", `${name}.css`), "utf8"),
     })),
   );
+  /** @brief 公式字体随包和 CDN 自托管，URL 相对于 css 目录。Self-host math fonts with package/CDN URLs relative to CSS. */
+  const katexRoot = dirname(dirname(fileURLToPath(import.meta.resolve("katex"))));
+  const mathCss = (await readFile(join(katexRoot, "dist", "katex.min.css"), "utf8")).replaceAll(
+    "url(fonts/",
+    "url(../assets/katex/fonts/",
+  );
+  extensions.push({ name: "math", css: `@layer moe.components {\n${mathCss}\n}\n` });
   const componentBundle = [components, ...extensions.map((entry) => entry.css)].join("\n");
   await Promise.all([
     mkdir(join(outputRoot, "css"), { recursive: true }),
     mkdir(join(outputRoot, "tokens"), { recursive: true }),
+    mkdir(join(outputRoot, "assets", "katex"), { recursive: true }),
     mkdir(dirname(generatedPath), { recursive: true }),
   ]);
   await Promise.all([
@@ -259,6 +267,10 @@ export async function buildTokens({
     ),
     writeFile(join(outputRoot, "css", "all.css"), `${css}\n${foundation}\n${componentBundle}`),
     cp(join(packageRoot, "src", "icons"), join(outputRoot, "assets", "icons"), { recursive: true }),
+    cp(join(katexRoot, "dist", "fonts"), join(outputRoot, "assets", "katex", "fonts"), {
+      recursive: true,
+    }),
+    cp(join(katexRoot, "LICENSE"), join(outputRoot, "assets", "katex", "LICENSE.txt")),
     writeFile(join(outputRoot, "tokens", "tokens.json"), `${JSON.stringify(resolved, null, 2)}\n`),
     writeFile(
       join(outputRoot, "tokens", "tokens.dtcg.json"),

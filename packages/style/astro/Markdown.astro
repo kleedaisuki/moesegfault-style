@@ -1,0 +1,13 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import { renderMarkdown } from "@moesegfault/style/markdown";
+
+/** 服务端安全 GFM 与 TeX，无需客户端脚本。Server-rendered safe GFM and TeX, without client scripts. */
+interface Props extends Omit<HTMLAttributes<"div">, "children"> {
+  /** Markdown 源文本，原始 HTML 被丢弃。Markdown source; raw HTML is dropped. */
+  content: string;
+}
+const { content, class: className, ...props } = Astro.props;
+const html = renderMarkdown(content);
+---
+<div {...props} class:list={["moe-markdown", className]} set:html={html} />
