@@ -16,6 +16,24 @@ describe("glass surfaces", () => {
     expect(screen.getByText("Visible content")).toBeVisible();
   });
 
+  it("bounds optical controls without leaking them into the DOM", () => {
+    const { rerender } = render(
+      <GlassPanel data-testid="optics" blur={8} tintOpacity={0.3} style={{ color: "red" }} />,
+    );
+    const panel = screen.getByTestId("optics");
+    expect(panel.style.getPropertyValue("--moe-glass-blur")).toBe("8px");
+    expect(panel.style.getPropertyValue("--moe-glass-opacity")).toBe("30%");
+    expect(panel.style.color).toBe("red");
+    expect(panel).not.toHaveAttribute("blur");
+    expect(panel).not.toHaveAttribute("tintOpacity");
+    rerender(<GlassPanel data-testid="optics" blur={-10} tintOpacity={2} />);
+    expect(panel.style.getPropertyValue("--moe-glass-blur")).toBe("0px");
+    expect(panel.style.getPropertyValue("--moe-glass-opacity")).toBe("100%");
+    rerender(<GlassPanel data-testid="optics" blur={Infinity} tintOpacity={NaN} />);
+    expect(panel.style.getPropertyValue("--moe-glass-blur")).toBe("12px");
+    expect(panel.style.getPropertyValue("--moe-glass-opacity")).toBe("42%");
+  });
+
   it("does not imply toolbar keyboard behavior", () => {
     render(
       <GlassPanel data-testid="panel">

@@ -30,16 +30,21 @@
     padding: var(--moe-space-3);
     border-radius: var(--moe-radius-md);
   }
+  /* 染色使用主题表面色，明暗随主题切换；不降低容器 opacity，避免子内容变淡。Theme tint follows light/dark surfaces; keep container opacity intact for sharp content. */
   /* 不对模糊做动画，也不强制建立永久合成层。Never animate blur or force permanent compositor layers. */
   @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
     .moe-glass {
       background: linear-gradient(
         135deg,
-        color-mix(in srgb, var(--moe-glass-tint) 94%, transparent),
-        color-mix(in srgb, var(--moe-glass-tint) 82%, transparent)
+        color-mix(in srgb, var(--moe-glass-tint) var(--moe-glass-opacity, 42%), transparent),
+        color-mix(
+          in srgb,
+          var(--moe-glass-tint) calc(var(--moe-glass-opacity, 42%) * 0.72),
+          transparent
+        )
       );
-      -webkit-backdrop-filter: blur(16px) saturate(115%);
-      backdrop-filter: blur(16px) saturate(115%);
+      -webkit-backdrop-filter: blur(var(--moe-glass-blur, 12px)) saturate(115%);
+      backdrop-filter: blur(var(--moe-glass-blur, 12px)) saturate(115%);
     }
   }
   @media (prefers-reduced-transparency: reduce) {
