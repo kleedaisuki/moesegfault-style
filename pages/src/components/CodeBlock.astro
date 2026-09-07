@@ -1,13 +1,18 @@
 ---
+import CodeBlock from "@moesegfault/style/astro/CodeBlock.astro";
+
+/** 保留文档组件原接口，并开放显式语言。Preserve the documentation API and accept explicit grammars. */
 interface Props {
+  /** 原始代码。Raw code. */
   code: string;
+  /** 代码标题。Code caption. */
   label?: string;
+  /** 高亮语法。Highlight grammar. */
+  language?: string;
 }
 
-const { code, label = "代码示例" } = Astro.props;
+const { code, label = "代码示例", language = "astro" } = Astro.props;
+const english = Astro.url.pathname.startsWith("/en/");
 ---
 
-<figure class="code-block">
-  <figcaption>{label}</figcaption>
-  <pre tabindex="0"><code>{code}</code></pre>
-</figure>
+<CodeBlock class="code-block" code={code} label={label} language={language} copyLabel={english ? "Copy" : "复制"} copiedLabel={english ? "Copied" : "已复制"} copyErrorLabel={english ? "Copy failed; select code manually" : "复制失败，请选择代码复制"} />

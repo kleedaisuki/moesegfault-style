@@ -28,12 +28,12 @@ const root = "https://style.moesegfault.dev";
         <table>
           <thead><tr><th>资源</th><th>固定版本 URL</th><th>什么时候使用</th></tr></thead>
           <tbody>
-            <tr><td>全量样式</td><td><code>{root}/v0.1.1/css/all.css</code></td><td>最省事：一次引入完整视觉样式</td></tr>
-            <tr><td>设计令牌</td><td><code>{root}/v0.1.1/css/tokens.css</code></td><td>只使用颜色、间距、圆角等 CSS 变量</td></tr>
-            <tr><td>基础样式</td><td><code>{root}/v0.1.1/css/foundation.css</code></td><td>需要主题和基础排版，不需要组件外观</td></tr>
-            <tr><td>组件样式</td><td><code>{root}/v0.1.1/css/components.css</code></td><td>已经引入基础样式，只补充组件外观</td></tr>
-            <tr><td>Token JSON</td><td><code>{root}/v0.1.1/tokens/tokens.json</code></td><td>在应用或构建脚本中读取解析后的令牌</td></tr>
-            <tr><td>DTCG JSON</td><td><code>{root}/v0.1.1/tokens/tokens.dtcg.json</code></td><td>导入支持 DTCG 的设计或转换工具</td></tr>
+            <tr><td>全量样式</td><td><code>{root}/v0.1.2/css/all.css</code></td><td>最省事：一次引入完整视觉样式</td></tr>
+            <tr><td>设计令牌</td><td><code>{root}/v0.1.2/css/tokens.css</code></td><td>只使用颜色、间距、圆角等 CSS 变量</td></tr>
+            <tr><td>基础样式</td><td><code>{root}/v0.1.2/css/foundation.css</code></td><td>需要主题和基础排版，不需要组件外观</td></tr>
+            <tr><td>组件样式</td><td><code>{root}/v0.1.2/css/components.css</code></td><td>已经引入基础样式，只补充组件外观</td></tr>
+            <tr><td>Token JSON</td><td><code>{root}/v0.1.2/tokens/tokens.json</code></td><td>在应用或构建脚本中读取解析后的令牌</td></tr>
+            <tr><td>DTCG JSON</td><td><code>{root}/v0.1.2/tokens/tokens.dtcg.json</code></td><td>导入支持 DTCG 的设计或转换工具</td></tr>
           </tbody>
         </table>
       </div>
@@ -48,8 +48,8 @@ const root = "https://style.moesegfault.dev";
       <div class="asset-grid">
         <article class="asset-card">
           <h3>推荐：锁定一个版本</h3>
-          <p><code>/v0.1.1/…</code> 的内容不会改变，页面也不会因为库发布新版而突然变化。准备升级时，只需更换 URL 中的版本号。</p>
-          <CodeBlock label="HTML" code={`<link rel="stylesheet"\n  href="${root}/v0.1.1/css/all.css">`} />
+          <p><code>/v0.1.2/…</code> 的内容不会改变，页面也不会因为库发布新版而突然变化。准备升级时，只需更换 URL 中的版本号。</p>
+          <CodeBlock label="HTML" code={`<link rel="stylesheet"\n  href="${root}/v0.1.2/css/all.css">`} />
         </article>
         <article class="asset-card">
           <h3>只获取最新基础资源</h3>
@@ -65,7 +65,7 @@ const root = "https://style.moesegfault.dev";
       <div class="callout">
         <h3>不知道怎么选？</h3>
         <p>
-          正式项目优先使用 <code>/v0.1.1/…</code>；原型和展示页可以使用 <code>/latest/…</code>。
+          正式项目优先使用 <code>/v0.1.2/…</code>；原型和展示页可以使用 <code>/latest/…</code>。
           浏览器和边缘缓存可能让 latest 的更新稍晚出现，这不会影响固定版本地址。
         </p>
       </div>

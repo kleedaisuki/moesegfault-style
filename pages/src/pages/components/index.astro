@@ -5,25 +5,20 @@ import CodeBlock from "../../components/CodeBlock.astro";
 import DocsLayout from "../../layouts/DocsLayout.astro";
 ---
 
-<DocsLayout
-  title="组件 Showcase"
-  description="MoeSegFault Style 的 React 组件与组合模式展示。"
-  currentPath="/components/"
->
-  <header class="page-intro">
-    <Container>
-      <p class="kicker">COMPONENTS</p>
-      <h1>小而完整的工具箱。</h1>
-      <p class="lede">基础组件保持诚实：原生语义、可组合的 Props、没有为了 Demo 发明的隐藏状态。</p>
-    </Container>
-  </header>
-  <section class="section section-tint" aria-label="组件展示">
-    <Container>
-      <ComponentGallery client:load />
-      <CodeBlock
-        label="React · composition.tsx"
-        code={`import { Badge, Button, Card, StatusDot } from "@moesegfault/style/react";\nimport "@moesegfault/style/all.css";\n\nexport function ProjectCard() {\n  return (\n    <Card>\n      <Badge tone="success">Stable</Badge>\n      <h2><StatusDot label="Online" status="online" /> Style service</h2>\n      <Button variant="secondary">Open</Button>\n    </Card>\n  );\n}`}
-      />
-    </Container>
-  </section>
+<DocsLayout title="组件 Showcase" description="暖纸、透光玻璃、克制动效与丰富对话：MoeSegFault Style v0.1.2 组件展示。" currentPath="/components/">
+  <header class="page-intro"><Container>
+    <p class="kicker">COMPONENTS / v0.1.2</p>
+    <h1>熟悉的温度，<br />新一层光。</h1>
+    <p class="lede">玻璃透光，星芒轻落，对话也有了层次。依然是暖纸、墨色与莓红；让视觉更细腻，而不是更吵闹。</p>
+    <div class="showcase-index" aria-label="展示目录"><a href="#glass">透光玻璃</a><a href="#motion">轻量动效</a><a href="#icons">祖传图标</a><a href="#messages">丰富消息</a><a href="#code">代码高亮</a></div>
+  </Container></header>
+  <section class="section section-tint" aria-label="组件展示"><Container>
+    <ComponentGallery client:load />
+    <section class="specimen" id="code" data-testid="v012-code" aria-labelledby="code-title" style="margin-top: 1.25rem">
+      <div class="specimen-heading"><div><p class="eyebrow">06 / Code, in its best light</p><h2 id="code-title">为每一行，找到好光线。</h2></div></div>
+      <p>代码高亮、适合阅读的等宽字体与明暗独立配色。试试右上角切换主题；长行留在代码框内滚动，不挤压页面。</p>
+      <CodeBlock language="tsx" label="React · composition.tsx" code={`import { GlassCard, Icon, MessageBubble } from "@moesegfault/style/react";\nimport "@moesegfault/style/all.css";\n\nexport function Workshop() {\n  return (\n    <GlassCard tone="warm">\n      <Icon name="sparkle" size={24} />\n      <MessageBubble author="Moe" tone="soft">\n        A little light, a little less noise.\n      </MessageBubble>\n    </GlassCard>\n  );\n}`} />
+      <p class="material-caption">支持键盘聚焦滚动与复制。未知语言仍按纯文本安全显示，不把代码当作 HTML 执行。</p>
+    </section>
+  </Container></section>
 </DocsLayout>

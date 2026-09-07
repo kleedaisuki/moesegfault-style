@@ -4,7 +4,21 @@ import { ComponentGallery } from "../../../components/ComponentGallery";
 import CodeBlock from "../../../components/CodeBlock.astro";
 import DocsLayout from "../../../layouts/DocsLayout.astro";
 ---
-<DocsLayout title="Component showcase" description="React components and composition patterns from MoeSegFault Style." currentPath="/en/components/" locale="en">
-  <header class="page-intro"><Container><p class="kicker">COMPONENTS</p><h1>A small but complete toolbox.</h1><p class="lede">The primitives stay honest: native semantics, composable props, and no hidden state invented for a demo.</p></Container></header>
-  <section class="section section-tint" aria-label="Component showcase"><Container><ComponentGallery locale="en" client:load /><CodeBlock label="React · composition.tsx" code={`import { Badge, Button, Card, StatusDot } from "@moesegfault/style/react";\nimport "@moesegfault/style/all.css";\n\nexport function ProjectCard() {\n  return (\n    <Card>\n      <Badge tone="success">Stable</Badge>\n      <h2><StatusDot label="Online" status="online" /> Style service</h2>\n      <Button variant="secondary">Open</Button>\n    </Card>\n  );\n}`} /></Container></section>
+
+<DocsLayout title="Component showcase" description="Warm paper, translucent glass, considered motion, and expressive conversations in MoeSegFault Style v0.1.2." currentPath="/en/components/" locale="en">
+  <header class="page-intro"><Container>
+    <p class="kicker">COMPONENTS / v0.1.2</p>
+    <h1>Same warmth.<br />A new light.</h1>
+    <p class="lede">Light through glass, a quiet sparkle, conversations with depth. Still paper, ink, and berry. More considered, never louder.</p>
+    <div class="showcase-index" aria-label="Showcase contents"><a href="#glass">Glass</a><a href="#motion">Motion</a><a href="#icons">Original icons</a><a href="#messages">Messages</a><a href="#code">Code highlighting</a></div>
+  </Container></header>
+  <section class="section section-tint" aria-label="Component showcase"><Container>
+    <ComponentGallery locale="en" client:load />
+    <section class="specimen" id="code" data-testid="v012-code" aria-labelledby="code-title" style="margin-top: 1.25rem">
+      <div class="specimen-heading"><div><p class="eyebrow">06 / Code, in its best light</p><h2 id="code-title">A better light for every line.</h2></div></div>
+      <p>Syntax highlighting, a reading-friendly monospace font, and separate light and dark palettes. Try the theme switch above. Long lines scroll inside the frame, not across the page.</p>
+      <CodeBlock language="tsx" label="React · composition.tsx" code={`import { GlassCard, Icon, MessageBubble } from "@moesegfault/style/react";\nimport "@moesegfault/style/all.css";\n\nexport function Workshop() {\n  return (\n    <GlassCard tone="warm">\n      <Icon name="sparkle" size={24} />\n      <MessageBubble author="Moe" tone="soft">\n        A little light, a little less noise.\n      </MessageBubble>\n    </GlassCard>\n  );\n}`} />
+      <p class="material-caption">Keyboard-focusable scrolling and copy controls. Unknown languages remain safe plain text; source code is not executed as HTML.</p>
+    </section>
+  </Container></section>
 </DocsLayout>

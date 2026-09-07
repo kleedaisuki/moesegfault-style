@@ -202,7 +202,7 @@ GitHub Pages 同时承载便于普通 HTML 或无法安装 npm 包的消费方�
 ```html
 <link
   rel="stylesheet"
-  href="https://style.moesegfault.dev/v0.1.1/css/all.css"
+  href="https://style.moesegfault.dev/v0.1.2/css/all.css"
 />
 ```
 
@@ -223,9 +223,9 @@ https://style.moesegfault.dev/css/all.css
 - 每个精确版本都会保留并列入根 `manifest.json` 的 `publishedVersions`；不会生成 `/v0/`
   一类主版本浮动别名。
 - `/latest/` 是唯一的完整浮动别名，只适合文档、原型或明确接受版本漂移的场景。
-- `/colors` 是可导航的默认入口，并跳转到当前稳定版本（当前为 `/v0.1.1/colors/`）。
+- `/colors` 是可导航的默认入口，并跳转到当前稳定版本（当前为 `/v0.1.2/colors/`）。
   `/colors/colors.css`、`/colors/colors.json` 与 `/css/all.css` 是无需跳转的最新稳定机器资源；
-  如需可复现构建，请改用对应的 `/v0.1.1/...` 路径。
+  如需可复现构建，请改用对应的 `/v0.1.2/...` 路径。
 - React/Astro 组件默认通过包管理器消费；远程分发重点是 CSS 与 token JSON，避免浏览器裸
   ESM 的 React runtime 解析与重复实例问题。
 
