@@ -16,7 +16,7 @@
     "format:check": "biome format .",
     "lint": "biome lint .",
     "check": "pnpm build && pnpm test && pnpm lint && pnpm format:check",
-    "test": "pnpm --filter @moesegfault/style test && pnpm --filter @moesegfault/pages test && node --test scripts/cdn-lib.test.mjs scripts/build-skill-downloads.test.mjs",
+    "test": "pnpm --filter @moesegfault/style test && pnpm --filter @moesegfault/pages test && node --test scripts/cdn-lib.test.mjs scripts/build-skill-downloads.test.mjs scripts/cutover-cloudflare-dns.test.mjs",
     "test:e2e": "pnpm --filter @moesegfault/pages test:e2e",
     "cdn:build": "node scripts/build-cdn.mjs",
     "cdn:verify": "node scripts/verify-cdn.mjs",

@@ -234,11 +234,14 @@ Deploy workflow: checkout the same SHA -> download that exact artifact
 This separation prevents deployment credentials from being exposed to pull
 request jobs and, more importantly, deploys the bytes that passed tests rather
 than rebuilding an unverified variant. Pin Node, pnpm, Wrangler, and GitHub Action
-revisions. Store `CLOUDFLARE_API_TOKEN` as a GitHub production-environment secret
-and `CLOUDFLARE_ACCOUNT_ID` as an environment variable; do not commit either
-value. The token should be scoped to the one account/zone and the Worker/domain
-operations required by the workflow. Cloudflare's documentation recommends an
-account- and zone-scoped token rather than a broadly reusable credential.
+revisions. Store `CLOUDFLARE_API_TOKEN` as a GitHub repository or
+production-environment secret and `CLOUDFLARE_ACCOUNT_ID` as an environment
+variable; do not commit either value. The token should be scoped to the one
+account/zone and the Worker/domain operations required by the workflow. The
+one-time migration from the externally managed GitHub Pages CNAME additionally
+requires Zone DNS Edit; that permission can be removed after the Custom Domain
+owns the hostname. Cloudflare's documentation recommends an account- and
+zone-scoped token rather than a broadly reusable credential.
 
 `wrangler deploy` creates a new version and immediately deploys it to 100% of
 traffic. This is appropriate here because the asset graph is internally coupled:
@@ -296,24 +299,29 @@ deployment workflows, not on the presence of Worker-script logs.
 ### Phase 3: hostname cutover
 
 Cloudflare cannot attach a Custom Domain while leaving an externally managed
-CNAME in place. Wrangler 4.135's non-interactive Custom Domain deployment sends
-`override_existing_dns_record: true`, so the verified deployment workflow can
-replace the conflicting GitHub Pages record through the Workers control plane
-instead of performing a separate general-purpose DNS deletion.
+CNAME in place. Production attempts with Wrangler 4.135, both in GitHub Actions
+and through local interactive OAuth, returned Cloudflare error `100117` even
+though Wrangler requested the existing-record override. The cutover must
+therefore remove the exact legacy CNAME through the DNS API immediately before
+the first Custom Domain deployment. The operation is deliberately narrow and
+must refuse any unexpected record type or target.
 
 1. Freeze unrelated deployments for the short cutover window.
 2. Confirm the tested commit and artifact identifiers.
-3. Deploy the verified Worker configuration with the Custom Domain. Wrangler asks
-   Cloudflare to replace the conflicting CNAME, create the Worker-owned record,
-   and manage the certificate.
-4. Run the production P0 smoke matrix immediately, including direct nested-route
+3. Back up and remove only the exact
+   `style.moesegfault.dev -> kleedaisuki.github.io` CNAME.
+4. Deploy the verified Worker configuration with the Custom Domain. Cloudflare
+   creates the Worker-owned record and manages the certificate.
+5. If deployment fails before a replacement record exists, restore the backed-up
+   legacy CNAME; never overwrite a record created by a concurrent operation.
+6. Run the production P0 smoke matrix immediately, including direct nested-route
    reloads and exact-version/skill checksum verification.
-5. Keep the previous GitHub Pages deployment intact for a defined observation
+7. Keep the previous GitHub Pages deployment intact for a defined observation
    window; remove the repository `CNAME` file only after the migration is accepted.
 
 The previous GitHub Pages deployment remains available as a rollback origin even
-though the canonical hostname moves. If Custom Domain attachment fails before the
-replacement is accepted, the conflicting record remains unchanged; after a
+though the canonical hostname moves. The DNS delete-to-attach interval is kept
+inside one deployment job and guarded by the conditional restore above. After a
 successful attachment, use Workers deployment rollback for content failures and
 restore the exported CNAME only for a routing-level rollback.
 

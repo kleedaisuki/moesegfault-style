@@ -312,8 +312,11 @@ pnpm workers:dry-run
 CI 会构建并验证版本资源、Skill 下载物、单元测试、浏览器/视觉回归以及 Wrangler dry-run，然后把
 同一份已验证产物交给部署 workflow。GitHub `production` environment 需要配置：
 
-- Environment secret `CLOUDFLARE_API_TOKEN`：仅授予目标账户与 zone 的 Workers 部署权限；
+- Repository secret `CLOUDFLARE_API_TOKEN`：授予目标账户的 Workers Scripts Edit，以及
+  `moesegfault.dev` 的 Workers Routes Edit；首次从旧 GitHub Pages CNAME 切换时还需要 DNS Edit，
+  切换完成后可移除该额外权限；
 - Repository variable `CLOUDFLARE_ACCOUNT_ID`：目标 Cloudflare account ID。
+- Repository variable `CLOUDFLARE_ZONE_ID`：`moesegfault.dev` 的 zone ID，用于限定首次 DNS 切换。
 
 自定义域名 `style.moesegfault.dev` 声明在 Wrangler 配置中。紧急回退可从 Workers deployment history
 恢复前一版本；源站切换期间也可把 DNS 恢复到原 GitHub Pages CNAME。
