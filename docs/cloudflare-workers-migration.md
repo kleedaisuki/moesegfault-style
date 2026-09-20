@@ -295,25 +295,27 @@ deployment workflows, not on the presence of Worker-script logs.
 
 ### Phase 3: hostname cutover
 
-Cloudflare cannot create a Custom Domain on a hostname with an existing CNAME.
-The observed GitHub Pages CNAME must therefore be removed before the first
-production deploy that attaches `style.moesegfault.dev`.
+Cloudflare cannot attach a Custom Domain while leaving an externally managed
+CNAME in place. Wrangler 4.135's non-interactive Custom Domain deployment sends
+`override_existing_dns_record: true`, so the verified deployment workflow can
+replace the conflicting GitHub Pages record through the Workers control plane
+instead of performing a separate general-purpose DNS deletion.
 
 1. Freeze unrelated deployments for the short cutover window.
 2. Confirm the tested commit and artifact identifiers.
-3. Remove the existing `style` CNAME from the Cloudflare zone.
-4. Deploy the verified Worker configuration with the Custom Domain. Cloudflare
-   creates the replacement DNS record and manages the certificate.
-5. Run the production P0 smoke matrix immediately, including direct nested-route
+3. Deploy the verified Worker configuration with the Custom Domain. Wrangler asks
+   Cloudflare to replace the conflicting CNAME, create the Worker-owned record,
+   and manage the certificate.
+4. Run the production P0 smoke matrix immediately, including direct nested-route
    reloads and exact-version/skill checksum verification.
-6. Keep the previous GitHub Pages deployment intact for a defined observation
+5. Keep the previous GitHub Pages deployment intact for a defined observation
    window; remove the repository `CNAME` file only after the migration is accepted.
 
-This sequence has a small control-plane cutover interval between CNAME deletion
-and Custom Domain readiness. If the project later establishes a strict zero-
-downtime requirement, a temporary proxied CNAME plus Worker Route can bridge the
-transition, but that is not the preferred steady state and adds an external-origin
-fallback that this static site does not otherwise need.
+The previous GitHub Pages deployment remains available as a rollback origin even
+though the canonical hostname moves. If Custom Domain attachment fails before the
+replacement is accepted, the conflicting record remains unchanged; after a
+successful attachment, use Workers deployment rollback for content failures and
+restore the exported CNAME only for a routing-level rollback.
 
 ## Rollback and destructive boundaries
 
