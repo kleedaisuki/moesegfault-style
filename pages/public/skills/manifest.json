@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "skills": [
+    {
+      "name": "moesegfault-style",
+      "sourceVersion": "cf28f3017eb254005223829ca71549049227ee6f6b83a6fc97d190f0edb863ff",
+      "entrypoint": "/skills/moesegfault-style/SKILL.md",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "url": "/skills/moesegfault-style/SKILL.md",
+          "size": 3335,
+          "sha256": "0710980db19c602248c1c22e539cf860db916e82b7b6045e65fbd9dcb2476bbd"
+        },
+        {
+          "path": "agents/openai.yaml",
+          "url": "/skills/moesegfault-style/agents/openai.yaml",
+          "size": 218,
+          "sha256": "b39bb630274d275ed3a4f255587d4fe8b371d0470129438bbe0d4def61947288"
+        },
+        {
+          "path": "references/capabilities.md",
+          "url": "/skills/moesegfault-style/references/capabilities.md",
+          "size": 3732,
+          "sha256": "5b38cdd033a1c8bb865106e0a109efb2434560f3fc70af3c448d29943cf3945f"
+        },
+        {
+          "path": "references/integration.md",
+          "url": "/skills/moesegfault-style/references/integration.md",
+          "size": 5147,
+          "sha256": "97ef611e8a55998e781b7bb250cbcf139832ec97fe91cc1578f46142e405851b"
+        }
+      ],
+      "archive": {
+        "format": "zip",
+        "url": "/skills/moesegfault-style.zip",
+        "size": 13056,
+        "sha256": "f07951e0b279d028ec478b42a0e8c781d66e1b7e564998e72a6919d56c0c93df",
+        "checksumUrl": "/skills/moesegfault-style.zip.sha256"
+      }
+    }
+  ]
+}

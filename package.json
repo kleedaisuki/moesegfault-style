@@ -8,18 +8,19 @@
     "node": ">=24.0.0"
   },
   "scripts": {
-    "build": "pnpm --filter @moesegfault/style build && pnpm --filter @moesegfault/pages build",
+    "build": "pnpm --filter @moesegfault/style build && pnpm skill:build && pnpm --filter @moesegfault/pages build",
     "build:library": "pnpm --filter @moesegfault/style build",
-    "build:pages": "pnpm --filter @moesegfault/pages build",
+    "build:pages": "pnpm skill:build && pnpm --filter @moesegfault/pages build",
     "dev": "pnpm --filter @moesegfault/pages dev",
     "format": "biome format --write .",
     "format:check": "biome format .",
     "lint": "biome lint .",
     "check": "pnpm build && pnpm test && pnpm lint && pnpm format:check",
-    "test": "pnpm --filter @moesegfault/style test && pnpm --filter @moesegfault/pages test && node --test scripts/cdn-lib.test.mjs",
+    "test": "pnpm --filter @moesegfault/style test && pnpm --filter @moesegfault/pages test && node --test scripts/cdn-lib.test.mjs scripts/build-skill-downloads.test.mjs",
     "test:e2e": "pnpm --filter @moesegfault/pages test:e2e",
     "cdn:build": "node scripts/build-cdn.mjs",
     "cdn:verify": "node scripts/verify-cdn.mjs",
+    "skill:build": "node scripts/build-skill-downloads.mjs",
     "release:verify-history": "node scripts/verify-release-history.mjs",
     "pack:check": "pnpm --filter @moesegfault/style pack:check"
   },

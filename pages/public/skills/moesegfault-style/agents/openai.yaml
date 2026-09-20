@@ -1,0 +1,4 @@
+interface:
+  display_name: "MoeSegfault Style"
+  short_description: "Build warm editorial interfaces with MoeSegfault Style"
+  default_prompt: "Use $moesegfault-style to apply MoeSegfault Style to this interface."

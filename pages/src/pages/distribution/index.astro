@@ -1,4 +1,6 @@
 ---
+import Button from "@moesegfault/style/astro/Button.astro";
+import Cluster from "@moesegfault/style/astro/Cluster.astro";
 import Container from "@moesegfault/style/astro/Container.astro";
 import CodeBlock from "../../components/CodeBlock.astro";
 import DocsLayout from "../../layouts/DocsLayout.astro";
@@ -36,6 +38,15 @@ const root = "https://style.moesegfault.dev";
             <tr><td>DTCG JSON</td><td><code>{root}/v0.1.2/tokens/tokens.dtcg.json</code></td><td>导入支持 DTCG 的设计或转换工具</td></tr>
           </tbody>
         </table>
+      </div>
+      <div class="callout">
+        <h3>给 Agent 的现成 Skill</h3>
+        <p>下载 ZIP 后直接放进 Agent 的技能目录；也可以先阅读入口文件，或通过清单核对文件与 SHA-256 摘要。</p>
+        <Cluster gap="0.65rem">
+          <Button href="/skills/moesegfault-style.zip" download="moesegfault-style.zip">下载 Agent Skill</Button>
+          <Button href="/skills/moesegfault-style/SKILL.md" variant="secondary">阅读 SKILL.md</Button>
+          <Button href="/skills/manifest.json" variant="ghost">查看技能清单</Button>
+        </Cluster>
       </div>
     </Container>
   </section>
