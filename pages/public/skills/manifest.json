@@ -3,7 +3,7 @@
   "skills": [
     {
       "name": "moesegfault-style",
-      "sourceVersion": "cf28f3017eb254005223829ca71549049227ee6f6b83a6fc97d190f0edb863ff",
+      "sourceVersion": "058e668b44c6697cf3aa65fe4417cac89ca2ee4cd7bcfcdc89abdb68e81edd27",
       "entrypoint": "/skills/moesegfault-style/SKILL.md",
       "files": [
         {
@@ -15,8 +15,8 @@
         {
           "path": "agents/openai.yaml",
           "url": "/skills/moesegfault-style/agents/openai.yaml",
-          "size": 218,
-          "sha256": "b39bb630274d275ed3a4f255587d4fe8b371d0470129438bbe0d4def61947288"
+          "size": 214,
+          "sha256": "60eee225bd9c50064ee710ef195003a0a0c26150a4ca64269c0df070008cb36c"
         },
         {
           "path": "references/capabilities.md",
@@ -34,8 +34,8 @@
       "archive": {
         "format": "zip",
         "url": "/skills/moesegfault-style.zip",
-        "size": 13056,
-        "sha256": "f07951e0b279d028ec478b42a0e8c781d66e1b7e564998e72a6919d56c0c93df",
+        "size": 13052,
+        "sha256": "40c2be1da1b6bb01d36aa2aab72a0ccb62bba6275f1ff71ab1f3b47b8764765b",
         "checksumUrl": "/skills/moesegfault-style.zip.sha256"
       }
     }

@@ -36,7 +36,7 @@ version newer than the declared version.
 | Lint and formatting | PASS | Biome lint checked 111 files; formatter checked 109 files; no errors. |
 | Package compatibility | PASS | `pack:check` produced the expected `@moesegfault/style@0.1.2` file inventory. |
 | Skill source/package | PASS | `quick_validate.py` passed for source and extracted download; archive has 4 source files and matches them by relative path and SHA-256. |
-| Skill reproducibility | PASS | After the final forward-test documentation revision, two builds produced SHA-256 `f07951e0b279d028ec478b42a0e8c781d66e1b7e564998e72a6919d56c0c93df`. |
+| Skill reproducibility | PASS | After the final forward-test revision and cross-platform LF normalization, repeated builds produced SHA-256 `40c2be1da1b6bb01d36aa2aab72a0ccb62bba6275f1ff71ab1f3b47b8764765b`. |
 | Worker dry run | PASS | Wrangler read 408 static files, found no bindings, and exited cleanly without publishing. |
 | Worker HTTP inventory | PASS | 130 local HTTP contracts across 3 exact releases, aliases, 10 site routes, skill files, GET/HEAD behavior, slash redirects, and a real 404 passed. |
 | Worker browser behavior | PASS | 59 Playwright tests passed against Wrangler itself; one forced-colors test was intentionally skipped for non-Chromium mobile. |

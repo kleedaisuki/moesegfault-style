@@ -1,0 +1,5 @@
+# Skill archives hash source bytes, so text must be identical on every checkout.
+# Skill 归档按源字节计算摘要，因此所有平台必须检出相同的文本换行。
+skills/** text eol=lf
+pages/public/skills/** text eol=lf
+pages/public/skills/*.zip binary
