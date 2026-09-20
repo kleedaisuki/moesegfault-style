@@ -4,7 +4,7 @@
 > 现有产品中提炼、重新实现的设计系统与组件库。
 
 [![CI](https://github.com/kleedaisuki/moesegfault-style/actions/workflows/ci.yml/badge.svg)](https://github.com/kleedaisuki/moesegfault-style/actions/workflows/ci.yml)
-[![Pages](https://github.com/kleedaisuki/moesegfault-style/actions/workflows/pages.yml/badge.svg)](https://github.com/kleedaisuki/moesegfault-style/actions/workflows/pages.yml)
+[![Deploy](https://github.com/kleedaisuki/moesegfault-style/actions/workflows/deploy.yml/badge.svg)](https://github.com/kleedaisuki/moesegfault-style/actions/workflows/deploy.yml)
 
 - 文档与 showcase（规范地址）：<https://style.moesegfault.dev>
 - 包名：`@moesegfault/style`
@@ -40,8 +40,10 @@ packages/style/
   scripts/             # Token/code generation
   dist/                # Generated package output (not hand-edited)
 pages/                  # Astro documentation + dogfooding showcase
+skills/                 # Agent-facing integration skill (source of truth)
 scripts/build-cdn.mjs   # Versioned static distribution builder
-.github/workflows/      # CI and GitHub Pages deployment
+wrangler.jsonc          # Cloudflare Workers Static Assets deployment
+.github/workflows/      # CI verification and Workers deployment
 ```
 
 工作区故意从单包与稳定子路径开始，避免过早制造多个包之间的发布依赖图。公共边界由
@@ -196,7 +198,7 @@ import {
 
 ## 远程静态资源
 
-GitHub Pages 同时承载便于普通 HTML 或无法安装 npm 包的消费方使用的静态资源。推荐锁定
+Cloudflare Workers Static Assets 同时承载便于普通 HTML 或无法安装 npm 包的消费方使用的静态资源。推荐锁定
 完整版本：
 
 ```html
@@ -229,13 +231,26 @@ https://style.moesegfault.dev/css/all.css
 - React/Astro 组件默认通过包管理器消费；远程分发重点是 CSS 与 token JSON，避免浏览器裸
   ESM 的 React runtime 解析与重复实例问题。
 
-### 这不是“强 CDN”
+### Agent Skill
 
-GitHub Pages 在这里是 **CDN-like 静态源站**，而不是带缓存控制、失效 API、服务等级协议
-（Service-Level Agreement, SLA）或强一致性的专业 CDN。项目无法为 Pages 响应配置理想的
-长期 `immutable` 缓存头；可变别名也可能短时间返回旧内容。对缓存策略、吞吐量或全球一致性
-有严格要求的生产系统，应使用精确版本 URL，并在需要时把同一 URL 契约迁移到对象存储与
-专业 CDN。
+面向编码 Agent 的 `moesegfault-style` skill 将接入路径、能力边界和视觉语法整理成渐进披露的
+说明，而不是复制完整 API 手册。可直接取得：
+
+```text
+https://style.moesegfault.dev/skills/moesegfault-style/SKILL.md
+https://style.moesegfault.dev/skills/moesegfault-style.zip
+https://style.moesegfault.dev/skills/moesegfault-style.zip.sha256
+https://style.moesegfault.dev/skills/manifest.json
+```
+
+ZIP 内保留标准的 `moesegfault-style/` 技能目录；manifest 提供源文件与归档的 SHA-256。仓库中的
+[`skills/moesegfault-style`](./skills/moesegfault-style) 是唯一事实源，静态下载物由构建脚本确定性生成。
+
+### 缓存边界
+
+Workers 静态资源由 Cloudflare 边缘网络分发。内容指纹的 `/_astro/*` 与精确版本 `/v<exact-semver>/*`
+可以长期缓存；`/latest/*`、无版本别名和 `/skills/*` 会随源码更新，因此必须重新验证。缓存并不改变
+版本语义：生产消费方仍应使用精确版本 URL，并把 manifest 校验视为发布契约的一部分。
 
 ## 视觉来源与提取边界
 
@@ -285,10 +300,23 @@ pnpm lint
 pnpm format:check
 pnpm pack:check
 pnpm test:e2e
+pnpm workers:dry-run
 ```
 
 `pnpm dev` 启动文档与 showcase。文档站直接使用 workspace library（dogfooding，自我验证），
 因此示例不是一套与真实包分离的“假组件”。更多协作说明见 [CONTRIBUTING.md](./CONTRIBUTING.md)。
+
+## Cloudflare Workers 部署
+
+`wrangler.jsonc` 将 `pages/dist` 作为纯静态资源部署；没有为静态请求增加 Worker 脚本或额外网络跳转。
+CI 会构建并验证版本资源、Skill 下载物、单元测试、浏览器/视觉回归以及 Wrangler dry-run，然后把
+同一份已验证产物交给部署 workflow。GitHub `production` environment 需要配置：
+
+- Environment secret `CLOUDFLARE_API_TOKEN`：仅授予目标账户与 zone 的 Workers 部署权限；
+- Repository variable `CLOUDFLARE_ACCOUNT_ID`：目标 Cloudflare account ID。
+
+自定义域名 `style.moesegfault.dev` 声明在 Wrangler 配置中。紧急回退可从 Workers deployment history
+恢复前一版本；源站切换期间也可把 DNS 恢复到原 GitHub Pages CNAME。
 
 ## 许可证
 

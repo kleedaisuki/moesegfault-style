@@ -5,3 +5,5 @@ packages:
 allowBuilds:
   esbuild: true
   sharp: true
+  # Wrangler 的本地运行时需要安装平台二进制。 / Wrangler local development needs its platform binary.
+  workerd: true

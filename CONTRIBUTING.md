@@ -15,7 +15,8 @@ pnpm dev
 ```
 
 不要手工编辑生成文件。设计令牌（Design Tokens）以 DTCG 源文件为单一事实来源，由构建
-脚本生成 CSS、JSON 和 TypeScript 输出。
+脚本生成 CSS、JSON 和 TypeScript 输出；`skills/` 是 Agent Skill 的事实源，
+`pages/public/skills/` 由 `pnpm skill:build` 生成。
 
 ## 变更边界
 
@@ -43,6 +44,7 @@ pnpm format:check
 ```bash
 pnpm pack:check  # package exports and tarball contents
 pnpm test:e2e    # rendered documentation/user journeys
+pnpm workers:dry-run # Cloudflare Workers static deployment bundle
 ```
 
 视觉变更至少检查浅色/深色、键盘焦点、窄屏和 `prefers-reduced-motion`。测试应复现真实失败
@@ -64,6 +66,6 @@ pnpm test:e2e    # rendered documentation/user journeys
 
 ## 发布说明
 
-维护者负责版本号、changelog、不可变 `/v<exact-semver>/` 资产和 GitHub Pages 发布。
+维护者负责版本号、changelog、不可变 `/v<exact-semver>/` 资产和 Cloudflare Workers 发布。
 当前没有 npm 自动发布流程；在 scope、registry 权限和 Trusted Publishing（可信发布）设置
 确认前，请勿提交包含长期 npm token 的 workflow。

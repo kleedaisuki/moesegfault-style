@@ -1,0 +1,23 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "moesegfault-style",
+  "compatibility_date": "2026-09-20",
+
+  // 仅开放版本化预览，避免 workers.dev 别名形成第二个规范站点。 / Keep version previews without creating a second canonical workers.dev site.
+  "workers_dev": false,
+  "preview_urls": true,
+
+  // 纯静态站不需要 Worker 脚本；资源优先路径避免无意义的计算调用。 / Static assets need no Worker script or needless compute hop.
+  "assets": {
+    "directory": "./pages/dist",
+    "html_handling": "auto-trailing-slash"
+  },
+
+  // Worker 是该子域的源站，因此使用 Custom Domain 而非源站代理 Route。 / The Worker is the origin, so use a Custom Domain rather than an origin-proxy Route.
+  "routes": [
+    {
+      "pattern": "style.moesegfault.dev",
+      "custom_domain": true
+    }
+  ]
+}

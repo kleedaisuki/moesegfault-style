@@ -4,6 +4,9 @@ dist/
 coverage/
 playwright-report/
 test-results/
+# 仓库内验证暂存与 Wrangler 本地状态 / Repository-local validation scratch and Wrangler state.
+.temp/
+.wrangler/
 *.tgz
 .DS_Store
 Thumbs.db

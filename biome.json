@@ -5,6 +5,8 @@
       "**",
       "!!**/dist",
       "!!**/.astro",
+      "!!**/.temp",
+      "!!**/.wrangler",
       "!!pages/public",
       "!!static-releases",
       "!!**/test-results",

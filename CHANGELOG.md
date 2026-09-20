@@ -1,5 +1,20 @@
 # Changelog / 更新记录
 
+## Unreleased / 未发布
+
+### Added / 新增
+
+- Added the `moesegfault-style` Agent Skill with deterministic ZIP, manifest, and checksum downloads.
+  新增 `moesegfault-style` Agent Skill，并提供可复现 ZIP、清单与校验和下载。
+
+### Changed / 变更
+
+- Migrated the documentation and static distribution origin from GitHub Pages to Cloudflare Workers Static Assets,
+  preserving the canonical host and public URL contracts. CI now gates deployment on browser/visual tests and a
+  Wrangler dry-run.
+  文档与静态分发源站从 GitHub Pages 迁移到 Cloudflare Workers Static Assets，规范域名与公开 URL
+  契约保持不变；CI 新增浏览器/视觉回归与 Wrangler dry-run 部署门禁。
+
 ## 0.1.2 — 2026-09-07
 
 ### Added / 新增

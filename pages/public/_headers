@@ -1,0 +1,14 @@
+# Public artifacts are intentionally reusable from package managers, examples, and agents.
+# 公共制品需要允许包管理器、示例站点与 Agent 跨域复用。
+/*
+  Access-Control-Allow-Origin: *
+
+# Astro fingerprints this directory, so deployed files can be cached permanently.
+# Astro 会为此目录中的文件生成内容指纹，因此已部署文件可永久缓存。
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Exact release directories are immutable; aliases and skill downloads keep revalidating.
+# 精确版本目录不可变；别名与 Skill 下载继续使用默认的重新验证策略。
+/v:release/*
+  Cache-Control: public, max-age=31536000, immutable
