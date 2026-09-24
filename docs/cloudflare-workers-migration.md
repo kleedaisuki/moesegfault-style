@@ -1,7 +1,8 @@
 # Cloudflare Workers static-site migration architecture
 
-Status: proposed production architecture
+Status: implemented and production-accepted
 Decision date: 2026-09-20
+Production acceptance date: 2026-09-24
 Scope: hosting and distribution only; this is not an independent security audit
 
 ## Executive decision
@@ -45,7 +46,7 @@ At the investigation snapshot, the repository has these relevant properties:
 | Site rendering | `pages/astro.config.mjs` uses `output: "static"` and canonical site `https://style.moesegfault.dev`. | No server-side Worker code is required. |
 | Deployable tree | `pages/dist` contains 355 files, about 7.0 MB total; its largest file is about 1.23 MB. | This is well below the documented Static Assets limits of 20,000 files on Workers Free (100,000 paid) and 25 MiB per file. |
 | Release data | `static-releases/v<semver>` is append-only and is mirrored into `pages/public`; root aliases such as `/latest`, `/css`, and `/tokens` are mutable. | Cache exact versions and mutable aliases differently; never create a second release store. |
-| Current DNS | On 2026-09-20, public DNS resolved `style.moesegfault.dev` as a CNAME to `kleedaisuki.github.io`, and live responses came from GitHub Pages. | The CNAME conflicts with a Worker Custom Domain and must be replaced during the cutover. |
+| Production DNS | On 2026-09-24, `style.moesegfault.dev` resolved to Cloudflare anycast addresses and responses came from Cloudflare Workers. | The former GitHub Pages CNAME has been replaced by the Worker Custom Domain. |
 | Existing path behavior | GitHub Pages redirects directory paths such as `/guides` to `/guides/`; generated `/latest/` and `/colors/` pages perform their own client redirect to an exact version. | Keep the generated pages, and use Static Assets' default directory-index handling. |
 | Existing cross-origin behavior | GitHub Pages currently returns `Access-Control-Allow-Origin: *`. | Retain wildcard CORS for the public artifact tree so font, JSON, CSS, and agent consumers do not regress. |
 
@@ -238,10 +239,10 @@ revisions. Store `CLOUDFLARE_API_TOKEN` as a GitHub repository or
 production-environment secret and `CLOUDFLARE_ACCOUNT_ID` as an environment
 variable; do not commit either value. The token should be scoped to the one
 account/zone and the Worker/domain operations required by the workflow. The
-one-time migration from the externally managed GitHub Pages CNAME additionally
-requires Zone DNS Edit; that permission can be removed after the Custom Domain
-owns the hostname. Cloudflare's documentation recommends an account- and
-zone-scoped token rather than a broadly reusable credential.
+completed one-time cutover used Zone DNS Edit to remove the legacy CNAME; normal
+deployments no longer contain that operation or require that permission.
+Cloudflare's documentation recommends an account- and zone-scoped token rather
+than a broadly reusable credential.
 
 `wrangler deploy` creates a new version and immediately deploys it to 100% of
 traffic. This is appropriate here because the asset graph is internally coupled:
@@ -298,6 +299,10 @@ deployment workflows, not on the presence of Worker-script logs.
 
 ### Phase 3: hostname cutover
 
+Completed on 2026-09-24 by GitHub Actions run `35498950311` (attempt 5).
+The deployment activated Worker version
+`9ff088a9-2ea9-44cf-bf4a-e3b8672c9bff` on the Custom Domain.
+
 Cloudflare cannot attach a Custom Domain while leaving an externally managed
 CNAME in place. Production attempts with Wrangler 4.135, both in GitHub Actions
 and through local interactive OAuth, returned Cloudflare error `100117` even
@@ -319,11 +324,10 @@ must refuse any unexpected record type or target.
 7. Keep the previous GitHub Pages deployment intact for a defined observation
    window; remove the repository `CNAME` file only after the migration is accepted.
 
-The previous GitHub Pages deployment remains available as a rollback origin even
-though the canonical hostname moves. The DNS delete-to-attach interval is kept
-inside one deployment job and guarded by the conditional restore above. After a
-successful attachment, use Workers deployment rollback for content failures and
-restore the exported CNAME only for a routing-level rollback.
+The cutover job guarded the DNS delete-to-attach interval with a conditional
+restore. After production acceptance, the one-time DNS mutation and restore steps
+were removed from the recurring deployment workflow, along with the repository
+`CNAME`. Workers deployment rollback is now the normal content rollback path.
 
 ## Rollback and destructive boundaries
 
@@ -421,9 +425,9 @@ architecture is accepted only when all of these hold:
 7. **Deployment** — same-SHA artifact download and production-environment
    `wrangler deploy`.
 8. **Preview and cutover** — Cloudflare version preview, DNS replacement, and P0
-   production validation.
-9. **Cleanup** — remove GitHub Pages-specific `CNAME`/documentation only after the
-   observation window.
+   production validation. Completed 2026-09-24.
+9. **Cleanup** — remove the one-time DNS mutation and GitHub Pages-specific
+   `CNAME` after production acceptance. Completed 2026-09-24.
 
 Each slice has a single primary owner and a narrow write region. The hosting slice
 must not refactor style components; the skill slice must not alter existing
