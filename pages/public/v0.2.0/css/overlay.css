@@ -1,0 +1,128 @@
+@layer moe.tokens, moe.reset, moe.foundation, moe.components, moe.utilities;
+
+@layer moe.components {
+  .moe-dialog {
+    width: min(30rem, calc(100vw - 2 * var(--moe-space-4)));
+    max-height: calc(100dvh - 2 * var(--moe-space-5));
+    padding: 0;
+    overflow: auto;
+    border: 1px solid var(--moe-line-strong);
+    border-radius: var(--moe-radius-lg);
+    color: var(--moe-text);
+    background: var(--moe-surface-strong);
+    box-shadow: var(--moe-shadow-lg);
+  }
+  .moe-dialog::backdrop {
+    background: var(--moe-overlay);
+  }
+  /* 进场用弹簧，退场只求利落；退场期间不拦截点击。Enter on a spring, leave briskly, and never intercept clicks while leaving. */
+  @supports (transition-behavior: allow-discrete) {
+    .moe-dialog,
+    .moe-dialog::backdrop {
+      opacity: 0;
+      pointer-events: none;
+      transition:
+        opacity var(--moe-exit),
+        scale var(--moe-exit),
+        translate var(--moe-exit),
+        overlay var(--moe-exit) allow-discrete,
+        display var(--moe-exit) allow-discrete;
+    }
+    .moe-dialog {
+      scale: 0.97;
+      translate: 0 0.5rem;
+    }
+    .moe-dialog[open],
+    .moe-dialog[open]::backdrop {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .moe-dialog[open] {
+      scale: 1;
+      translate: 0;
+      transition:
+        opacity var(--moe-exit),
+        scale var(--moe-spring),
+        translate var(--moe-spring);
+    }
+    @starting-style {
+      .moe-dialog[open],
+      .moe-dialog[open]::backdrop {
+        opacity: 0;
+      }
+      .moe-dialog[open] {
+        scale: 0.94;
+        translate: 0 1rem;
+      }
+    }
+  }
+  .moe-dialog__header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: var(--moe-space-1) var(--moe-space-4);
+    padding: var(--moe-space-5) var(--moe-space-5) 0;
+  }
+  .moe-dialog__title {
+    margin: 0;
+    font-size: var(--moe-font-size-lg);
+  }
+  .moe-dialog__description {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: var(--moe-text-soft);
+    font-size: var(--moe-font-size-sm);
+  }
+  .moe-dialog__body {
+    padding: var(--moe-space-4) var(--moe-space-5) var(--moe-space-5);
+  }
+  .moe-dialog__footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--moe-space-2);
+    padding: var(--moe-space-4) var(--moe-space-5);
+    border-block-start: 1px solid var(--moe-line);
+    background: var(--moe-surface-sunken);
+  }
+
+  .moe-tooltip {
+    position: relative;
+    display: inline-flex;
+  }
+  .moe-tooltip__bubble {
+    position: absolute;
+    z-index: 50;
+    inset-block-end: calc(100% + 6px);
+    inset-inline-start: 50%;
+    width: max-content;
+    max-width: 16rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--moe-radius-xs);
+    color: var(--moe-background);
+    background: var(--moe-heading);
+    font-size: var(--moe-font-size-xs);
+    line-height: 1.45;
+    opacity: 0;
+    visibility: hidden;
+    scale: 0.94;
+    transform-origin: 50% 100%;
+    translate: -50% 0.25rem;
+    transition:
+      opacity var(--moe-motion-fast) var(--moe-motion-ease-standard),
+      visibility var(--moe-motion-fast),
+      scale var(--moe-spring),
+      translate var(--moe-spring);
+  }
+  .moe-tooltip[data-side="bottom"] > .moe-tooltip__bubble {
+    inset-block: calc(100% + 6px) auto;
+    transform-origin: 50% 0;
+    translate: -50% -0.25rem;
+  }
+  .moe-tooltip:is(:hover, :focus-within):not([data-dismissed]) > .moe-tooltip__bubble {
+    opacity: 1;
+    visibility: visible;
+    scale: 1;
+    translate: -50% 0;
+  }
+}

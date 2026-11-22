@@ -1,0 +1,79 @@
+---
+import Notice from "@moesegfault/style/astro/Notice.astro";
+import CodeBlock from "../components/CodeBlock.astro";
+import CloverField from "../components/CloverField.astro";
+import DocsLayout from "../layouts/DocsLayout.astro";
+import { pinned, type SiteLocale } from "../lib/site";
+
+interface Props {
+  locale?: SiteLocale;
+}
+const { locale = "zh-CN" } = Astro.props;
+const en = locale === "en";
+---
+
+<DocsLayout
+  title={en ? "Guides" : "接入"}
+  description={en ? "Use moeSegFault Style with plain HTML, React, and Astro." : "在纯 HTML、React 与 Astro 中接入 moeSegFault Style。"}
+  currentPath={en ? "/en/guides/" : "/guides/"}
+  locale={locale}
+>
+  <header class="page-intro pad">
+    <h1>{en ? "Start with one line" : "从一行开始"}</h1>
+    <CloverField />
+  </header>
+
+  <section class="section" aria-labelledby="cdn-title">
+    <div class="pad">
+      <div class="section__head"><h2 id="cdn-title">{en ? "Plain HTML" : "纯 HTML"}</h2></div>
+      <CodeBlock
+        language="html"
+        label="index.html"
+        code={`<!doctype html>\n<html lang="${locale}" data-moe-theme="auto">\n  <head>\n    <link rel="stylesheet" href="${pinned("css/all.css")}">\n    <link rel="stylesheet" href="${pinned("css/fonts.css")}">\n  </head>\n  <body>\n    <button class="moe-button">Deploy</button>\n    <button class="moe-button" data-variant="secondary">Cancel</button>\n  </body>\n</html>`}
+      />
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="install-title">
+    <div class="pad">
+      <div class="section__head"><h2 id="install-title">{en ? "React 19 and Astro" : "React 19 与 Astro"}</h2></div>
+      <div class="split">
+        <CodeBlock language="tsx" label="src/App.tsx" code={`import "@moesegfault/style/all.css";\nimport "@moesegfault/style/fonts.css";\nimport { Button, Field, Input } from "@moesegfault/style/react";\n\nexport function App() {\n  return (\n    <Field label="Project" hint="Lowercase only">\n      <Input name="project" />\n      <Button>Create</Button>\n    </Field>\n  );\n}`} />
+        <CodeBlock language="astro" label="src/pages/index.astro" code={`---\nimport "@moesegfault/style/all.css";\nimport { Button, Icon, Panel } from "@moesegfault/style/astro";\n---\n<Panel title="status">\n  <Button href="/start">\n    Start <Icon slot="trailing" name="arrow-right" />\n  </Button>\n</Panel>`} />
+      </div>
+      <Notice>
+        {en ? "Not on a registry yet. Install from Git or a packed tarball." : "尚未发布到 registry，请从 Git 或 tarball 安装。"}
+      </Notice>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="layers-title">
+    <div class="pad">
+      <div class="section__head"><h2 id="layers-title">{en ? "Layered CSS" : "分层 CSS"}</h2></div>
+      <div class="split">
+        <CodeBlock language="css" label="app.css" code={`@import "@moesegfault/style/tokens.css";\n@import "@moesegfault/style/foundation.css";\n@import "@moesegfault/style/components.css";`} />
+        <CodeBlock language="css" label="brand.css" code={`:root {\n  --moe-action: #0b6b4f;\n  --moe-radius-md: 4px;\n}`} />
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="upgrade-title">
+    <div class="pad">
+      <div class="section__head"><h2 id="upgrade-title">{en ? "Upgrading from 0.1" : "从 0.1 升级"}</h2></div>
+      <div class="split">
+        <CodeBlock language="css" label="compat.css" code={`:root {\n  --moe-radius-sm: 10px;\n  --moe-radius-md: 18px;\n  --moe-radius-lg: 26px;\n  --moe-action: var(--moe-color-coral-700);\n  --moe-accent: var(--moe-color-coral-600);\n}`} />
+        <CodeBlock language="html" label="index.html" code={`<link rel="stylesheet"\n  href="https://style.moesegfault.dev/v0.1.2/css/all.css">`} />
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="rich-text-title" style="border-block-end: 0">
+    <div class="pad">
+      <div class="section__head"><h2 id="rich-text-title">Markdown &amp; TeX</h2></div>
+      <div class="split">
+        <CodeBlock language="tsx" label="notes.tsx" code={"import { Markdown, Math } from \"@moesegfault/style/react/rich-text\";\n\nconst note = String.raw`Euler: $e^{i\\pi}+1=0$`;\n\n<Markdown content={note} />;\n<Math tex={String.raw`\\sum_{k=1}^{n} k`} display />;"} />
+        <CodeBlock language="astro" label="notes.astro" code={"---\nimport { Markdown, Math } from \"@moesegfault/style/astro\";\nconst note = \"## Notes\\n\\nA short paragraph.\";\n---\n<Markdown content={note} />\n<Math tex={String.raw`E = mc^2`} display />"} />
+      </div>
+    </div>
+  </section>
+</DocsLayout>

@@ -1,0 +1,179 @@
+@layer moe.tokens, moe.reset, moe.foundation, moe.components, moe.utilities;
+
+/* 本地可托管字体，无 CDN 请求；通过变量替换。Self-hostable fonts, no CDN requests; override with a custom property. */
+@layer moe.components {
+  .moe-code-block {
+    --moe-code-background: #fffdf9;
+    --moe-code-foreground: #3d2823;
+    --moe-code-comment: #7a6459;
+    --moe-code-keyword: #b3202b;
+    --moe-code-string: #2b6b3f;
+    --moe-code-number: #8a5208;
+    --moe-code-title: #8b2f6b;
+    --moe-code-attribute: #1f6376;
+    min-width: 0;
+    max-width: 100%;
+    margin: 0;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid var(--moe-line);
+    border-radius: var(--moe-radius-md);
+    color: var(--moe-code-foreground);
+    background: var(--moe-code-background);
+  }
+
+  /* 显式深色与系统自动主题共享色板。Explicit dark and system-auto modes share a palette. */
+  :root[data-moe-theme="dark"] .moe-code-block {
+    --moe-code-background: #100708;
+    --moe-code-foreground: #f3e6d8;
+    --moe-code-comment: #b79d90;
+    --moe-code-keyword: #ff8d80;
+    --moe-code-string: #a5dcae;
+    --moe-code-number: #f5cd63;
+    --moe-code-title: #ffadc9;
+    --moe-code-attribute: #9fd3dc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-moe-theme="light"]):not([data-moe-theme="dark"]) .moe-code-block {
+      --moe-code-background: #100708;
+      --moe-code-foreground: #f3e6d8;
+      --moe-code-comment: #b79d90;
+      --moe-code-keyword: #ff8d80;
+      --moe-code-string: #a5dcae;
+      --moe-code-number: #f5cd63;
+      --moe-code-title: #ffadc9;
+      --moe-code-attribute: #9fd3dc;
+    }
+  }
+  .moe-code-block__header {
+    display: flex;
+    min-height: 2.5rem;
+    align-items: center;
+    gap: var(--moe-space-3);
+    padding-inline: var(--moe-space-4);
+    border-block-end: 1px solid var(--moe-line);
+    background: var(--moe-hover);
+    font-family: var(--moe-font-family-mono);
+    font-size: var(--moe-font-size-xs);
+  }
+  .moe-code-block__title {
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .moe-code-block__language {
+    color: var(--moe-code-comment);
+  }
+  .moe-code-block__copy {
+    margin-inline-end: -0.5rem;
+    min-height: calc(var(--moe-control-sm) - 2px);
+    padding: 0 0.5rem;
+    border: 1px solid transparent;
+    border-radius: calc(var(--moe-radius-sm) - 2px);
+    color: inherit;
+    background: transparent;
+    font: inherit;
+    cursor: pointer;
+  }
+  .moe-code-block__copy:hover {
+    border-color: var(--moe-line);
+    background: var(--moe-surface-strong);
+  }
+  .moe-code-block__copy[hidden] {
+    display: none;
+  }
+  .moe-code-block__pre {
+    margin: 0;
+    /* 行高由 pre 决定，避免继承正文 strut。The pre sets line height so the body strut never leaks in. */
+    font-size: 0.8125rem;
+    line-height: 1.7;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    padding: var(--moe-space-4);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--moe-line-strong) transparent;
+    tab-size: 2;
+  }
+  .moe-code-block__code {
+    padding: 0;
+    border: 0;
+    color: inherit;
+    background: transparent;
+    font-family: var(--moe-code-font-family, var(--moe-font-family-mono));
+    font-size: inherit;
+    font-variant-ligatures: none;
+    line-height: inherit;
+    white-space: pre;
+  }
+  .moe-code-block[data-wrap] .moe-code-block__code {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .moe-code-block__pre:focus-visible {
+    outline: 2px solid var(--moe-focus);
+    outline-offset: -2px;
+  }
+  .moe-code-block__copy:focus-visible {
+    outline: 2px solid var(--moe-focus);
+    outline-offset: 1px;
+  }
+  /* 反馈浮在代码框内，不推动布局。Feedback floats inside the frame without shifting layout. */
+  .moe-code-block__status {
+    position: absolute;
+    inset: auto var(--moe-space-2) var(--moe-space-2) auto;
+    max-width: calc(100% - 2 * var(--moe-space-2));
+    padding: 0.125rem 0.5rem;
+    border-radius: var(--moe-radius-xs);
+    color: var(--moe-background);
+    background: var(--moe-heading);
+    font-size: var(--moe-font-size-xs);
+    pointer-events: none;
+  }
+  .moe-code-block__status:empty {
+    padding: 0;
+  }
+  .moe-code-block :is(.hljs-comment, .hljs-quote) {
+    color: var(--moe-code-comment);
+    font-style: italic;
+  }
+  .moe-code-block :is(.hljs-keyword, .hljs-selector-tag, .hljs-tag, .hljs-name) {
+    color: var(--moe-code-keyword);
+  }
+  .moe-code-block :is(.hljs-string, .hljs-regexp, .hljs-addition) {
+    color: var(--moe-code-string);
+  }
+  .moe-code-block :is(.hljs-number, .hljs-literal, .hljs-built_in, .hljs-symbol) {
+    color: var(--moe-code-number);
+  }
+  .moe-code-block :is(.hljs-title, .hljs-section, .hljs-selector-class) {
+    color: var(--moe-code-title);
+  }
+  .moe-code-block :is(.hljs-attr, .hljs-attribute, .hljs-variable, .hljs-meta, .hljs-property) {
+    color: var(--moe-code-attribute);
+  }
+  .moe-code-block .hljs-deletion {
+    color: var(--moe-code-keyword);
+    text-decoration: line-through;
+  }
+  .moe-code-block .hljs-emphasis {
+    font-style: italic;
+  }
+  .moe-code-block .hljs-strong {
+    font-weight: 700;
+  }
+  @media (forced-colors: active) {
+    .moe-code-block {
+      border-color: CanvasText;
+      box-shadow: none;
+    }
+    .moe-code-block__copy {
+      border-color: ButtonText;
+    }
+  }
+}

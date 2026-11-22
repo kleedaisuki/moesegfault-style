@@ -11,8 +11,8 @@ describe("Icon", () => {
   });
 
   it("exposes meaningful names and native dimensions", () => {
-    render(<Icon name="brand" title="MoeSegfault" size={48} width={64} />);
-    expect(screen.getByRole("img", { name: "MoeSegfault" })).toHaveAttribute("width", "64");
+    render(<Icon name="brand" title="moeSegFault" size={48} width={64} />);
+    expect(screen.getByRole("img", { name: "moeSegFault" })).toHaveAttribute("width", "64");
     expect(screen.getByRole("img")).toHaveAttribute("height", "48");
   });
 

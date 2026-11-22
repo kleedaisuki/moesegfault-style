@@ -10,78 +10,67 @@ interface Props {
 const { locale = "zh-CN" } = Astro.props;
 const en = locale === "en";
 const content = en
-  ? String.raw`### A small note from the workbench
+  ? String.raw`### Coverage of a pinned release
 
-A useful note can hold **an idea**, a little code, and a proof. Inline math such as $e^{i\pi}+1=0$ stays in the sentence.
+A formula such as $e^{i\pi}+1=0$ stays inside its sentence, and **emphasis** stays restrained.
 
-> Leave room for the next thought. A first draft does not need to be a final answer.
+> A pinned URL is a contract: its bytes never change.
 
-- [x] Keep the paper and berry palette
-- [x] Set equations beside the words
-- [ ] Write the next page
+- [x] Keep the 0.1 variables working
+- [x] Typeset Markdown math with one KaTeX version
+- [ ] Publish the package to a registry
 
-| Material | A place for it |
+| Source | Good for |
 | :-- | :-- |
 | Markdown | Notes, links, and checklists |
-| TeX | Derivations and mathematical ideas |
-
-A finite sum, with enough space to read:
+| TeX | Derivations |
 
 $$
 \sum_{k=1}^{n} k = \frac{n(n+1)}{2}
 $$
 
-Read the [integration guide](/en/guides/) when you are ready to take it home.
+Continue with the [integration guide](/en/guides/).
 
 ~~~ts
-const draft = { theme: "warm-paper", ready: true };
+const release = { version: "0.2.0", pinned: true };
 ~~~
 `
-  : String.raw`### 工作台上的一页随记
+  : String.raw`### 固定版本的覆盖范围
 
-一张便笺，可以放下**一个想法**、几行代码，也可以认真写完一段推导。行内公式 $e^{i\pi}+1=0$ 就留在句子里，不必另起一页。
+行内公式 $e^{i\pi}+1=0$ 留在句子里，**强调**保持克制。
 
-> 给下一句话留一点空白。初稿不必急着成为定稿。
+> 固定地址就是契约：它的字节不会再变。
 
-- [x] 留住暖纸与莓红
-- [x] 让公式和文字坐在一起
-- [ ] 写下下一页
+- [x] 0.1 的变量继续可用
+- [x] Markdown 公式统一使用一个 KaTeX 版本
+- [ ] 把包发布到 registry
 
-| 材料 | 适合放在哪里 |
+| 来源 | 适合 |
 | :-- | :-- |
-| Markdown | 笔记、链接与待办清单 |
-| TeX | 推导过程与数学想法 |
-
-一个有限求和，留出足够的阅读空间：
+| Markdown | 笔记、链接与清单 |
+| TeX | 推导过程 |
 
 $$
 \sum_{k=1}^{n} k = \frac{n(n+1)}{2}
 $$
 
-想带回自己的项目，可以翻开[接入指南](/guides/)。
+接下来阅读[接入指南](/guides/)。
 
 ~~~ts
-const draft = { theme: "warm-paper", ready: true };
+const release = { version: "0.2.0", pinned: true };
 ~~~
 `;
 const longFormula = String.raw`\underbrace{1 + 2 + 3 + \cdots + n}_{\text{ascending}} + \underbrace{n + (n-1) + (n-2) + \cdots + 1}_{\text{descending}} = \underbrace{(n+1) + (n+1) + \cdots + (n+1)}_{n\text{ pairs}} = n(n+1)`;
 ---
 
-<section class="specimen rich-text-specimen" id="rich-text" data-testid="v012-rich-content" aria-labelledby="rich-text-title">
-  <div class="specimen-heading">
-    <div>
-      <p class="eyebrow">07 / Notes, proofs, and little discoveries</p>
-      <h2 id="rich-text-title">{en ? "A page for words and equations." : "文字与公式，共用一张好纸。"}</h2>
-    </div>
+<section class="specimen" id="rich-text" data-testid="specimen-rich-text" aria-labelledby="rich-text-title">
+  <div class="specimen__head">
+    <h2 id="rich-text-title">Markdown &amp; TeX</h2>
   </div>
-  <p>{en ? "Markdown handles the structure; TeX sets the mathematics. This note is rendered by Astro before it reaches your browser—no client-side rendering step is needed." : "Markdown 整理层次，TeX 安放公式。这一页由 Astro 在服务端完成排版，浏览器无需等待客户端渲染。"}</p>
-  <article class="rich-text-paper" aria-label={en ? "Rendered Markdown and TeX note" : "Markdown 与 TeX 排版便笺"}>
+  <article class="stage" aria-label={en ? "Rendered Markdown and TeX" : "Markdown 与 TeX 排版示例"}>
     <Markdown content={content} />
   </article>
-  <div class="rich-text-equation">
-    <h3>{en ? "A long derivation stays on its own line." : "推导再长，也不把纸面撑开。"}</h3>
-    <p>{en ? "This standalone TeX specimen scrolls horizontally on narrow screens. The rest of the page stays put." : "独立 TeX 组件在窄屏内横向滚动，长公式留在自己的区域，正文照常阅读。"}</p>
+  <div class="stage">
     <Formula tex={longFormula} display />
   </div>
-  <p class="material-caption">{en ? "GFM tables and task lists, inline and display math. Raw HTML is disabled by default; Markdown is content, not a place to run scripts." : "支持 GFM（GitHub Flavored Markdown）表格、任务列表，以及行内与块级公式。默认不解析原始 HTML：内容负责表达，不负责执行脚本。"}</p>
 </section>

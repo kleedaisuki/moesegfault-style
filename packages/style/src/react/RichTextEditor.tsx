@@ -8,6 +8,7 @@ import type { EditorView } from "@tiptap/pm/view";
 import { useEffect, useId, useMemo, useRef, useState, type ReactElement } from "react";
 import { actions } from "../editor/actions.js";
 import { isSafeEditorUrl, supportsVisualEditing } from "../editor/markdown.js";
+import { Icon } from "./Icon.js";
 import { Markdown } from "./Markdown.js";
 import { mergeClassNames } from "./utils.js";
 
@@ -272,7 +273,7 @@ export function RichTextEditor({
                   if (editor && !locked) action.run(editor);
                 }}
               >
-                {action.text}
+                <Icon name={action.icon} size={16} />
               </button>
             ))}
             <button
@@ -287,7 +288,7 @@ export function RichTextEditor({
                 setLinkError(false);
               }}
             >
-              ↗
+              <Icon name="link" size={16} />
             </button>
           </fieldset>
           {linkOpen && (
@@ -353,11 +354,6 @@ export function RichTextEditor({
           aria-label={locale === "zh" ? "文稿预览" : "Document preview"}
         />
       )}
-      <footer className="moe-editor__footer">
-        {locale === "zh"
-          ? "以 Markdown 留存灵感 · 视觉编辑会规范化标记；表格单元格为单行，Tab 切换，多行粘贴合并为空格"
-          : "Keep ideas in Markdown · Visual edits normalize formatting. Table cells are single-line; Tab navigates, pasted line breaks become spaces."}
-      </footer>
       {name && <input type="hidden" name={name} value={source} disabled={disabled} />}
     </section>
   );

@@ -1,28 +1,5 @@
 ---
-import Container from "@moesegfault/style/astro/Container.astro";
-import { ComponentGallery } from "../../components/ComponentGallery";
-import CodeBlock from "../../components/CodeBlock.astro";
-import RichTextGallery from "../../components/RichTextGallery.astro";
-import { EditorGallery } from "../../components/EditorGallery";
-import DocsLayout from "../../layouts/DocsLayout.astro";
+import ComponentsView from "../../views/ComponentsView.astro";
 ---
 
-<DocsLayout title="组件 Showcase" description="暖纸、透光玻璃、克制动效与丰富对话：MoeSegFault Style v0.1.2 组件展示。" currentPath="/components/">
-  <header class="page-intro"><Container>
-    <p class="kicker">COMPONENTS / v0.1.2</p>
-    <h1>熟悉的温度，<br />新一层光。</h1>
-    <p class="lede">窗后是若隐若现的笔记，纸上是写到一半的推导，旁边留着一段对话。试试这些新零件：暖纸、墨色与莓红都还在，细节多了一点。</p>
-    <div class="showcase-index" aria-label="展示目录"><a href="#glass">毛玻璃</a><a href="#motion">轻量动效</a><a href="#icons">祖传图标</a><a href="#messages">丰富消息</a><a href="#code">代码高亮</a><a href="#rich-text">Markdown 与 TeX</a><a href="#editor">富文本编辑器</a></div>
-  </Container></header>
-  <section class="section section-tint" aria-label="组件展示"><Container>
-    <ComponentGallery client:load />
-    <section class="specimen" id="code" data-testid="v012-code" aria-labelledby="code-title" style="margin-top: 1.25rem">
-      <div class="specimen-heading"><div><p class="eyebrow">06 / Code, in its best light</p><h2 id="code-title">为每一行，找到好光线。</h2></div></div>
-      <p>代码高亮、适合阅读的等宽字体与明暗独立配色。试试右上角切换主题；长行留在代码框内滚动，不挤压页面。</p>
-      <CodeBlock language="tsx" label="React · composition.tsx" code={`import { GlassCard, Icon, MessageBubble } from "@moesegfault/style/react";\nimport "@moesegfault/style/all.css";\n\nexport function Workshop() {\n  return (\n    <GlassCard tone="warm">\n      <Icon name="sparkle" size={24} />\n      <MessageBubble author="Moe" tone="soft">\n        A little light, a little less noise.\n      </MessageBubble>\n    </GlassCard>\n  );\n}`} />
-      <p class="material-caption">支持键盘聚焦滚动与复制。未知语言仍按纯文本安全显示，不把代码当作 HTML 执行。</p>
-    </section>
-    <RichTextGallery />
-    <EditorGallery client:visible />
-  </Container></section>
-</DocsLayout>
+<ComponentsView />

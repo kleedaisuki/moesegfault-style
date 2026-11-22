@@ -5,14 +5,16 @@ import CodeBlock from "@moesegfault/style/astro/CodeBlock.astro";
 interface Props {
   /** 原始代码。Raw code. */
   code: string;
-  /** 代码标题。Code caption. */
-  label?: string;
+  /** 文件名，同时说明语言。Filename, which also names the language. */
+  label: string;
   /** 高亮语法。Highlight grammar. */
   language?: string;
+  /** 是否提供复制按钮。Whether to provide a copy button. */
+  copyable?: boolean;
 }
 
-const { code, label = "代码示例", language = "astro" } = Astro.props;
+const { code, label, language = "astro", copyable = true } = Astro.props;
 const english = Astro.url.pathname.startsWith("/en/");
 ---
 
-<CodeBlock class="code-block" code={code} label={label} language={language} copyLabel={english ? "Copy" : "复制"} copiedLabel={english ? "Copied" : "已复制"} copyErrorLabel={english ? "Copy failed; select code manually" : "复制失败，请选择代码复制"} />
+<CodeBlock code={code} copyable={copyable} filename={label} language={language} copyLabel={english ? "Copy" : "复制"} copiedLabel={english ? "Copied" : "已复制"} copyErrorLabel={english ? "Copy failed; select code manually" : "复制失败，请选择代码复制"} />

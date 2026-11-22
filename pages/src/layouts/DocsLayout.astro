@@ -1,10 +1,18 @@
 ---
 import "@moesegfault/style/all.css";
-import "@fontsource-variable/jetbrains-mono";
+import "@moesegfault/style/fonts.css";
+import Badge from "@moesegfault/style/astro/Badge.astro";
 import BrandMark from "@moesegfault/style/astro/BrandMark.astro";
-import Container from "@moesegfault/style/astro/Container.astro";
+import Button from "@moesegfault/style/astro/Button.astro";
+import Icon from "@moesegfault/style/astro/Icon.astro";
 import { ThemeToggle } from "../components/ThemeToggle";
-import { getAlternatePath, getNavItems, isCurrentPath, type SiteLocale } from "../lib/site";
+import {
+  getAlternatePath,
+  getNavItems,
+  isCurrentPath,
+  type SiteLocale,
+  VERSION,
+} from "../lib/site";
 import "../styles/docs.css";
 
 interface Props {
@@ -28,13 +36,13 @@ const alternateUrl = new URL(alternatePath, Astro.site);
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#fff6ea" />
+    <meta name="theme-color" content="#fffdf9" />
     <link rel="canonical" href={canonicalUrl} />
     <link rel="alternate" hreflang={isEnglish ? "zh-CN" : "en"} href={alternateUrl} />
     <link rel="alternate" hreflang={locale} href={canonicalUrl} />
     <link rel="alternate" hreflang="x-default" href={isEnglish ? alternateUrl : canonicalUrl} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>{title} · MoeSegFault Style</title>
+    <title>{title} · moeSegFault Style</title>
     <script is:inline>
       (() => {
         const saved = localStorage.getItem("moe-theme");
@@ -42,45 +50,50 @@ const alternateUrl = new URL(alternatePath, Astro.site);
         const theme = dark ? "dark" : "light";
         document.documentElement.dataset.moeTheme = theme;
         document.documentElement.style.colorScheme = theme;
-        document.querySelector('meta[name="theme-color"]')?.setAttribute("content", dark ? "#21130f" : "#fff6ea");
+        document.querySelector('meta[name="theme-color"]')?.setAttribute("content", dark ? "#160b0c" : "#fffdf9");
       })();
     </script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">{isEnglish ? "Skip to main content" : "跳到主要内容"}</a>
     <header class="site-header">
-      <Container>
-        <div class="header-inner">
-          <a class="brand-link" href={isEnglish ? "/en/" : "/"} aria-label={isEnglish ? "MoeSegFault Style home" : "MoeSegFault Style 首页"}>
-            <BrandMark />
-            <span class="brand-copy"><strong>MoeSegFault</strong><small>{isEnglish ? "Style workshop" : "暖纸界面工坊"}</small></span>
+      <div class="frame">
+        <div class="site-header__inner pad">
+          <a class="site-header__brand" href={isEnglish ? "/en/" : "/"} aria-label={isEnglish ? "moeSegFault Style home" : "moeSegFault Style 首页"}>
+            <BrandMark label="moeSegFault" />
+            <Badge>v{VERSION}</Badge>
           </a>
-          <nav aria-label={isEnglish ? "Primary navigation" : "主要导航"}>
+          <nav class="site-nav" aria-label={isEnglish ? "Primary navigation" : "主要导航"}>
             <ul>
               {navItems.map(({ href, label }) => (
-                <li><a href={href} aria-current={isCurrentPath(currentPath, href) ? "page" : undefined}>{label}</a></li>
+                <li><a href={href} aria-current={isCurrentPath(currentPath, href) ? "page" : undefined}>{label}{isCurrentPath(currentPath, href) && <span class="site-nav__mark" />}</a></li>
               ))}
             </ul>
           </nav>
-          <div class="header-actions">
-            <a class="language-switch" href={alternatePath} lang={isEnglish ? "zh-CN" : "en"} hreflang={isEnglish ? "zh-CN" : "en"} aria-label={isEnglish ? "Switch to Chinese" : "Read in English"}>
+          <div class="site-header__actions">
+            <Button variant="ghost" size="sm" href={alternatePath} lang={isEnglish ? "zh-CN" : "en"} hreflang={isEnglish ? "zh-CN" : "en"} aria-label={isEnglish ? "Switch to Chinese" : "Read in English"}>
               {isEnglish ? "中文" : "EN"}
-            </a>
+            </Button>
             <ThemeToggle locale={locale} client:load />
           </div>
         </div>
-      </Container>
+      </div>
     </header>
     <main id="main-content" tabindex="-1">
-      <slot />
+      <div class="frame"><slot /></div>
     </main>
     <footer class="site-footer">
-      <Container>
-        <div class="footer-inner">
-          <p><strong>MoeSegFault Style</strong> — {isEnglish ? "A warm sheet of paper for your code." : "给代码一张温暖的纸。"}</p>
-          <p><a href="https://github.com/kleedaisuki/moesegfault-style">{isEnglish ? "Source" : "查看源码"}</a> · GPL-3.0-or-later</p>
+      <div class="frame">
+        <div class="site-footer__inner pad">
+          <p>GPL-3.0-or-later</p>
+          <p><a href="https://github.com/kleedaisuki/moesegfault-style">GitHub <Icon name="arrow-up-right" /></a></p>
         </div>
-      </Container>
+      </div>
     </footer>
+    <span class="moe-visually-hidden" role="status" data-copy-status={isEnglish ? "Copied" : "已复制"}></span>
+    <script>
+      import { bindCopy } from "../lib/copy";
+      bindCopy();
+    </script>
   </body>
 </html>

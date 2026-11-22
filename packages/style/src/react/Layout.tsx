@@ -114,3 +114,38 @@ export function Cluster({
     />
   );
 }
+
+/** @brief 网格属性。Grid props. */
+export interface GridProps extends HTMLAttributes<HTMLDivElement> {
+  /** @brief 子项间距。Gap between children. */
+  gap?: LayoutGap;
+  /** @brief 列的最小宽度，任意 CSS 长度。Minimum column width as any CSS length. */
+  min?: string;
+  /** @brief 用共享发丝线代替间距。Replace gaps with shared hairlines. */
+  ruled?: boolean;
+}
+
+/** @brief 无断点的自适应网格。Responsive grid without breakpoints. */
+export function Grid({
+  className,
+  gap = "lg",
+  min,
+  ruled = false,
+  style,
+  ...props
+}: GridProps): ReactElement {
+  return (
+    <div
+      {...props}
+      className={mergeClassNames("moe-grid", className)}
+      data-ruled={ruled || undefined}
+      style={
+        {
+          ...style,
+          "--moe-grid-space": gap === "none" ? "0px" : `var(--moe-space-${gap})`,
+          ...(min === undefined ? {} : { "--moe-grid-min": min }),
+        } as CSSProperties
+      }
+    />
+  );
+}

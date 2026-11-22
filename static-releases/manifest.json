@@ -16,11 +16,16 @@
       "version": "0.1.2",
       "baseUrl": "/v0.1.2",
       "manifestUrl": "/v0.1.2/manifest.json"
+    },
+    {
+      "version": "0.2.0",
+      "baseUrl": "/v0.2.0",
+      "manifestUrl": "/v0.2.0/manifest.json"
     }
   ],
-  "latestVersion": "0.1.2",
+  "latestVersion": "0.2.0",
   "latestBaseUrl": "/latest",
-  "defaultVersion": "0.1.2",
+  "defaultVersion": "0.2.0",
   "defaultResources": {
     "styles": "/css/all.css",
     "colors": "/colors/",

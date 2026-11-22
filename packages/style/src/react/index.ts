@@ -4,20 +4,32 @@ export type {
   ButtonAnchorProps,
   ButtonCommonProps,
   ButtonElementProps,
+  ButtonGroupProps,
   ButtonProps,
   ButtonSize,
   ButtonVariant,
+  IconButtonProps,
 } from "./Button.js";
-export { Button } from "./Button.js";
+export { Button, ButtonGroup, IconButton } from "./Button.js";
 export type {
   CardContentProps,
   CardDescriptionProps,
+  CardFooterProps,
   CardHeaderProps,
   CardProps,
   CardTitleProps,
   CardVariant,
+  PanelProps,
 } from "./Card.js";
-export { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./Card.js";
+export {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  Panel,
+} from "./Card.js";
 export type { ComposerProps, ComposerSubmitHandler } from "./Composer.js";
 export { Composer } from "./Composer.js";
 export type {
@@ -35,10 +47,11 @@ export type {
   ClusterProps,
   ContainerProps,
   ContainerSize,
+  GridProps,
   LayoutGap,
   StackProps,
 } from "./Layout.js";
-export { Cluster, Container, Stack } from "./Layout.js";
+export { Cluster, Container, Grid, Stack } from "./Layout.js";
 export type {
   MessageBubbleProps,
   MessageBubbleRole,
@@ -63,3 +76,57 @@ export type { IconProps, IconName } from "./Icon.js";
 export { Icon } from "./Icon.js";
 export type { CodeBlockProps } from "./CodeBlock.js";
 export { CodeBlock } from "./CodeBlock.js";
+export type {
+  AvatarProps,
+  DataTone,
+  DescriptionItem,
+  DescriptionListProps,
+  EmptyStateProps,
+  ProgressProps,
+  SeparatorProps,
+  SpinnerProps,
+  StatProps,
+  TableProps,
+} from "./Data.js";
+export {
+  Avatar,
+  DescriptionList,
+  EmptyState,
+  Kbd,
+  Progress,
+  Separator,
+  Skeleton,
+  Spinner,
+  Stat,
+  Table,
+} from "./Data.js";
+export type {
+  ChoiceProps,
+  ControlSize,
+  FieldProps,
+  InputProps,
+  SegmentedControlProps,
+  SegmentedOption,
+  SelectProps,
+  TextareaProps,
+} from "./Form.js";
+export {
+  Checkbox,
+  Field,
+  Input,
+  Radio,
+  SegmentedControl,
+  Select,
+  Switch,
+  Textarea,
+} from "./Form.js";
+export type {
+  AccordionItemProps,
+  BreadcrumbItem,
+  BreadcrumbsProps,
+  TabItem,
+  TabsProps,
+} from "./Navigation.js";
+export { Accordion, AccordionItem, Breadcrumbs, Tabs } from "./Navigation.js";
+export type { DialogProps, TooltipProps } from "./Overlay.js";
+export { Dialog, Tooltip } from "./Overlay.js";

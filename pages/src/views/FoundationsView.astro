@@ -1,0 +1,113 @@
+---
+import Grid from "@moesegfault/style/astro/Grid.astro";
+import { tokens } from "@moesegfault/style";
+import CodeBlock from "../components/CodeBlock.astro";
+import CloverField from "../components/CloverField.astro";
+import HexDump from "../components/HexDump.astro";
+import DocsLayout from "../layouts/DocsLayout.astro";
+import type { SiteLocale } from "../lib/site";
+
+interface Props {
+  locale?: SiteLocale;
+}
+const { locale = "zh-CN" } = Astro.props;
+const en = locale === "en";
+
+const roles = [
+  "background",
+  "surface-strong",
+  "surface-muted",
+  "surface-sunken",
+  "heading",
+  "text",
+  "text-soft",
+  "line-strong",
+  "action",
+  "accent",
+  "accent-wash",
+  "highlight",
+  "brand",
+  "success",
+  "warning",
+  "danger",
+  "focus",
+];
+/** 只展示数值阶梯，跳过具名别名。Show numeric steps only, skipping named aliases. */
+const spaces = Object.entries(tokens).filter(([name]) => /^space\.[1-9]$/.test(name));
+const radii = Object.entries(tokens).filter(([name]) => /^radius\.(?!pill)/.test(name));
+const sizes = Object.entries(tokens)
+  .filter(([name]) => name.startsWith("font.size."))
+  .reverse();
+const sample = en ? "Cute by default, careful by design" : "默认可爱，处处精密";
+---
+
+<DocsLayout
+  title={en ? "Foundations" : "基础"}
+  description={en ? "Color, type, space, shape, and theming in moeSegFault Style." : "moeSegFault Style 的颜色、字体、间距、形状与主题。"}
+  currentPath={en ? "/en/foundations/" : "/foundations/"}
+  locale={locale}
+>
+  <header class="page-intro pad">
+    <h1>{en ? "Foundations" : "基础"}</h1>
+    <CloverField />
+  </header>
+
+  <section class="section" aria-labelledby="palette-title">
+    <div class="pad">
+      <div class="section__head"><h2 id="palette-title">{en ? "Palette" : "色板"}</h2></div>
+      <HexDump />
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="color-title">
+    <div class="pad">
+      <div class="section__head"><h2 id="color-title">{en ? "Semantic color" : "语义颜色"}</h2></div>
+      <Grid ruled min="11rem">
+        {roles.map((role) => (
+          <article class="swatch">
+            <div class="swatch__color" style={`--swatch: var(--moe-${role})`}></div>
+            <code class="swatch__copy">--moe-{role}</code>
+          </article>
+        ))}
+      </Grid>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="type-title">
+    <div class="pad">
+      <div class="section__head"><h2 id="type-title">{en ? "Type" : "字体"}</h2></div>
+      <div>
+        {sizes.map(([name, value]) => (
+          <div class="type-specimen"><code class="moe-eyebrow">{name.replace("font.size.", "")} / {value}</code><span style={`font-size: min(${value}, 11vw); ${Number.parseFloat(String(value)) > 20 ? "font-weight: 600; letter-spacing: -0.03em" : ""}`}>{sample}</span></div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="space-title">
+    <div class="pad">
+      <div class="section__head"><h2 id="space-title">{en ? "Space and shape" : "间距与形状"}</h2></div>
+      <ul class="ramp">
+        {spaces.map(([name, value]) => (
+          <li><code>{name}</code><span class="ramp__bar" style={`width: min(100%, ${parseInt(String(value), 10) * 4}px)`}></span><code>{value}</code></li>
+        ))}
+      </ul>
+      <Grid min="9rem" gap="1rem" style="margin-block-start: var(--moe-space-6)">
+        {radii.map(([name, value]) => <div class="material" style={`border-radius: ${value}`}><code>{name}</code><code>{value}</code></div>)}
+        {["sm", "md", "lg"].map((level) => <div class="material" style={`box-shadow: var(--moe-shadow-${level}); border-radius: var(--moe-radius-md)`}><code>shadow.{level}</code></div>)}
+      </Grid>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="token-title" style="border-block-end: 0">
+    <div class="pad">
+      <div class="section__head"><h2 id="token-title">{en ? "Consuming tokens" : "使用令牌"}</h2></div>
+      <div class="split">
+        <CodeBlock language="css" label="panel.css" code={`@import "@moesegfault/style/tokens.css";\n\n.panel {\n  color: var(--moe-text);\n  border: 1px solid var(--moe-line);\n  border-radius: var(--moe-radius-md);\n}`} />
+        <CodeBlock language="ts" label="chart.ts" code={`import { tokens } from "@moesegfault/style";\n\nconst accent = tokens["semantic.light.accent"];\nconst space = tokens["space.4"];`} />
+        <CodeBlock language="ts" label="build.ts" code={`import tokens from "@moesegfault/style/tokens.json";\nimport source from "@moesegfault/style/tokens.dtcg.json";`} />
+        <CodeBlock language="html" label="index.html" code={`<html data-moe-theme="dark">\n  …\n</html>`} />
+      </div>
+    </div>
+  </section>
+</DocsLayout>

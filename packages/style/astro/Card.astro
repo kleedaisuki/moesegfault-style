@@ -19,8 +19,14 @@ export interface Props extends Omit<HTMLAttributes<"article">, "class" | "title"
   title?: string;
   /** @brief 可选说明文本 / Optional description text. */
   description?: string;
+  /** @brief 标题链接 / Title link. */
+  href?: string;
   /** @brief 标题元素层级 / Heading element level. */
   headingAs?: CardHeading;
+  /** @brief 悬停反馈；标题内链接扩展为整卡目标 / Hover feedback; a title link covers the whole card. */
+  interactive?: boolean;
+  /** @brief 卡片表面变体 / Card surface variant. */
+  variant?: "default" | "muted" | "elevated";
   /** @brief 自定义 CSS 类 / Custom CSS class. */
   class?: string;
 }
@@ -31,7 +37,10 @@ const {
   eyebrow,
   title,
   description,
+  href,
   headingAs: Heading = "h2",
+  interactive = false,
+  variant,
   class: className,
   ...rest
 } = Astro.props;
@@ -40,7 +49,7 @@ const {
 const hasHeader = eyebrow || title || description || Astro.slots.has("header");
 ---
 
-<Tag {...rest} class:list={["moe-card", className]}>
+<Tag {...rest} class:list={["moe-card", className]} data-interactive={interactive || undefined} data-variant={variant}>
   {
     hasHeader && (
       <header class="moe-card__header">
@@ -49,13 +58,13 @@ const hasHeader = eyebrow || title || description || Astro.slots.has("header");
         ) : (
           <>
             {eyebrow && <p class="moe-card__eyebrow">{eyebrow}</p>}
-            {title && <Heading class="moe-card__title">{title}</Heading>}
+            {title && <Heading class="moe-card__title">{href ? <a href={href}>{title}</a> : title}</Heading>}
             {description && <p class="moe-card__description">{description}</p>}
           </>
         )}
       </header>
     )
   }
-  <div class="moe-card__content"><slot /></div>
+  {Astro.slots.has("default") && <div class="moe-card__content"><slot /></div>}
   {Astro.slots.has("footer") && <footer class="moe-card__footer"><slot name="footer" /></footer>}
 </Tag>

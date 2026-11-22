@@ -2,10 +2,13 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const headers = readFileSync(new URL("../public/_headers", import.meta.url), "utf8");
-const distributionPages = [
-  readFileSync(new URL("../src/pages/distribution/index.astro", import.meta.url), "utf8"),
-  readFileSync(new URL("../src/pages/en/distribution/index.astro", import.meta.url), "utf8"),
-];
+const distributionView = readFileSync(
+  new URL("../src/views/DistributionView.astro", import.meta.url),
+  "utf8",
+);
+const distributionRoutes = ["distribution", "en/distribution"].map((route) =>
+  readFileSync(new URL(`../src/pages/${route}/index.astro`, import.meta.url), "utf8"),
+);
 
 describe("Cloudflare static asset contract", () => {
   it("allows consumers to reuse every published artifact cross-origin", () => {
@@ -29,11 +32,10 @@ describe("Agent Skill distribution", () => {
       "/skills/manifest.json",
     ];
 
-    for (const page of distributionPages) {
-      for (const link of links) expect(page).toContain(`href="${link}"`);
-      expect(page).toContain(
-        'href="/skills/moesegfault-style.zip" download="moesegfault-style.zip"',
-      );
-    }
+    for (const link of links) expect(distributionView).toContain(`href="${link}"`);
+    expect(distributionView).toContain(
+      'href="/skills/moesegfault-style.zip" download="moesegfault-style.zip"',
+    );
+    for (const route of distributionRoutes) expect(route).toContain("DistributionView");
   });
 });

@@ -1,0 +1,69 @@
+---
+import CodeBlock from "../components/CodeBlock.astro";
+import { ComponentGallery } from "../components/ComponentGallery";
+import { EditorGallery } from "../components/EditorGallery";
+import RichTextGallery from "../components/RichTextGallery.astro";
+import CloverField from "../components/CloverField.astro";
+import DocsLayout from "../layouts/DocsLayout.astro";
+import type { SiteLocale } from "../lib/site";
+
+interface Props {
+  locale?: SiteLocale;
+}
+const { locale = "zh-CN" } = Astro.props;
+const en = locale === "en";
+const groups = [
+  [
+    ["buttons", "Button", "按钮"],
+    ["forms", "Forms", "表单"],
+    ["navigation", "Navigation", "导航"],
+    ["data", "Data", "数据"],
+    ["feedback", "Feedback", "反馈"],
+    ["overlays", "Overlays", "浮层"],
+  ],
+  [
+    ["surfaces", "Surfaces", "表面"],
+    ["glass", "Glass", "玻璃"],
+    ["motion", "Motion", "动效"],
+    ["icons", "Icons", "图标"],
+  ],
+  [
+    ["messages", "Messages", "对话"],
+    ["code", "Code", "代码"],
+    ["rich-text", "Markdown & TeX", "Markdown 与 TeX"],
+    ["editor", "Editor", "编辑器"],
+  ],
+] as const;
+---
+
+<DocsLayout
+  title={en ? "Components" : "组件"}
+  description={en ? "Interactive reference for moeSegFault Style components." : "moeSegFault Style 组件的可交互参考。"}
+  currentPath={en ? "/en/components/" : "/components/"}
+  locale={locale}
+>
+  <header class="page-intro pad">
+    <h1>{en ? "Components" : "组件"}</h1>
+    <CloverField />
+  </header>
+  <div class="docs-layout">
+    <aside class="docs-toc">
+      <nav class="docs-toc__inner" aria-label={en ? "Component index" : "组件目录"}>
+        {groups.map((items) => (
+          <ul>{items.map(([id, english, chinese]) => <li><a href={`#${id}`}>{en ? english : chinese}</a></li>)}</ul>
+        ))}
+      </nav>
+    </aside>
+    <div class="specimens">
+      <ComponentGallery locale={locale} client:load />
+      <section class="specimen" id="code" data-testid="specimen-code" aria-labelledby="code-title">
+        <div class="specimen__head">
+          <h2 id="code-title">{en ? "Code" : "代码"}</h2>
+        </div>
+        <CodeBlock language="tsx" label="deploy.tsx" code={`import "@moesegfault/style/all.css";\nimport { Button, Field, Panel, Select } from "@moesegfault/style/react";\n\nexport function Deploy({ pending }: { pending: boolean }) {\n  // One primary action per view.\n  return (\n    <Panel title="deploy.config">\n      <Field label="Channel" hint="Pin an exact version in production.">\n        <Select defaultValue="pinned">\n          <option value="pinned">Pinned</option>\n          <option value="latest">latest</option>\n        </Select>\n      </Field>\n      <Button loading={pending}>Deploy</Button>\n    </Panel>\n  );\n}`} />
+      </section>
+      <RichTextGallery locale={locale} />
+      <EditorGallery locale={locale} client:visible />
+    </div>
+  </div>
+</DocsLayout>

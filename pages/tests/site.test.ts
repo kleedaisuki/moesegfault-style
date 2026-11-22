@@ -6,6 +6,8 @@ import {
   getNavItems,
   isCurrentPath,
   NAV_ITEMS,
+  pinned,
+  VERSION,
 } from "../src/lib/site";
 
 const docsCss = readFileSync(new URL("../src/styles/docs.css", import.meta.url), "utf8");
@@ -43,27 +45,20 @@ describe("documentation navigation", () => {
 });
 
 describe("documentation theme contract", () => {
-  it("maps its palette to the library's supported semantic tokens", () => {
-    const mappings = [
-      ["paper", "background"],
-      ["paper-raised", "surface-strong"],
-      ["ink", "text"],
-      ["muted", "text-soft"],
-      ["line", "border"],
-      ["accent", "accent"],
-      ["accent-soft", "accent-wash"],
-      ["leaf", "success"],
-    ] as const;
-
-    for (const [docsToken, libraryToken] of mappings) {
-      expect(docsCss).toContain(`--docs-${docsToken}: var(--moe-color-${libraryToken});`);
-    }
-    expect(docsCss).toContain("--docs-shadow: var(--moe-shadow-md);");
+  it("takes every color from library tokens", () => {
+    expect(docsCss).not.toMatch(/#[\da-f]{3,8}\b/i);
+    expect(docsCss).not.toMatch(/\b(?:rgb|hsl|oklch|oklab)a?\(/i);
+    expect(docsCss).not.toMatch(/\[data-moe-theme/);
   });
 
-  it("does not replace the library dark theme or reference retired palette tokens", () => {
-    expect(docsCss).not.toMatch(/\[data-moe-theme=["']dark["']\]\s*\{/);
-    expect(docsCss).not.toMatch(/--moe-color-(?:paper|ink-muted|accent-soft)(?:\s*[,)]|\s*:)/);
-    expect(docsCss).not.toMatch(/--docs-(?:paper|ink|accent|leaf|shadow):\s*#[\da-f]/i);
+  it("stays in its own cascade layer above the library", () => {
+    expect(docsCss).toContain("moe.components, moe.utilities, site;");
+    expect(docsCss.trimEnd().endsWith("}")).toBe(true);
+    expect(docsCss).not.toContain("!important");
+  });
+
+  it("derives pinned URLs from the library version", () => {
+    expect(VERSION).toMatch(/^\d+\.\d+\.\d+$/);
+    expect(pinned("css/all.css")).toBe(`https://style.moesegfault.dev/v${VERSION}/css/all.css`);
   });
 });

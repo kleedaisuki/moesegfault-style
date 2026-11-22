@@ -8,6 +8,26 @@ const defaultOutputRoot = join(packageRoot, "dist");
 const defaultGeneratedPath = join(packageRoot, "src", "tokens.generated.ts");
 const referencePattern = /^\{([^}]+)\}$/;
 
+/** @brief 可独立导入且并入组件层的样式 (Styles importable on their own and bundled into the component layer). */
+const extensionNames = [
+  "forms",
+  "data",
+  "navigation",
+  "overlay",
+  "glass",
+  "motion",
+  "messages",
+  "code",
+  "icons",
+  "markdown",
+  "editor",
+];
+/** @brief 可选自托管字体：家族与源子集文件 (Opt-in self-hosted fonts: family and source subset files). */
+const fontFaces = [
+  { family: "Geist Variable", source: "geist", subsets: ["latin-ext", "latin"] },
+  { family: "Geist Mono Variable", source: "geist-mono", subsets: ["latin-ext", "latin"] },
+];
+
 /** @brief 判断对象是否为 DTCG 令牌节点 (Determine whether an object is a DTCG token node). */
 function isToken(value) {
   return Boolean(value && typeof value === "object" && "$value" in value);
@@ -165,6 +185,27 @@ function toCss(value, type) {
   throw new Error(`Unsupported ${type ?? "unknown"} token value: ${JSON.stringify(value)}`);
 }
 
+/** @brief 弹簧元数据的 DTCG 扩展键 (DTCG extension key for spring metadata). */
+const springExtension = "io.moesegfault.spring";
+const springSamples = 40;
+
+/**
+ * @brief 把欠阻尼弹簧的阶跃响应采样为 linear() (Sample an underdamped spring's step response as linear()).
+ * @note 角频率取包络在终点衰减到千分之一 (The frequency lets the envelope decay to one thousandth at the end).
+ */
+export function springEasing(dampingRatio) {
+  const damped = Math.sqrt(1 - dampingRatio ** 2);
+  const frequency = Math.log(1000) / dampingRatio;
+  const stops = Array.from({ length: springSamples + 1 }, (_, index) => {
+    const time = index / springSamples;
+    const phase = frequency * damped * time;
+    const wave = Math.cos(phase) + (dampingRatio / damped) * Math.sin(phase);
+    return Number((1 - Math.exp(-Math.log(1000) * time) * wave).toFixed(4));
+  });
+  stops[springSamples] = 1;
+  return `linear(${stops.join(", ")})`;
+}
+
 function variableName(name) {
   return `--moe-${name.replaceAll(".", "-")}`;
 }
@@ -186,26 +227,21 @@ function renderTokenCss(tokens) {
       dark.push(`  ${semanticVariableName(name)}: ${cssValue};`);
     else common.push(`  ${variableName(name)}: ${cssValue};`);
   }
-  const themeAliases = [
-    "background",
-    "background-end",
-    "surface",
-    "surface-strong",
-    "surface-muted",
-    "text",
-    "text-soft",
-    "heading",
-    "accent",
-    "accent-strong",
-    "accent-wash",
-    "on-accent",
-    "border",
-    "focus",
-    "success",
-    "danger",
-    "neutral",
-  ];
-  return `@layer moe.tokens, moe.reset, moe.foundation, moe.components, moe.utilities;\n\n@layer moe.tokens {\n  :root {\n${common.join("\n")}\n${light.join("\n")}\n    color-scheme: light;\n  }\n\n  :root[data-moe-theme="dark"] {\n${dark.join("\n")}\n    color-scheme: dark;\n  }\n\n  @media (prefers-color-scheme: dark) {\n    :root:not([data-moe-theme]),\n    :root[data-moe-theme="auto"] {\n${dark.join("\n")}\n      color-scheme: dark;\n    }\n  }\n\n  :root {\n${themeAliases.map((name) => `    --moe-${name}: var(--moe-color-${name});`).join("\n")}\n  }\n}\n`;
+  /** @brief 弹簧曲线仅在支持处替换三次贝塞尔回退 (Springs replace their cubic-bezier fallback only where supported). */
+  const springs = [...tokens]
+    .filter(([, token]) => token.$extensions?.[springExtension])
+    .map(([name, token]) => {
+      const { dampingRatio } = token.$extensions[springExtension];
+      return `      ${variableName(name)}: ${springEasing(dampingRatio)};`;
+    });
+  /** @brief 主题别名由语义令牌派生，新增角色无需登记第二处 (Aliases derive from semantic tokens; new roles need no second registry). */
+  const themeAliases = [...tokens.keys()]
+    .filter((name) => name.startsWith("semantic.light."))
+    .map((name) => name.slice("semantic.light.".length));
+  /** @brief 深色主题复用同名阴影角色 (The dark theme reuses the same elevation roles). */
+  for (const level of ["sm", "md", "lg"])
+    dark.push(`  --moe-shadow-${level}: var(--moe-shadow-dark-${level});`);
+  return `@layer moe.tokens, moe.reset, moe.foundation, moe.components, moe.utilities;\n\n@layer moe.tokens {\n  :root {\n${common.join("\n")}\n${light.join("\n")}\n    color-scheme: light;\n  }\n\n  :root[data-moe-theme="dark"] {\n${dark.join("\n")}\n    color-scheme: dark;\n  }\n\n  @media (prefers-color-scheme: dark) {\n    :root:not([data-moe-theme]),\n    :root[data-moe-theme="auto"] {\n${dark.join("\n")}\n      color-scheme: dark;\n    }\n  }\n\n  :root {\n${themeAliases.map((name) => `    --moe-${name}: var(--moe-color-${name});`).join("\n")}\n  }\n\n  @supports (transition-timing-function: linear(0, 1)) {\n    :root {\n${springs.join("\n")}\n    }\n  }\n}\n`;
 }
 
 /** @brief 生成稳定的 TypeScript 令牌 API (Generate the stable TypeScript token API). */
@@ -219,6 +255,28 @@ function renderTypeScript(tokens) {
 /** @brief 删除构建输出以防止陈旧文件进入发布包 (Remove build output so stale files cannot enter a release). */
 export async function cleanOutput(outputRoot = defaultOutputRoot) {
   await rm(outputRoot, { recursive: true, force: true });
+}
+
+/**
+ * @brief 收集可选字体样式表与其文件 (Collect the opt-in font stylesheet and its files).
+ * @note 字体不进入 all.css，避免消费者被动下载 (Fonts stay out of all.css so consumers never download them implicitly).
+ */
+async function collectFonts() {
+  const faces = [];
+  const files = [];
+  for (const { family, source, subsets } of fontFaces) {
+    const root = dirname(fileURLToPath(import.meta.resolve(`@fontsource-variable/${source}`)));
+    const sheet = await readFile(join(root, "index.css"), "utf8");
+    for (const subset of subsets) {
+      const name = `${source}-${subset}-wght-normal.woff2`;
+      const face = sheet.match(new RegExp(`@font-face \\{[^}]*${name}[^}]*\\}`))?.[0];
+      assertValid(face, `missing font face ${family} ${subset}`);
+      faces.push(face.replace(/url\([^)]*\)/, `url(../assets/fonts/${name})`));
+      files.push({ from: join(root, "files", name), to: name });
+    }
+    files.push({ from: join(root, "LICENSE"), to: `${source}-LICENSE.txt` });
+  }
+  return { css: `${faces.join("\n\n")}\n`, files };
 }
 
 /** @brief 构建 CSS、JSON 与 TypeScript 设计令牌产物 (Build CSS, JSON, and TypeScript design-token artifacts). */
@@ -239,7 +297,7 @@ export async function buildTokens({
   const components = await readFile(join(packageRoot, "src", "styles", "components.css"), "utf8");
   /** @brief 独立样式也并入组件层，保持原有分层导入有效。Standalone styles also join the component bundle to preserve layered imports. */
   const extensions = await Promise.all(
-    ["glass", "motion", "messages", "code", "icons", "markdown", "editor"].map(async (name) => ({
+    extensionNames.map(async (name) => ({
       name,
       css: await readFile(join(packageRoot, "src", "styles", `${name}.css`), "utf8"),
     })),
@@ -251,11 +309,13 @@ export async function buildTokens({
     "url(../assets/katex/fonts/",
   );
   extensions.push({ name: "math", css: `@layer moe.components {\n${mathCss}\n}\n` });
+  const fonts = await collectFonts();
   const componentBundle = [components, ...extensions.map((entry) => entry.css)].join("\n");
   await Promise.all([
     mkdir(join(outputRoot, "css"), { recursive: true }),
     mkdir(join(outputRoot, "tokens"), { recursive: true }),
     mkdir(join(outputRoot, "assets", "katex"), { recursive: true }),
+    mkdir(join(outputRoot, "assets", "fonts"), { recursive: true }),
     mkdir(dirname(generatedPath), { recursive: true }),
   ]);
   await Promise.all([
@@ -266,6 +326,8 @@ export async function buildTokens({
       writeFile(join(outputRoot, "css", `${entry.name}.css`), entry.css),
     ),
     writeFile(join(outputRoot, "css", "all.css"), `${css}\n${foundation}\n${componentBundle}`),
+    writeFile(join(outputRoot, "css", "fonts.css"), fonts.css),
+    ...fonts.files.map(({ from, to }) => cp(from, join(outputRoot, "assets", "fonts", to))),
     cp(join(packageRoot, "src", "icons"), join(outputRoot, "assets", "icons"), { recursive: true }),
     cp(join(katexRoot, "dist", "fonts"), join(outputRoot, "assets", "katex", "fonts"), {
       recursive: true,

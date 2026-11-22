@@ -1,0 +1,10 @@
+@layer moe.tokens, moe.reset, moe.foundation, moe.components, moe.utilities;
+
+/* 图标在文字和 flex 布局中保持尺寸。Icons keep their dimensions in text and flex layouts. */
+@layer moe.components {
+  .moe-icon {
+    display: inline-block;
+    flex-shrink: 0;
+    vertical-align: -0.125em;
+  }
+}

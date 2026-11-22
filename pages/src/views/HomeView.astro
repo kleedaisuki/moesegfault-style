@@ -1,0 +1,103 @@
+---
+import Button from "@moesegfault/style/astro/Button.astro";
+import Card from "@moesegfault/style/astro/Card.astro";
+import Cluster from "@moesegfault/style/astro/Cluster.astro";
+import Grid from "@moesegfault/style/astro/Grid.astro";
+import Icon from "@moesegfault/style/astro/Icon.astro";
+import CodeBlock from "../components/CodeBlock.astro";
+import CopyLine from "../components/CopyLine.astro";
+import DitherEdge from "../components/DitherEdge.astro";
+import CloverField from "../components/CloverField.astro";
+import PixelText from "../components/PixelText.astro";
+import { Detonator } from "../components/Detonator";
+import { type ReleaseRow, Workbench } from "../components/Workbench";
+import DocsLayout from "../layouts/DocsLayout.astro";
+import { pinned, type SiteLocale, VERSION } from "../lib/site";
+
+interface Props {
+  locale?: SiteLocale;
+}
+const { locale = "zh-CN" } = Astro.props;
+const en = locale === "en";
+const base = en ? "/en" : "";
+
+interface ReleaseManifest {
+  version: string;
+  files: { bytes: number }[];
+}
+const manifests = import.meta.glob<ReleaseManifest>("../../../static-releases/v*/manifest.json", {
+  eager: true,
+  import: "default",
+});
+const releases: ReleaseRow[] = Object.values(manifests)
+  .map(({ version, files }) => ({
+    version,
+    files: files.length,
+    bytes: files.reduce((total, file) => total + file.bytes, 0),
+  }))
+  .sort((left, right) => right.version.localeCompare(left.version, "en", { numeric: true }));
+---
+
+<DocsLayout
+  title={en ? "Cute by default, careful by design" : "默认可爱，处处精密"}
+  description={en ? "A crimson and honey design system for React, Astro, and plain HTML." : "面向 React、Astro 与纯 HTML 的绯红蜜金设计系统。"}
+  currentPath={`${base}/`}
+  locale={locale}
+>
+  <section class="hero bleed" data-moe-surface="brand">
+    <div class="hero__grid pad">
+      <div class="hero__copy">
+        <h1>
+          {(en ? ["Cute by default.", "Careful by design."] : ["默认可爱，", "处处精密。"]).map((line) => (
+            <span class="hero__line"><span>{line}</span></span>
+          ))}
+        </h1>
+        <p class="lede">
+          {en
+            ? "A design system for React, Astro, and plain HTML."
+            : "面向 React、Astro 与纯 HTML 的设计系统。"}
+        </p>
+        <Cluster gap="0.5rem">
+          <Button href={`${base}/components/`} size="lg">{en ? "Browse components" : "浏览组件"}</Button>
+          <Button href={`${base}/guides/`} size="lg" variant="secondary">{en ? "Get started" : "开始接入"}</Button>
+        </Cluster>
+        <CopyLine text={pinned("css/all.css")} locale={locale} />
+      </div>
+      <div class="hero__field">
+        <CloverField />
+        <Detonator locale={locale} client:load />
+      </div>
+    </div>
+    <DitherEdge side="bottom" />
+  </section>
+
+  <section class="section section--stage" aria-label={en ? "Component workbench" : "组件工作台"}>
+    <div class="workbench-stage moe-blueprint pad">
+      <Workbench releases={releases} locale={locale} client:visible />
+    </div>
+  </section>
+
+  <section class="section section--open" aria-label={en ? "Layers" : "分层"}>
+    <div class="pad">
+      <Grid min="19rem" gap="1rem" class="layers">
+        <Card headingAs="h2" href={`${base}/foundations/`} interactive title={en ? "Tokens" : "令牌"}>
+          <CodeBlock language="css" label="tokens.css" copyable={false} code={`.panel {\n  color: var(--moe-text);\n  border: 1px solid var(--moe-line);\n}`} />
+        </Card>
+        <Card headingAs="h2" href={`${base}/guides/`} interactive title="CSS">
+          <CodeBlock language="html" label="index.html" copyable={false} code={`<button class="moe-button"\n  data-variant="secondary">\n  Deploy\n</button>`} />
+        </Card>
+        <Card headingAs="h2" href={`${base}/components/`} interactive title={en ? "Components" : "组件"}>
+          <CodeBlock language="tsx" label="App.tsx" copyable={false} code={`<Field label="Region">\n  <Select>…</Select>\n</Field>\n<Button loading>Deploy</Button>`} />
+        </Card>
+      </Grid>
+    </div>
+  </section>
+
+  <section class="section section--closing bleed" data-moe-surface="brand" style="border-block-end: 0">
+    <DitherEdge side="top" />
+    <div class="closing pad">
+      <h2><PixelText text={`v${VERSION}`} /></h2>
+      <Button href={`${base}/distribution/`} variant="contrast" size="lg">{en ? "See release assets" : "查看版本资源"}<Icon slot="trailing" name="arrow-right" /></Button>
+    </div>
+  </section>
+</DocsLayout>

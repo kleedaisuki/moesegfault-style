@@ -1,0 +1,12 @@
+---
+import { ditherMask } from "../lib/dither";
+
+/** 页面底色沿抖动边缘溶入相邻的品牌表面。The page color dissolves into the adjacent brand surface through a dither. */
+interface Props {
+  side: "top" | "bottom";
+}
+const { side } = Astro.props;
+const ROWS = 20;
+const mask = ditherMask(ROWS);
+---
+<div class="dither-edge" data-side={side} style={`--dither:${mask};--dither-rows:${ROWS}`} aria-hidden="true"></div>

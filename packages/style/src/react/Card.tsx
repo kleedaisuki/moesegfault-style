@@ -1,4 +1,4 @@
-import type { HTMLAttributes, ReactElement } from "react";
+import { type HTMLAttributes, type ReactElement, type ReactNode, useId } from "react";
 import { mergeClassNames } from "./utils";
 
 /** @brief 卡片表面的视觉变体。Visual variants for a card surface. */
@@ -8,6 +8,8 @@ export type CardVariant = "default" | "muted" | "elevated";
 export interface CardProps extends HTMLAttributes<HTMLElement> {
   /** @brief 卡片表面变体。Card surface variant. */
   variant?: CardVariant;
+  /** @brief 悬停反馈；标题内链接扩展为整卡目标。Hover feedback; a link inside the title covers the whole card. */
+  interactive?: boolean;
 }
 
 /**
@@ -15,9 +17,19 @@ export interface CardProps extends HTMLAttributes<HTMLElement> {
  * @param props 原生 article 属性与视觉变体。Native article attributes and visual variant.
  * @return React article 元素。React article element.
  */
-export function Card({ className, variant = "default", ...props }: CardProps): ReactElement {
+export function Card({
+  className,
+  interactive = false,
+  variant = "default",
+  ...props
+}: CardProps): ReactElement {
   return (
-    <article {...props} className={mergeClassNames("moe-card", className)} data-variant={variant} />
+    <article
+      {...props}
+      className={mergeClassNames("moe-card", className)}
+      data-interactive={interactive || undefined}
+      data-variant={variant}
+    />
   );
 }
 
@@ -67,4 +79,50 @@ export type CardContentProps = HTMLAttributes<HTMLDivElement>;
  */
 export function CardContent({ className, ...props }: CardContentProps): ReactElement {
   return <div {...props} className={mergeClassNames("moe-card__body", className)} />;
+}
+
+/** @brief 卡片底部属性。Card footer props. */
+export type CardFooterProps = HTMLAttributes<HTMLDivElement>;
+
+/** @brief 渲染以发丝线分隔的卡片底部。Render a hairline-separated card footer. */
+export function CardFooter({ className, ...props }: CardFooterProps): ReactElement {
+  return <div {...props} className={mergeClassNames("moe-card__footer", className)} />;
+}
+
+/** @brief 面板属性。Panel props. */
+export interface PanelProps extends Omit<HTMLAttributes<HTMLElement>, "title"> {
+  /** @brief 标题栏文字，也是区域名称。Header text, also the region's name. */
+  title: ReactNode;
+  /** @brief 标题栏末端操作。Trailing header actions. */
+  actions?: ReactNode;
+  /** @brief 去除正文内边距，供表格与代码贴边。Remove body padding for edge-to-edge tables and code. */
+  flush?: boolean;
+}
+
+/** @brief 带标题栏的工具面板。A tool panel with a header bar. */
+export function Panel({
+  actions,
+  children,
+  className,
+  flush = false,
+  title,
+  ...props
+}: PanelProps): ReactElement {
+  const titleId = useId();
+  return (
+    <section
+      aria-labelledby={titleId}
+      {...props}
+      className={mergeClassNames("moe-panel", className)}
+      data-flush={flush || undefined}
+    >
+      <header className="moe-panel__header">
+        <span className="moe-panel__title" id={titleId}>
+          {title}
+        </span>
+        {actions != null && <div className="moe-panel__actions">{actions}</div>}
+      </header>
+      <div className="moe-panel__body">{children}</div>
+    </section>
+  );
 }

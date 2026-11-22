@@ -1,5 +1,7 @@
-import { Button } from "@moesegfault/style/react";
-import { useEffect, useState } from "react";
+import { Icon, IconButton } from "@moesegfault/style/react";
+import { type MouseEvent, useEffect, useState } from "react";
+import { flushSync } from "react-dom";
+import { revealTheme } from "../lib/theme-reveal";
 
 type Theme = "light" | "dark";
 
@@ -14,7 +16,7 @@ function readTheme(): Theme {
 /**
  * @brief 切换并持久化文档主题。Toggle and persist the document theme.
  * @return 无返回值。No return value.
- * @note 该组件使用库内 Button，以持续检验 React 入口。This component dogfoods the library Button.
+ * @note 该组件使用库内 IconButton，以持续检验 React 入口。This component dogfoods the library IconButton.
  */
 export function ThemeToggle({ locale = "zh-CN" }: { locale?: "zh-CN" | "en" }) {
   const [theme, setTheme] = useState<Theme>("light");
@@ -25,35 +27,37 @@ export function ThemeToggle({ locale = "zh-CN" }: { locale?: "zh-CN" | "en" }) {
     setReady(true);
   }, []);
 
-  const toggle = () => {
-    const next = readTheme() === "dark" ? "light" : "dark";
+  const apply = (next: Theme) => {
     document.documentElement.dataset.moeTheme = next;
     document.documentElement.style.colorScheme = next;
     document
       .querySelector('meta[name="theme-color"]')
-      ?.setAttribute("content", next === "dark" ? "#21130f" : "#fff6ea");
-    localStorage.setItem("moe-theme", next);
-    setTheme(next);
+      ?.setAttribute("content", next === "dark" ? "#160b0c" : "#fffdf9");
+    /* 过渡要在回调返回前看到新图标。The transition must see the new icon before its callback returns. */
+    flushSync(() => setTheme(next));
   };
 
-  const nextLabel = theme === "dark" ? "light" : "dark";
-  const visibleLabel =
-    locale === "en" ? (theme === "dark" ? "Light" : "Dark") : theme === "dark" ? "浅色" : "深色";
+  const toggle = (event: MouseEvent<HTMLButtonElement>) => {
+    const next = readTheme() === "dark" ? "light" : "dark";
+    localStorage.setItem("moe-theme", next);
+    revealTheme(event.currentTarget, () => apply(next));
+  };
+
+  const dark = theme === "dark";
+  const label =
+    locale === "en"
+      ? `Switch to ${dark ? "light" : "dark"} theme`
+      : `切换至${dark ? "浅色" : "深色"}主题`;
 
   return (
-    <Button
-      aria-label={
-        locale === "en"
-          ? `Switch to ${nextLabel} theme`
-          : `切换至${theme === "dark" ? "浅色" : "深色"}主题`
-      }
+    <IconButton
+      className="theme-toggle"
       data-ready={ready}
+      label={label}
       onClick={toggle}
       size="sm"
-      variant="ghost"
     >
-      <span aria-hidden="true">{theme === "dark" ? "☀" : "☾"}</span>
-      <span>{visibleLabel}</span>
-    </Button>
+      <Icon key={theme} name={dark ? "sun" : "moon"} size={16} />
+    </IconButton>
   );
 }

@@ -1,3 +1,16 @@
+import stylePackage from "@moesegfault/style/package.json";
+
+/** 文档展示的版本，唯一来源是库的 package.json。Version shown in docs; the library manifest is its only source. */
+export const VERSION: string = stylePackage.version;
+
+/** 规范站点根地址。Canonical site origin. */
+export const ORIGIN = "https://style.moesegfault.dev";
+
+/** 固定版本资源地址。URL of a pinned release asset. */
+export function pinned(path: string): string {
+  return `${ORIGIN}/v${VERSION}/${path}`;
+}
+
 /** @brief 文档导航项。Documentation navigation item. */
 export interface NavItem {
   /** @brief 站内路径。Site-relative path. */
@@ -11,16 +24,16 @@ export type SiteLocale = "zh-CN" | "en";
 
 /** @brief 文档站的唯一导航数据源。Single source of truth for docs navigation. */
 export const NAV_ITEMS: readonly NavItem[] = [
-  { href: "/", label: "首页" },
-  { href: "/foundations/", label: "视觉规范" },
+  { href: "/", label: "概览" },
+  { href: "/foundations/", label: "基础" },
   { href: "/components/", label: "组件" },
-  { href: "/guides/", label: "接入指南" },
-  { href: "/distribution/", label: "版本资源" },
+  { href: "/guides/", label: "接入" },
+  { href: "/distribution/", label: "分发" },
 ] as const;
 
 /** @brief 英文文档导航。English documentation navigation. */
 export const EN_NAV_ITEMS: readonly NavItem[] = [
-  { href: "/en/", label: "Home" },
+  { href: "/en/", label: "Overview" },
   { href: "/en/foundations/", label: "Foundations" },
   { href: "/en/components/", label: "Components" },
   { href: "/en/guides/", label: "Guides" },

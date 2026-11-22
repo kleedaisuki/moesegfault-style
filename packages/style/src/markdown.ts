@@ -1,6 +1,5 @@
-import type { Element, Root } from "hast";
+import type { Element, ElementContent, Root, RootContent } from "hast";
 import katex from "katex";
-import rehypeKatex from "rehype-katex";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import rehypeStringify from "rehype-stringify";
 import remarkGfm from "remark-gfm";
@@ -57,19 +56,39 @@ function elements(tree: Root): Element[] {
   return result;
 }
 
-/** 数学解析前设预算；超限公式仍可读但不交给 KaTeX。Budget math before parsing; excess formulas remain readable without KaTeX. */
-function limitMath() {
+/** 拼接元素的直接文本子节点。Join an element's direct text children. */
+function textOf(node: Element): string {
+  return node.children.map((child) => (child.type === "text" ? child.value : "")).join("");
+}
+
+/** 识别 remark-math 标记；块级公式被包在 pre 中。Recognize remark-math markers; display math is wrapped in pre. */
+function mathMarker(node: RootContent | ElementContent): Element | undefined {
+  if (node.type !== "element") return undefined;
+  const code = node.tagName === "pre" ? node.children[0] : node;
+  if (code?.type !== "element" || code.tagName !== "code") return undefined;
+  const classes = code.properties.className;
+  return Array.isArray(classes) && classes.includes("language-math") ? code : undefined;
+}
+
+/**
+ * 与独立公式共用同一渲染器，保证标记与随包 math.css 来自同一 KaTeX 版本。
+ * Share the standalone renderer so emitted markup always matches the KaTeX version behind math.css.
+ */
+function typesetMath() {
   return (tree: Root): void => {
     let count = 0;
-    for (const node of elements(tree)) {
-      const classes = node.properties.className;
-      if (node.tagName !== "code" || !Array.isArray(classes) || !classes.includes("language-math"))
-        continue;
-      const source = node.children
-        .map((child) => (child.type === "text" ? child.value : ""))
-        .join("");
-      count += 1;
-      if (!withinMathBudget(source) || count > MAX_MATH_COUNT) node.properties.className = [];
+    for (const parent of [tree, ...elements(tree)]) {
+      parent.children = parent.children.map((node) => {
+        const marker = mathMarker(node);
+        if (!marker) return node;
+        count += 1;
+        const source = textOf(marker);
+        const value =
+          count > MAX_MATH_COUNT
+            ? mathFallback(source)
+            : renderMath(source, (node as Element).tagName === "pre");
+        return { type: "raw", value };
+      }) as typeof parent.children;
     }
   };
 }
@@ -78,20 +97,10 @@ function limitMath() {
 function highlightFences() {
   return (tree: Root): void => {
     for (const pre of elements(tree)) {
-      if (
-        Array.isArray(pre.properties.className) &&
-        pre.properties.className.includes("katex-display")
-      ) {
-        pre.properties.tabIndex = 0;
-        pre.properties.role = "region";
-        pre.properties.ariaLabel = "数学公式 / Mathematical expression";
-      }
       if (pre.tagName !== "pre") continue;
       const code = pre.children[0];
       if (code?.type !== "element" || code.tagName !== "code") continue;
-      const source = code.children
-        .map((child) => (child.type === "text" ? child.value : ""))
-        .join("");
+      const source = textOf(code);
       const classes = code.properties.className;
       const language = Array.isArray(classes)
         ? String(classes.find((value) => String(value).startsWith("language-")) || "").slice(9)
@@ -124,8 +133,7 @@ function createProcessor() {
         code: [["className", /^language-./, "math-inline", "math-display"]],
       },
     })
-    .use(limitMath)
-    .use(rehypeKatex, mathOptions)
+    .use(typesetMath)
     .use(highlightFences)
     .use(rehypeStringify, { allowDangerousHtml: true });
 }
@@ -150,14 +158,18 @@ export function renderMarkdown(content: string): string {
   }
 }
 
+/** 不可排版的公式保留可读源码。Formulas that cannot be typeset keep readable source. */
+function mathFallback(tex: string): string {
+  return `<code class="moe-math__fallback">${highlightCode(tex)}</code>`;
+}
+
 /**
  * 渲染独立 TeX，不接受任意 KaTeX 选项以维持安全边界。Render standalone TeX without arbitrary options that could bypass safety.
  * 非法/超长公式保留可读源文本。Invalid/oversized formulas preserve readable source text.
  * @example renderMath(String.raw`\int_0^1 x^2\,dx`, true)
  */
 export function renderMath(tex: string, display = false): string {
-  if (!withinMathBudget(tex))
-    return `<code class="moe-math__fallback">${highlightCode(tex)}</code>`;
+  if (!withinMathBudget(tex)) return mathFallback(tex);
   try {
     return katex
       .renderToString(tex, {
@@ -171,6 +183,6 @@ export function renderMath(tex: string, display = false): string {
         '<span class="katex-display" tabindex="0" role="region" aria-label="数学公式 / Mathematical expression">',
       );
   } catch {
-    return `<code class="moe-math__fallback">${highlightCode(tex)}</code>`;
+    return mathFallback(tex);
   }
 }

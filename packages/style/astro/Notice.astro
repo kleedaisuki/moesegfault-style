@@ -1,0 +1,20 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import Icon from "./Icon.astro";
+
+/** 通知色调。Notice tones. */
+export type NoticeTone = "info" | "success" | "warning" | "danger";
+
+interface Props extends Omit<HTMLAttributes<"div">, "title"> {
+  /** 可选标题。Optional title. */
+  title?: string;
+  /** 通知色调。Notice tone. */
+  tone?: NoticeTone;
+}
+const { title, tone = "info", class: className, ...rest } = Astro.props;
+---
+<div {...rest} class:list={["moe-notice", className]} data-tone={tone}>
+  <Icon class="moe-notice__icon" name={tone} size={16} />
+  {title && <strong class="moe-notice__title">{title}</strong>}
+  <div class="moe-notice__content"><slot /></div>
+</div>
