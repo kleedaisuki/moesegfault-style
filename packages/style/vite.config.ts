@@ -30,7 +30,6 @@ export default defineConfig({
         "remark-math",
         "remark-rehype",
         "rehype-sanitize",
-        "rehype-katex",
         "rehype-stringify",
         "katex",
       ],

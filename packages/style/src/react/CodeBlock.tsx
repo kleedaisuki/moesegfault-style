@@ -64,7 +64,8 @@ export function CodeBlock({
     >
       <figcaption className="moe-code-block__header" id={captionId}>
         <span className="moe-code-block__title">{filename || label}</span>
-        <span className="moe-code-block__language">{language}</span>
+        {/* A filename already names the language. */}
+        {!filename && <span className="moe-code-block__language">{language}</span>}
         {copyable && (
           <button
             type="button"

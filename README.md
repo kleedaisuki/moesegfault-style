@@ -1,7 +1,7 @@
-# MoeSegfault Style
+# moeSegFault Style
 
-> A warm, editorial design system for React, Astro, and the web. 这是一个从 MoeSegfault
-> 现有产品中提炼、重新实现的设计系统与组件库。
+> A crimson and honey design system for React, Astro, and the web. Klee 色系落在发丝线网格与原生
+> 控件上：绯红负责行动，蜜金负责高光，四叶草负责报平安。
 
 [![CI](https://github.com/kleedaisuki/moesegfault-style/actions/workflows/ci.yml/badge.svg)](https://github.com/kleedaisuki/moesegfault-style/actions/workflows/ci.yml)
 [![Deploy](https://github.com/kleedaisuki/moesegfault-style/actions/workflows/deploy.yml/badge.svg)](https://github.com/kleedaisuki/moesegfault-style/actions/workflows/deploy.yml)
@@ -28,7 +28,8 @@ API。React、Astro 和纯 HTML 消费方共享相同的设计令牌（Design To
 3. **薄框架封装**：React 与 Astro 组件共享视觉语言，但保留各自自然的渲染模型。
 4. **可访问性默认开启**：可见焦点、减少动态效果（reduced motion）、语义 HTML 和明暗主题
    是基础行为，而不是可选补丁。
-5. **固定版本优先**：生产应用应锁定完整语义化版本（Semantic Versioning, SemVer）。
+5. **边线先于阴影**：层级依次由发丝线、底色和阴影表达，每个视图只有一个主操作色。
+6. **固定版本优先**：生产应用应锁定完整语义化版本（Semantic Versioning, SemVer）。
 
 ## 仓库结构
 
@@ -75,6 +76,15 @@ import "@moesegfault/style/foundation.css";
 import "@moesegfault/style/components.css";
 ```
 
+`components.css` 已包含表单、数据、导航与浮层样式；`forms.css`、`data.css`、`navigation.css`、
+`overlay.css` 供只取一类组件的项目单独使用。
+
+文本字体按需启用。`all.css` 不下载文本字体；需要 Geist 与 Geist Mono 时再加一行：
+
+```ts
+import "@moesegfault/style/fonts.css";
+```
+
 令牌同时提供 CSS Custom Properties（CSS 自定义属性）、普通 JSON、DTCG JSON 和类型安全的
 TypeScript 访问方式：
 
@@ -105,6 +115,8 @@ import {
   Card,
   Cluster,
   Container,
+  Field,
+  Input,
   Stack,
 } from "@moesegfault/style/react";
 
@@ -114,7 +126,10 @@ export function Welcome() {
       <Stack>
         <BrandMark />
         <Card>
-          <h1>Hello, MoeSegfault!</h1>
+          <h1>Hello, moeSegFault!</h1>
+          <Field label="Project" hint="Lowercase only">
+            <Input name="project" />
+          </Field>
           <Cluster>
             <Button>Get started</Button>
             <Button variant="secondary">Documentation</Button>
@@ -191,8 +206,14 @@ import {
 | `@moesegfault/style/astro/*.astro` | 稳定的 Astro 组件显式子路径 |
 | `@moesegfault/style/tokens.css` | CSS token definitions only |
 | `@moesegfault/style/foundation.css` | 基础排版、主题与页面基础规则 |
-| `@moesegfault/style/components.css` | 组件与布局样式 |
-| `@moesegfault/style/all.css` | 上述 CSS 的便利聚合入口 |
+| `@moesegfault/style/components.css` | 全部组件与布局样式 |
+| `@moesegfault/style/{forms,data,navigation,overlay}.css` | 单独一类控件的样式 |
+| `@moesegfault/style/{glass,motion,messages,code,icons,markdown,math,editor}.css` | 单独一类呈现能力的样式 |
+| `@moesegfault/style/fonts.css` | 可选的自托管 Geist 与 Geist Mono |
+| `@moesegfault/style/all.css` | 除 `fonts.css` 外全部 CSS 的便利聚合入口 |
+| `@moesegfault/style/code`、`/markdown` | 与框架无关的高亮、Markdown 与公式渲染 |
+| `@moesegfault/style/react/{rich-text,editor}` | 独立的 React 富文本渲染与编辑入口 |
+| `@moesegfault/style/icons/*.svg` | 静态品牌 SVG |
 | `@moesegfault/style/tokens.json` | 解析后的运行时令牌 JSON |
 | `@moesegfault/style/tokens.dtcg.json` | DTCG 交换格式令牌 |
 
@@ -204,7 +225,7 @@ Cloudflare Workers Static Assets 同时承载便于普通 HTML 或无法安装 n
 ```html
 <link
   rel="stylesheet"
-  href="https://style.moesegfault.dev/v0.1.2/css/all.css"
+  href="https://style.moesegfault.dev/v0.2.0/css/all.css"
 />
 ```
 
@@ -225,9 +246,9 @@ https://style.moesegfault.dev/css/all.css
 - 每个精确版本都会保留并列入根 `manifest.json` 的 `publishedVersions`；不会生成 `/v0/`
   一类主版本浮动别名。
 - `/latest/` 是唯一的完整浮动别名，只适合文档、原型或明确接受版本漂移的场景。
-- `/colors` 是可导航的默认入口，并跳转到当前稳定版本（当前为 `/v0.1.2/colors/`）。
+- `/colors` 是可导航的默认入口，并跳转到当前稳定版本（当前为 `/v0.2.0/colors/`）。
   `/colors/colors.css`、`/colors/colors.json` 与 `/css/all.css` 是无需跳转的最新稳定机器资源；
-  如需可复现构建，请改用对应的 `/v0.1.2/...` 路径。
+  如需可复现构建，请改用对应的 `/v0.2.0/...` 路径。
 - React/Astro 组件默认通过包管理器消费；远程分发重点是 CSS 与 token JSON，避免浏览器裸
   ESM 的 React runtime 解析与重复实例问题。
 
@@ -264,8 +285,10 @@ Workers 静态资源由 Cloudflare 边缘网络分发。内容指纹的 `/_astro
 | `FOGMOE-telegram-bot/app` | 奶油与珊瑚色板、玻璃表面、状态与聊天视觉、移动端安全区 | 会话状态机、SSE/API、领域模型、完整聊天容器 |
 
 本仓库只提取可泛化的视觉规范、交互语义和基础构件。**没有复制或重新分发源项目中的
-PDF、文章或其他受内容许可证约束的正文。字体文件目前也不随库或远程静态资源分发**；默认
-字体栈使用宿主系统字体。若未来新增字体或第三方图像，每项资产必须单独记录来源与许可证。
+PDF、文章或其他受内容许可证约束的正文。** 随包分发的第三方字体只有两组：`fonts.css` 按需加载的
+Geist 与 Geist Mono（OFL-1.1），以及公式样式使用的 KaTeX 字体（MIT）；许可证文本与字体文件相邻，
+汇总见 [`THIRD_PARTY_NOTICES.txt`](./packages/style/THIRD_PARTY_NOTICES.txt)。未引入 `fonts.css`
+时使用宿主系统字体。
 
 ## 版本策略
 

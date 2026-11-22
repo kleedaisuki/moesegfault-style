@@ -14,7 +14,7 @@ for (const route of routes) {
     await page.goto(route);
     await expect(page.locator("main h1")).toBeVisible();
     await expect(page.getByRole("navigation", { name: "主要导航" })).toBeVisible();
-    await expect(page.locator('nav a[aria-current="page"]')).toHaveCount(1);
+    await expect(page.locator('.site-nav a[aria-current="page"]')).toHaveCount(1);
     await expect(page.locator('link[rel="icon"]')).toHaveAttribute("href", "/favicon.svg");
 
     const overflow = await page.evaluate(
@@ -29,13 +29,14 @@ for (const route of englishRoutes) {
     await page.goto(route);
     await expect(page.locator("html")).toHaveAttribute("lang", "en");
     await expect(page.getByRole("navigation", { name: "Primary navigation" })).toBeVisible();
-    await expect(page.locator('nav a[aria-current="page"]')).toHaveCount(1);
+    await expect(page.locator('.site-nav a[aria-current="page"]')).toHaveCount(1);
     await expect(page.getByRole("link", { name: "Switch to Chinese" })).toBeVisible();
     await expect(page.getByRole("button", { name: /Switch to (light|dark) theme/ })).toBeVisible();
     const navLinks = await page
-      .locator("nav a")
+      .locator(".site-nav a")
       .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
     expect(navLinks.every((href) => href?.startsWith("/en/"))).toBe(true);
+    // biome-ignore lint/performance/useDomNodeTextContent: only rendered text counts as untranslated
     const englishBody = (await page.locator("body").innerText()).replace("中文", "");
     expect(englishBody).not.toMatch(/[\u3400-\u9fff]/u);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
@@ -50,19 +51,19 @@ test("language switch preserves the current section", async ({ page }) => {
   await page.goto("/foundations/");
   await page.getByRole("link", { name: "Read in English" }).click();
   await expect(page).toHaveURL(/\/en\/foundations\/$/);
-  await expect(page.locator("main h1")).toHaveText("Order you can feel.");
+  await expect(page.locator("main h1")).toHaveText("Foundations");
   await page.getByRole("link", { name: "Switch to Chinese" }).click();
   await expect(page).toHaveURL(/\/foundations\/$/);
 });
 
 test("theme preference survives navigation", async ({ page }) => {
   await page.goto("/");
-  await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute("content", "#fff6ea");
+  await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute("content", "#fffdf9");
   const toggle = page.getByRole("button", { name: /切换至深色主题/ });
   await expect(toggle).toHaveAttribute("data-ready", "true");
   await toggle.click();
   await expect(page.locator("html")).toHaveAttribute("data-moe-theme", "dark");
-  await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute("content", "#21130f");
+  await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute("content", "#160b0c");
   await expect
     .poll(() =>
       page.evaluate(() =>
@@ -71,7 +72,7 @@ test("theme preference survives navigation", async ({ page }) => {
           .trim(),
       ),
     )
-    .toBe("#21130f");
+    .toBe("#160b0c");
 
   await page.goto("/foundations/");
   await expect(page.locator("html")).toHaveAttribute("data-moe-theme", "dark");

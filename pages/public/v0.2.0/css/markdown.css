@@ -1,0 +1,172 @@
+@layer moe.tokens, moe.reset, moe.foundation, moe.components, moe.utilities;
+
+/* 文稿继承主题与字体；KaTeX 字体另由 math.css 自托管。Prose inherits theme and typography; math.css self-hosts KaTeX fonts. */
+@layer moe.components {
+  .moe-markdown {
+    min-width: 0;
+    color: var(--moe-text);
+    line-height: 1.75;
+    overflow-wrap: anywhere;
+  }
+  .moe-markdown .moe-code-block {
+    margin-block: 1em;
+  }
+  .moe-markdown > :first-child {
+    margin-top: 0;
+  }
+  .moe-markdown > :last-child {
+    margin-bottom: 0;
+  }
+  .moe-markdown :where(h1, h2, h3, h4, h5, h6) {
+    margin-block: 1.8em 0.65em;
+    line-height: 1.35;
+    letter-spacing: -0.015em;
+  }
+  .moe-markdown :where(p, ul, ol, blockquote, pre, table) {
+    margin-block: 1em;
+  }
+  .moe-markdown .moe-code-block > .moe-code-block__pre {
+    margin: 0;
+  }
+  .moe-markdown :where(ul, ol) {
+    padding-inline-start: 1.5em;
+  }
+  .moe-markdown li + li {
+    margin-block-start: 0.3em;
+  }
+  .moe-markdown a {
+    color: var(--moe-accent-strong);
+  }
+  .moe-markdown blockquote {
+    margin-inline: 0;
+    padding-inline-start: 1em;
+    border-inline-start: 2px solid var(--moe-accent);
+    color: var(--moe-text-soft);
+  }
+  .moe-markdown blockquote > :last-child {
+    margin-block-end: 0;
+  }
+  .moe-markdown :not(pre) > code {
+    padding: 0.12em 0.36em;
+    border: 1px solid var(--moe-line);
+    border-radius: var(--moe-radius-xs);
+    color: var(--moe-heading);
+    background: var(--moe-hover);
+    font-family: var(--moe-font-family-mono);
+    font-size: 0.875em;
+  }
+  .moe-markdown table {
+    display: block;
+    width: fit-content;
+    background: transparent;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: 0.92em;
+  }
+  .moe-markdown :where(th, td) {
+    padding: 0.55em 1em;
+    border: 1px solid var(--moe-line);
+    text-align: start;
+  }
+  .moe-markdown th {
+    color: var(--moe-heading);
+    background: var(--moe-surface-sunken);
+    font-weight: var(--moe-font-weight-medium);
+  }
+  /* 保留 GFM 列对齐约定。Preserve GFM column alignment semantics. */
+  .moe-markdown :where(th, td)[align="center"] {
+    text-align: center;
+  }
+  .moe-markdown :where(th, td)[align="right"] {
+    text-align: right;
+  }
+  .moe-markdown :where(th, td)[align="left"] {
+    text-align: left;
+  }
+  .moe-markdown img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--moe-radius-md);
+  }
+  .moe-markdown hr {
+    margin-block: 2em;
+    border: 0;
+    border-top: 1px solid var(--moe-line);
+  }
+  .moe-markdown .contains-task-list {
+    padding-inline-start: 0;
+  }
+  .moe-markdown .task-list-item {
+    position: relative;
+    padding-inline-start: 1.75em;
+    list-style: none;
+  }
+  /* GFM task boxes are always disabled, and browsers ignore accent-color there. */
+  .moe-markdown .task-list-item > input[type="checkbox"],
+  .moe-markdown .task-list-item > p > input[type="checkbox"] {
+    position: absolute;
+    inset-block-start: 0.375em;
+    inset-inline-start: 0;
+    display: grid;
+    width: 1em;
+    height: 1em;
+    place-content: center;
+    margin: 0;
+    border: 1px solid var(--moe-line-strong);
+    border-radius: var(--moe-radius-xs);
+    appearance: none;
+    background: var(--moe-surface-strong);
+  }
+  .moe-markdown .task-list-item input:checked {
+    border-color: var(--moe-action);
+    background: var(--moe-action);
+  }
+  .moe-markdown .task-list-item input:checked::before {
+    width: 0.625em;
+    height: 0.625em;
+    background: var(--moe-on-action);
+    clip-path: polygon(14% 44%, 0 60%, 42% 100%, 100% 20%, 84% 6%, 40% 70%);
+    content: "";
+  }
+  @media (forced-colors: active) {
+    .moe-markdown .task-list-item input[type="checkbox"] {
+      appearance: auto;
+    }
+    .moe-markdown .task-list-item input:checked::before {
+      content: none;
+    }
+  }
+  .moe-markdown .footnotes {
+    margin-block-start: 2em;
+    border-top: 1px solid var(--moe-line);
+    font-size: 0.85em;
+  }
+  .moe-math {
+    max-width: 100%;
+    color: inherit;
+  }
+  .moe-math[data-display] {
+    display: block;
+    min-width: 0;
+    margin-block: 1em;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  .moe-markdown .katex-display,
+  .moe-math .katex-display {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-block: 0.35em;
+  }
+  .moe-math[data-display] > .katex-display {
+    margin-block: 0;
+  }
+  .moe-markdown__fallback,
+  .moe-math__fallback {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font-family: var(--moe-font-family-mono);
+  }
+}

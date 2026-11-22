@@ -1,0 +1,18 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends Omit<HTMLAttributes<"section">, "title"> {
+  /** 标题栏文字，也是区域名称。Header text, also the region's name. */
+  title: string;
+  /** 去除正文内边距。Remove body padding. */
+  flush?: boolean;
+}
+const { title, flush = false, class: className, ...rest } = Astro.props;
+---
+<section aria-label={title} {...rest} class:list={["moe-panel", className]} data-flush={flush || undefined}>
+  <header class="moe-panel__header">
+    <span class="moe-panel__title">{title}</span>
+    {Astro.slots.has("actions") && <div class="moe-panel__actions"><slot name="actions" /></div>}
+  </header>
+  <div class="moe-panel__body"><slot /></div>
+</section>

@@ -3,7 +3,7 @@
 ## Purpose and decision rule
 
 This plan validates the migration of `style.moesegfault.dev` from GitHub Pages to
-Cloudflare Workers, the addition of an agent-facing MoeSegfault Style skill, and
+Cloudflare Workers, the addition of an agent-facing moeSegFault Style skill, and
 distribution of that skill as a static download. It is intentionally independent
 of the implementation: commands that depend on the final scripts are identified
 by capability, not by a presumed internal layout.
@@ -245,7 +245,7 @@ Perform at least three scenario evaluations in a disposable directory:
 
 | Scenario | Expected skill behavior |
 | --- | --- |
-| Add MoeSegfault styling to a React page | Chooses the React/package entry points and imports the minimum required CSS without inventing APIs. |
+| Add moeSegFault styling to a React page | Chooses the React/package entry points and imports the minimum required CSS without inventing APIs. |
 | Style a plain static HTML page | Uses a pinned static CSS URL (or a clearly documented local alternative), semantic markup, theme tokens, and no React dependency. |
 | Modify an Astro documentation page | Selects supported Astro primitives, preserves accessibility/theme behavior, and points to deeper references only when needed. |
 

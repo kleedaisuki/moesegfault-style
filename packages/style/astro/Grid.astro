@@ -1,0 +1,18 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import { mergeLayoutStyles } from "./_style";
+
+export interface Props extends Omit<HTMLAttributes<"div">, "class"> {
+  /** 子项间距 CSS 值。CSS gap value between children. */
+  gap?: string;
+  /** 列的最小宽度。Minimum column width. */
+  min?: string;
+  /** 自定义 CSS 类。Custom CSS class. */
+  class?: string;
+  /** 用共享发丝线代替间距。Replace gaps with shared hairlines. */
+  ruled?: boolean;
+}
+const { gap, min, ruled = false, class: className, style, ...rest } = Astro.props;
+const layoutStyle = mergeLayoutStyles(style, { "--moe-grid-space": gap, "--moe-grid-min": min });
+---
+<div {...rest} class:list={["moe-grid", className]} data-ruled={ruled || undefined} style={layoutStyle}><slot /></div>

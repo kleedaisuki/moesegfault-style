@@ -1,7 +1,7 @@
 import { expect, type Page, test } from "@playwright/test";
 
 /** 富文本验收区域，与展示文案解耦。Rich-content acceptance region independent of copy. */
-const rich = '[data-testid="v012-rich-content"]';
+const rich = '[data-testid="specimen-rich-text"]';
 
 /** 长公式与代码只能在自身区域滚动。Long equations and code must not widen the document. */
 async function expectContained(page: Page): Promise<void> {
@@ -126,20 +126,40 @@ test("frosted pane blurs live underlying text and artwork, with a working compar
     });
     await expectContained(page);
   }
-  const toggle = page.getByTestId("frosted-demo").getByRole("button");
-  await expect(toggle).toHaveAttribute("aria-pressed", "true");
+  const toggle = page.getByTestId("frosted-demo").getByRole("switch");
+  await expect(toggle).toBeChecked();
   await toggle.focus();
   await toggle.press("Space");
-  await expect(toggle).toHaveAttribute("aria-pressed", "false");
+  await expect(toggle).not.toBeChecked();
   await expect(pane).toHaveAttribute("data-frosted", "false");
   expect(await pane.evaluate((element) => getComputedStyle(element).backdropFilter)).toMatch(
     /blur\(0px\)/,
   );
 });
 
+test("Markdown formulas use the same styled layout as standalone formulas", async ({ page }) => {
+  await page.goto("/components/");
+  const markdown = page.locator(`${rich} .moe-markdown .katex-display`).first();
+  const layout = await markdown.evaluate((element) => {
+    const limit = [...element.querySelectorAll(".katex-sizing")].map((node) =>
+      Number.parseFloat(getComputedStyle(node).fontSize),
+    );
+    const body = Number.parseFloat(getComputedStyle(element).fontSize);
+    return {
+      body,
+      smallest: Math.min(...limit),
+      legacy: element.querySelectorAll(".strut").length,
+    };
+  });
+  expect(layout.legacy).toBe(0);
+  expect(layout.smallest).toBeLessThan(layout.body);
+});
+
 test("self-hosted mathematics fonts load without missing resources", async ({ page }) => {
   const failures: string[] = [];
-  page.on("requestfailed", (request) => failures.push(request.url()));
+  page.on("requestfailed", (request) =>
+    failures.push(`${request.url()} ${request.failure()?.errorText}`),
+  );
   page.on("response", (response) => {
     if (response.status() >= 400) failures.push(`${response.status()} ${response.url()}`);
   });

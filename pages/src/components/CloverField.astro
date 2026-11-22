@@ -1,0 +1,31 @@
+---
+import {
+  CLOVER_CELL,
+  CLOVER_MARGIN,
+  CLOVER_SIZE,
+  type CloverTone,
+  cloverCells,
+} from "../lib/clover";
+
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+const extent = CLOVER_SIZE + 2 * CLOVER_MARGIN;
+const inset = (1 - CLOVER_CELL) / 2;
+const tones: CloverTone[] = ["ember", "spark", "stem", "leaf", "vein"];
+/** 每种色调一条路径，而不是七百个矩形。One path per tone instead of hundreds of rects. */
+const paths = tones.map((tone) => ({
+  tone,
+  d: cloverCells
+    .filter((cell) => cell.tone === tone)
+    .map(
+      ({ column, row }) =>
+        `M${column + inset} ${row + inset}h${CLOVER_CELL}v${CLOVER_CELL}h-${CLOVER_CELL}z`,
+    )
+    .join(""),
+}));
+---
+<svg class:list={["clover", className]} viewBox={`${-CLOVER_MARGIN} ${-CLOVER_MARGIN} ${extent} ${extent}`} aria-hidden="true" focusable="false">
+  {paths.map(({ tone, d }) => <path class={`clover__${tone}`} d={d} />)}
+</svg>

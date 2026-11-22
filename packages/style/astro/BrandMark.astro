@@ -16,7 +16,7 @@ export interface Props extends Omit<HTMLAttributes<"a">, "class"> {
 }
 
 /** @brief 组件属性 / Component properties. */
-const { href, label = "Moe Segfault", class: className, ...rest } = Astro.props;
+const { href, label = "moeSegFault", class: className, ...rest } = Astro.props;
 
 /** @brief 表示是否显式提供链接地址 / Whether a link destination was explicitly provided. */
 const hasHref = href !== undefined && href !== null;
@@ -34,7 +34,7 @@ const linkProps = hasHref ? { href } : {};
   class:list={["moe-brand-mark", className]}
   aria-label={rest["aria-label"] ?? label}
 >
-  <span class="moe-brand-mark__symbol" aria-hidden="true"><slot name="symbol">M</slot></span>
+  <span class="moe-brand-mark__symbol" aria-hidden="true"><slot name="symbol"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="currentColor"><path d="M18 13h9v14.4L40.2 13H51L35.7 30.2 52 51H40.6L28.3 35.3 27 36.7V51h-9V13Z" /><path class="moe-brand-mark__spark" d="m49.5 7 1.8 4.7L56 13.5l-4.7 1.8L49.5 20l-1.8-4.7-4.7-1.8 4.7-1.8L49.5 7Z" /></svg></slot></span>
   <span class="moe-brand-mark__text">
     <span class="moe-brand-mark__name"><slot>{label}</slot></span>
     {

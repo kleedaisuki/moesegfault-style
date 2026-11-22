@@ -1,0 +1,16 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import { type IconGlyph, iconGlyphs } from "@moesegfault/style";
+
+interface Props extends Omit<HTMLAttributes<"svg">, "name"> {
+  /** 界面图标名称。Interface icon name. */
+  name: IconGlyph;
+  /** 默认宽高。Default dimensions. */
+  size?: number | string;
+  /** 非装饰图标的可访问名称。Accessible name for a meaningful icon. */
+  title?: string;
+}
+const { name, size = "1em", title, class: className, ...rest } = Astro.props;
+const semantics = title ? { role: "img", "aria-label": title } : { "aria-hidden": "true" as const };
+---
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width={size} height={size} focusable="false" {...semantics} {...rest} class:list={["moe-icon", `moe-icon--${name}`, className]}><path d={iconGlyphs[name]} pathLength="1" /></svg>

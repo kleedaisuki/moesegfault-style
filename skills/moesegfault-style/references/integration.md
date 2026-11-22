@@ -29,7 +29,9 @@ For deliberately selective adoption, preserve this order:
 @import "@moesegfault/style/components.css";
 ```
 
-Specialized CSS such as glass, motion, messages, code, Markdown/math, or editor styles belongs after its prerequisites. Prefer `all.css` unless bundle evidence justifies managing layers manually.
+Text fonts are opt-in. Add `@moesegfault/style/fonts.css` to self-host Geist and Geist Mono; without it the stacks fall back to system fonts and nothing is downloaded.
+
+Specialized CSS such as forms, data, navigation, overlays, glass, motion, messages, code, Markdown/math, or editor styles belongs after its prerequisites. Prefer `all.css` unless bundle evidence justifies managing layers manually.
 
 ### React
 
@@ -42,7 +44,7 @@ export function Welcome() {
     <Container size="narrow">
       <Stack gap="lg">
         <Card>
-          <h1>Build on a warm sheet of paper.</h1>
+          <h1>Cute by default.</h1>
           <Button>Continue</Button>
         </Card>
       </Stack>
@@ -86,7 +88,7 @@ import { createThemeBootstrap } from "@moesegfault/style";
 
 A later theme control may persist the same `moe-theme` key and call `applyTheme`; it does not require hydrating the native Astro style components.
 
-For host-owned CSS, prefer semantic variables such as `--moe-background`, `--moe-surface`, `--moe-text`, `--moe-text-soft`, `--moe-heading`, `--moe-accent`, `--moe-border`, and the public spacing, radius, shadow, typography, and motion scales. Raw palette tokens are appropriate only when a semantic role truly does not fit.
+For host-owned CSS, prefer semantic variables such as `--moe-background`, `--moe-surface`, `--moe-text`, `--moe-text-soft`, `--moe-heading`, `--moe-accent`, `--moe-action`, `--moe-highlight`, `--moe-brand`, `--moe-line`, `--moe-line-strong`, `--moe-border`, and the public spacing, radius, shadow, typography, and motion scales. Raw palette tokens are appropriate only when a semantic role truly does not fit.
 
 ## Static assets
 

@@ -1,0 +1,18 @@
+---
+import { CLOVER_CELL } from "../lib/clover";
+import { pixelType } from "../lib/pixel-type";
+
+interface Props {
+  text: string;
+}
+const { text } = Astro.props;
+const type = pixelType(text);
+const inset = (1 - CLOVER_CELL) / 2;
+const path = type?.cells
+  .map(
+    ({ column, row }) =>
+      `M${column + inset} ${row + inset}h${CLOVER_CELL}v${CLOVER_CELL}h-${CLOVER_CELL}z`,
+  )
+  .join("");
+---
+{type ? <Fragment><svg class="pixel-text" viewBox={`0 0 ${type.width} ${type.height}`} aria-hidden="true" focusable="false"><path d={path} /></svg><span class="moe-visually-hidden">{text}</span></Fragment> : text}

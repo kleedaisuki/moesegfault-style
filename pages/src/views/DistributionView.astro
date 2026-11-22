@@ -1,0 +1,71 @@
+---
+import Button from "@moesegfault/style/astro/Button.astro";
+import Cluster from "@moesegfault/style/astro/Cluster.astro";
+import Icon from "@moesegfault/style/astro/Icon.astro";
+import CopyLine from "../components/CopyLine.astro";
+import CloverField from "../components/CloverField.astro";
+import DocsLayout from "../layouts/DocsLayout.astro";
+import { ORIGIN, pinned, type SiteLocale, VERSION } from "../lib/site";
+
+interface Props {
+  locale?: SiteLocale;
+}
+const { locale = "zh-CN" } = Astro.props;
+const en = locale === "en";
+const assets = [
+  "css/all.css",
+  "css/fonts.css",
+  "css/tokens.css",
+  "css/foundation.css",
+  "css/components.css",
+  "tokens/tokens.json",
+  "tokens/tokens.dtcg.json",
+  "manifest.json",
+];
+---
+
+<DocsLayout
+  title={en ? "Distribution" : "分发"}
+  description={en ? "Versioned static assets for moeSegFault Style." : "moeSegFault Style 的版本化静态资源。"}
+  currentPath={en ? "/en/distribution/" : "/distribution/"}
+  locale={locale}
+>
+  <header class="page-intro pad">
+    <h1>{en ? "A URL is a contract" : "地址就是契约"}</h1>
+    <CloverField />
+  </header>
+
+  <section class="section" aria-labelledby="pinned-title">
+    <div class="pad">
+      <div class="section__head"><h2 id="pinned-title">{en ? "Pinned" : "固定版本"}</h2></div>
+      <div class="stack">
+        <CopyLine text={pinned("css/all.css")} locale={locale} />
+        <ul class="file-grid">
+          {assets.map((path) => <li><a href={`/v${VERSION}/${path}`}><Icon name="file" size={16} /><code>{path}</code></a></li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="moving-title">
+    <div class="pad">
+      <div class="section__head"><h2 id="moving-title">{en ? "Moving with releases" : "跟随新版本"}</h2></div>
+      <div class="stack">
+        <CopyLine text={`${ORIGIN}/latest/css/all.css`} locale={locale} />
+        <CopyLine text={`${ORIGIN}/css/all.css`} locale={locale} />
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="skill-title" style="border-block-end: 0">
+    <div class="pad">
+      <div class="section__head"><h2 id="skill-title">Agent Skill</h2></div>
+      <Cluster gap="0.5rem">
+        <Button href="/skills/moesegfault-style.zip" download="moesegfault-style.zip">{en ? "Download skill" : "下载 Skill"}</Button>
+        <Button href="/skills/moesegfault-style/SKILL.md" variant="secondary">SKILL.md</Button>
+        <Button href="/skills/manifest.json" variant="ghost">{en ? "Manifest" : "清单"}<Icon slot="trailing" name="arrow-up-right" /></Button>
+        <Button href="/manifest.json" variant="ghost">{en ? "All versions" : "所有版本"}<Icon slot="trailing" name="arrow-up-right" /></Button>
+      </Cluster>
+    </div>
+  </section>
+</DocsLayout>

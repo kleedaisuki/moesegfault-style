@@ -28,7 +28,7 @@ const language: CodeLanguage = "typescript";
 const code: CodeBlockProps = { code: "const n = 42", language };
 const glass: GlassProps = { tone: "warm" };
 const motion: MotionProps = { preset: "rise", disabled: true };
-const icon: IconProps = { name: "brand", title: "MoeSegfault" };
+const icon: IconProps = { name: "brand", title: "moeSegFault" };
 const message: MessageBubbleProps = { variant: "assistant", tone: "soft", status: "Done" };
 void [highlightCode(code.code, language), glass, motion, icon, message];
 

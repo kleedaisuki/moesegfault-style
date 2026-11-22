@@ -3,103 +3,101 @@
 /* 本地可托管字体，无 CDN 请求；通过变量替换。Self-hostable fonts, no CDN requests; override with a custom property. */
 @layer moe.components {
   .moe-code-block {
-    --moe-code-background: #fff9f0;
-    --moe-code-foreground: #453631;
-    --moe-code-comment: #786c65;
-    --moe-code-keyword: #a33d35;
-    --moe-code-string: #48652b;
-    --moe-code-number: #935318;
-    --moe-code-title: #754787;
-    --moe-code-attribute: #286674;
+    --moe-code-background: #fffdf9;
+    --moe-code-foreground: #3d2823;
+    --moe-code-comment: #7a6459;
+    --moe-code-keyword: #b3202b;
+    --moe-code-string: #2b6b3f;
+    --moe-code-number: #8a5208;
+    --moe-code-title: #8b2f6b;
+    --moe-code-attribute: #1f6376;
     min-width: 0;
     max-width: 100%;
     margin: 0;
     overflow: hidden;
-    border: 1px solid var(--moe-border);
-    border-radius: var(--moe-radius-md, 1rem);
+    position: relative;
+    border: 1px solid var(--moe-line);
+    border-radius: var(--moe-radius-md);
     color: var(--moe-code-foreground);
-    background: linear-gradient(
-      125deg,
-      color-mix(in srgb, var(--moe-color-gold) 8%, var(--moe-code-background)),
-      var(--moe-code-background) 70%
-    );
-    box-shadow:
-      0 1px 0 color-mix(in srgb, white 36%, transparent) inset,
-      0 10px 32px color-mix(in srgb, var(--moe-accent) 7%, transparent);
+    background: var(--moe-code-background);
   }
 
   /* 显式深色与系统自动主题共享色板。Explicit dark and system-auto modes share a palette. */
   :root[data-moe-theme="dark"] .moe-code-block {
-    --moe-code-background: #241f20;
-    --moe-code-foreground: #f0dfd3;
-    --moe-code-comment: #b5a399;
-    --moe-code-keyword: #ffa295;
-    --moe-code-string: #c4d695;
-    --moe-code-number: #f3c080;
-    --moe-code-title: #d7b7ec;
-    --moe-code-attribute: #9ed2db;
+    --moe-code-background: #100708;
+    --moe-code-foreground: #f3e6d8;
+    --moe-code-comment: #b79d90;
+    --moe-code-keyword: #ff8d80;
+    --moe-code-string: #a5dcae;
+    --moe-code-number: #f5cd63;
+    --moe-code-title: #ffadc9;
+    --moe-code-attribute: #9fd3dc;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-moe-theme="light"]):not([data-moe-theme="dark"]) .moe-code-block {
-      --moe-code-background: #241f20;
-      --moe-code-foreground: #f0dfd3;
-      --moe-code-comment: #b5a399;
-      --moe-code-keyword: #ffa295;
-      --moe-code-string: #c4d695;
-      --moe-code-number: #f3c080;
-      --moe-code-title: #d7b7ec;
-      --moe-code-attribute: #9ed2db;
+      --moe-code-background: #100708;
+      --moe-code-foreground: #f3e6d8;
+      --moe-code-comment: #b79d90;
+      --moe-code-keyword: #ff8d80;
+      --moe-code-string: #a5dcae;
+      --moe-code-number: #f5cd63;
+      --moe-code-title: #ffadc9;
+      --moe-code-attribute: #9fd3dc;
     }
   }
   .moe-code-block__header {
     display: flex;
-    flex-wrap: wrap;
+    min-height: 2.5rem;
     align-items: center;
-    gap: 0.65rem;
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--moe-border);
-    background: color-mix(in srgb, var(--moe-accent) 6%, transparent);
-    font-size: 0.8rem;
+    gap: var(--moe-space-3);
+    padding-inline: var(--moe-space-4);
+    border-block-end: 1px solid var(--moe-line);
+    background: var(--moe-hover);
+    font-family: var(--moe-font-family-mono);
+    font-size: var(--moe-font-size-xs);
   }
   .moe-code-block__title {
     min-width: 0;
     flex: 1;
-    overflow-wrap: anywhere;
-    font-weight: 650;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .moe-code-block__language {
     color: var(--moe-code-comment);
-    font-size: 0.72rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
   }
   .moe-code-block__copy {
-    min-height: 2.75rem;
-    padding: 0.3rem 0.7rem;
-    border: 1px solid var(--moe-border);
-    border-radius: 0.6rem;
+    margin-inline-end: -0.5rem;
+    min-height: calc(var(--moe-control-sm) - 2px);
+    padding: 0 0.5rem;
+    border: 1px solid transparent;
+    border-radius: calc(var(--moe-radius-sm) - 2px);
     color: inherit;
     background: transparent;
     font: inherit;
     cursor: pointer;
   }
   .moe-code-block__copy:hover {
-    background: color-mix(in srgb, var(--moe-accent) 12%, transparent);
+    border-color: var(--moe-line);
+    background: var(--moe-surface-strong);
   }
   .moe-code-block__copy[hidden] {
     display: none;
   }
   .moe-code-block__pre {
     margin: 0;
+    /* 行高由 pre 决定，避免继承正文 strut。The pre sets line height so the body strut never leaks in. */
+    font-size: 0.8125rem;
+    line-height: 1.7;
     border: 0;
     border-radius: 0;
     background: transparent;
     box-shadow: none;
-    padding: 1.15rem 1.25rem;
+    padding: var(--moe-space-4);
     overflow-x: auto;
     overscroll-behavior-x: contain;
     scrollbar-width: thin;
-    scrollbar-color: var(--moe-border) transparent;
+    scrollbar-color: var(--moe-line-strong) transparent;
     tab-size: 2;
   }
   .moe-code-block__code {
@@ -107,19 +105,10 @@
     border: 0;
     color: inherit;
     background: transparent;
-    font-family: var(
-      --moe-code-font-family,
-      "JetBrains Mono Variable",
-      "JetBrains Mono",
-      "Cascadia Code",
-      "SFMono-Regular",
-      Consolas,
-      "Liberation Mono",
-      monospace
-    );
-    font-size: 0.85rem;
+    font-family: var(--moe-code-font-family, var(--moe-font-family-mono));
+    font-size: inherit;
     font-variant-ligatures: none;
-    line-height: 1.85;
+    line-height: inherit;
     white-space: pre;
   }
   .moe-code-block[data-wrap] .moe-code-block__code {
@@ -127,22 +116,27 @@
     overflow-wrap: anywhere;
   }
   .moe-code-block__pre:focus-visible {
-    outline: 3px solid var(--moe-focus);
-    outline-offset: -3px;
+    outline: 2px solid var(--moe-focus);
+    outline-offset: -2px;
   }
   .moe-code-block__copy:focus-visible {
-    outline: 3px solid var(--moe-focus);
-    outline-offset: 3px;
+    outline: 2px solid var(--moe-focus);
+    outline-offset: 1px;
   }
+  /* 反馈浮在代码框内，不推动布局。Feedback floats inside the frame without shifting layout. */
   .moe-code-block__status {
-    display: block;
-    padding-inline: 1rem;
-    font-size: 0.8rem;
-    overflow-wrap: anywhere;
+    position: absolute;
+    inset: auto var(--moe-space-2) var(--moe-space-2) auto;
+    max-width: calc(100% - 2 * var(--moe-space-2));
+    padding: 0.125rem 0.5rem;
+    border-radius: var(--moe-radius-xs);
+    color: var(--moe-background);
+    background: var(--moe-heading);
+    font-size: var(--moe-font-size-xs);
+    pointer-events: none;
   }
-  .moe-code-block__status:not(:empty) {
-    padding-block: 0.5rem;
-    border-top: 1px solid var(--moe-border);
+  .moe-code-block__status:empty {
+    padding: 0;
   }
   .moe-code-block :is(.hljs-comment, .hljs-quote) {
     color: var(--moe-code-comment);

@@ -1,8 +1,9 @@
 import type { HTMLAttributes, ReactElement, ReactNode } from "react";
+import { Icon } from "./Icon";
 import { mergeClassNames } from "./utils";
 
 /** @brief 徽章的视觉色调。Visual tones for a badge. */
-export type BadgeTone = "neutral" | "accent" | "success" | "danger";
+export type BadgeTone = "neutral" | "accent" | "success" | "warning" | "danger";
 
 /** @brief 徽章属性。Badge props. */
 export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
@@ -50,6 +51,7 @@ export function Notice({
       data-tone={tone}
       role={role ?? (tone === "danger" ? "alert" : "status")}
     >
+      <Icon className="moe-notice__icon" name={tone} size={16} />
       {title && <strong className="moe-notice__title">{title}</strong>}
       <div className="moe-notice__content">{children}</div>
     </div>

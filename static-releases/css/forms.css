@@ -1,0 +1,322 @@
+@layer moe.tokens, moe.reset, moe.foundation, moe.components, moe.utilities;
+
+@layer moe.components {
+  .moe-field {
+    display: grid;
+    gap: 0.375rem;
+    min-width: 0;
+  }
+  .moe-field__label {
+    color: var(--moe-heading);
+    font-size: 0.8125rem;
+    font-weight: var(--moe-font-weight-medium);
+    line-height: 1.4;
+  }
+  .moe-field__required {
+    color: var(--moe-accent-strong);
+  }
+  .moe-field__hint,
+  .moe-field__error {
+    margin: 0;
+    color: var(--moe-text-soft);
+    font-size: var(--moe-font-size-xs);
+    line-height: 1.5;
+  }
+  .moe-field__error {
+    color: color-mix(in srgb, var(--moe-danger) 72%, var(--moe-heading));
+    transition:
+      opacity var(--moe-spring),
+      translate var(--moe-spring);
+  }
+  @starting-style {
+    .moe-field__error {
+      opacity: 0;
+      translate: 0 -0.375rem;
+    }
+  }
+
+  .moe-input {
+    width: 100%;
+    min-width: 0;
+    min-height: var(--moe-control-md);
+    padding: 0.375rem 0.75rem;
+    border: 1px solid var(--moe-line-strong);
+    border-radius: var(--moe-radius-sm);
+    color: var(--moe-heading);
+    background: var(--moe-surface-strong);
+    font-family: inherit;
+    font-size: var(--moe-font-size-sm);
+    line-height: 1.5;
+    transition:
+      border-color var(--moe-motion-fast) var(--moe-motion-ease-standard),
+      box-shadow var(--moe-motion-fast) var(--moe-motion-ease-standard);
+  }
+  .moe-input::placeholder {
+    color: color-mix(in srgb, var(--moe-text-soft) 82%, transparent);
+    opacity: 1;
+  }
+  .moe-input:hover:not(:disabled, :focus-visible) {
+    border-color: color-mix(in srgb, var(--moe-heading) 38%, transparent);
+  }
+  .moe-input:focus-visible {
+    border-color: var(--moe-accent);
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: var(--moe-ring);
+  }
+  .moe-input[aria-invalid="true"] {
+    --moe-ring: 0 0 0 3px color-mix(in srgb, var(--moe-danger) 24%, transparent);
+    border-color: var(--moe-danger);
+  }
+  .moe-input:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+  .moe-input[data-size="sm"] {
+    min-height: var(--moe-control-sm);
+    padding-block: 0.125rem;
+    font-size: 0.8125rem;
+  }
+  .moe-input[data-size="lg"] {
+    min-height: var(--moe-control-lg);
+    font-size: var(--moe-font-size-md);
+  }
+  textarea.moe-input {
+    min-height: 6rem;
+    padding-block: 0.5rem;
+    resize: vertical;
+  }
+  .moe-select {
+    position: relative;
+    display: grid;
+  }
+  .moe-select > select {
+    padding-inline-end: 2.25rem;
+    appearance: none;
+    cursor: pointer;
+  }
+  .moe-select > svg {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-end: 0.75rem;
+    color: var(--moe-text-soft);
+    pointer-events: none;
+    translate: 0 -50%;
+    transition: rotate var(--moe-spring);
+  }
+  .moe-input-group {
+    position: relative;
+    display: grid;
+  }
+  .moe-input-group > :is(svg, .moe-kbd) {
+    position: absolute;
+    inset-block-start: 50%;
+    color: var(--moe-text-soft);
+    pointer-events: none;
+    translate: 0 -50%;
+  }
+  .moe-input-group > svg {
+    inset-inline-start: 0.75rem;
+  }
+  .moe-input-group > svg ~ .moe-input {
+    padding-inline-start: 2.25rem;
+  }
+  .moe-input-group > .moe-kbd {
+    inset-inline-end: 0.5rem;
+  }
+  .moe-select > select:open ~ svg {
+    rotate: 180deg;
+  }
+
+  .moe-choice {
+    display: inline-grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    column-gap: 0.625rem;
+    color: var(--moe-text);
+    font-size: var(--moe-font-size-sm);
+    line-height: 1.5;
+    cursor: pointer;
+  }
+  .moe-choice:has(:disabled) {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+  .moe-choice__input {
+    display: grid;
+    width: 1rem;
+    height: 1rem;
+    place-content: center;
+    margin: 0.1875rem 0 0;
+    border: 1px solid color-mix(in srgb, var(--moe-heading) 42%, transparent);
+    background: var(--moe-surface-strong);
+    appearance: none;
+    cursor: inherit;
+    transition:
+      background-color var(--moe-motion-fast) var(--moe-motion-ease-standard),
+      border-color var(--moe-motion-fast) var(--moe-motion-ease-standard),
+      scale var(--moe-bounce);
+  }
+  .moe-choice:not(:has(:disabled)):active .moe-choice__input:not([role="switch"]) {
+    scale: calc(1 - 4 * (1 - var(--moe-press)));
+    transition-duration: 60ms;
+  }
+  .moe-choice__input::before {
+    content: "";
+    transform: scale(0);
+    transition:
+      transform var(--moe-bounce),
+      width var(--moe-spring),
+      background-color var(--moe-motion-fast) var(--moe-motion-ease-standard);
+  }
+  .moe-choice__input[type="checkbox"]:not([role="switch"]) {
+    border-radius: var(--moe-radius-xs);
+  }
+  .moe-choice__input[type="checkbox"]:not([role="switch"])::before {
+    width: 0.625rem;
+    height: 0.625rem;
+    background: var(--moe-on-action);
+    clip-path: polygon(14% 44%, 0 60%, 42% 100%, 100% 20%, 84% 6%, 40% 70%);
+  }
+  .moe-choice__input[type="radio"] {
+    border-radius: 50%;
+  }
+  .moe-choice__input[type="radio"]::before {
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 50%;
+    background: var(--moe-on-action);
+  }
+  .moe-choice__input:is(:checked, :indeterminate):not([type="radio"]:not(:checked)) {
+    border-color: var(--moe-action);
+    background: var(--moe-action);
+  }
+  .moe-choice__input:checked::before {
+    transform: scale(1);
+  }
+  .moe-choice__input[type="checkbox"]:indeterminate::before {
+    height: 2px;
+    clip-path: none;
+    transform: scale(1);
+  }
+  .moe-choice__input[role="switch"] {
+    width: 1.875rem;
+    height: 1.125rem;
+    place-content: center start;
+    margin-block-start: 0.125rem;
+    padding-inline: 2px;
+    border-radius: var(--moe-radius-pill);
+    background: var(--moe-pressed);
+  }
+  .moe-choice__input[role="switch"]::before {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 0.375rem;
+    background: var(--moe-text-soft);
+    transform: none;
+    transition-timing-function: var(--moe-motion-ease-spring);
+  }
+  .moe-choice__input[role="switch"]:checked::before {
+    background: var(--moe-on-action);
+    transform: translateX(0.75rem);
+  }
+  /* 按住时拇指被压扁，松手弹向另一侧。Held down, the thumb squashes; released, it springs across. */
+  .moe-choice:not(:has(:disabled)):active .moe-choice__input[role="switch"]::before {
+    width: 1rem;
+  }
+  .moe-choice:not(:has(:disabled)):active .moe-choice__input[role="switch"]:checked::before {
+    transform: translateX(0.5rem);
+  }
+  .moe-choice__description {
+    display: block;
+    color: var(--moe-text-soft);
+    font-size: var(--moe-font-size-xs);
+  }
+
+  .moe-segmented {
+    display: inline-flex;
+    width: fit-content;
+    max-width: 100%;
+    overflow-x: auto;
+    margin: 0;
+    padding: 2px;
+    border: 1px solid var(--moe-line);
+    border-radius: var(--moe-radius-sm);
+    background: var(--moe-surface-sunken);
+  }
+  .moe-segmented__option {
+    position: relative;
+    display: inline-flex;
+    min-height: calc(var(--moe-control-sm) - 2px);
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    padding-inline: 0.75rem;
+    border: 1px solid transparent;
+    border-radius: calc(var(--moe-radius-sm) - 2px);
+    color: var(--moe-text-soft);
+    font-size: 0.8125rem;
+    font-weight: var(--moe-font-weight-medium);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color var(--moe-motion-base) var(--moe-motion-ease-standard);
+  }
+  .moe-segmented__option:hover {
+    color: var(--moe-heading);
+  }
+  .moe-segmented__option:has(:checked) {
+    border-color: var(--moe-line);
+    color: var(--moe-heading);
+    background: var(--moe-surface-strong);
+    box-shadow: var(--moe-shadow-sm);
+  }
+  /* 一枚滑块跟随选中项；不支持锚点定位时回到逐项底色。One thumb follows the choice; without anchor positioning each option paints its own. */
+  @supports (anchor-scope: all) {
+    .moe-segmented {
+      position: relative;
+      anchor-scope: --moe-segment;
+    }
+    .moe-segmented__option:has(:checked) {
+      border-color: transparent;
+      background: none;
+      box-shadow: none;
+      anchor-name: --moe-segment;
+    }
+    .moe-segmented:has(:checked)::before {
+      position: absolute;
+      inset: anchor(top) anchor(right) anchor(bottom) anchor(left);
+      border: 1px solid var(--moe-line);
+      border-radius: calc(var(--moe-radius-sm) - 2px);
+      background: var(--moe-surface-strong);
+      box-shadow: var(--moe-shadow-sm);
+      content: "";
+      position-anchor: --moe-segment;
+      transition: inset var(--moe-spring);
+    }
+  }
+  .moe-segmented__option:has(:focus-visible) {
+    outline: 2px solid var(--moe-focus);
+    outline-offset: 1px;
+  }
+  .moe-segmented__option:has(:disabled) {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .moe-segmented__option > input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: inherit;
+  }
+  @media (forced-colors: active) {
+    .moe-choice__input,
+    .moe-choice__input::before {
+      forced-color-adjust: none;
+    }
+    .moe-segmented__option:has(:checked),
+    .moe-segmented:has(:checked)::before {
+      border-color: Highlight;
+    }
+  }
+}

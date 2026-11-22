@@ -55,9 +55,9 @@ async function inventory(version) {
   /** @brief 精确版本的可导航入口 / Navigable exact-version landing page. */
   const versionIndex = `<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
-<title>MoeSegFault Style ${version}</title><link rel="stylesheet" href="css/all.css"></head>
+<title>moeSegFault Style ${version}</title><link rel="stylesheet" href="css/all.css"></head>
 <body class="moe-surface"><main class="moe-container moe-stack" style="padding-block:var(--moe-space-8)">
-<p class="moe-badge">v${version}</p><h1>MoeSegFault Style 静态资源 / Static assets</h1>
+<p class="moe-badge">v${version}</p><h1>moeSegFault Style 静态资源 / Static assets</h1>
 <p>此目录固定为不可变版本 v${version}。This directory is pinned to immutable version v${version}.</p>
 <ul><li><a href="manifest.json">发布清单 / Release manifest</a></li><li><a href="colors/">颜色资源 / Color resources</a></li><li><a href="css/all.css">完整样式 / Complete stylesheet</a></li><li><a href="tokens/tokens.json">设计令牌 / Design tokens</a></li></ul>
 </main></body></html>
@@ -70,7 +70,7 @@ async function inventory(version) {
   /** @brief 精确版本的可导航颜色索引 / Navigable exact-version color index. */
   const colorIndex = `<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
-<title>MoeSegFault Colors ${version}</title><link rel="stylesheet" href="../css/all.css"></head>
+<title>moeSegFault Colors ${version}</title><link rel="stylesheet" href="../css/all.css"></head>
 <body class="moe-surface"><main class="moe-container moe-stack" style="padding-block:var(--moe-space-8)">
 <p class="moe-badge">v${version}</p><h1>颜色资源 / Color resources</h1>
 <p>此页面固定指向版本 v${version}。This page is pinned to version v${version}.</p>
@@ -183,7 +183,7 @@ async function createExactRelease(target, files, manifestText) {
 }
 
 /**
- * @brief 写入 GitHub Pages 可执行的客户端跳转页 / Write a client redirect that works on GitHub Pages.
+ * @brief 写入静态托管可执行的客户端跳转页 / Write a client redirect that needs no server rules.
  * @param {string} target 输出文件 / Output file.
  * @param {string} destination 规范目标 URL / Canonical destination URL.
  * @return {Promise<void>} 完成信号 / Completion signal.

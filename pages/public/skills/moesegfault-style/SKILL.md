@@ -1,11 +1,11 @@
 ---
 name: moesegfault-style
-description: Build or restyle web interfaces with the MoeSegfault Style design system, including its CSS and tokens, React components, Astro components, themes, and versioned static assets. Use when a user asks to adopt, extend, or match MoeSegfault Style; do not use for unrelated generic UI work.
+description: Build or restyle web interfaces with the moeSegFault Style design system, including its CSS and tokens, React components, Astro components, themes, and versioned static assets. Use when a user asks to adopt, extend, or match moeSegFault Style; do not use for unrelated generic UI work.
 ---
 
-# MoeSegfault Style
+# moeSegFault Style
 
-Use the public contracts of `@moesegfault/style` to produce warm, editorial interfaces without recreating the library in application code.
+Use the public contracts of `@moesegfault/style` to produce precise, playful interfaces without recreating the library in application code.
 
 ## Start from the host application
 
@@ -24,9 +24,11 @@ Prefer public layout and UI primitives over copying their markup or CSS. Add app
 
 Keep the visual hierarchy restrained:
 
-- Treat content as the focus and paper-like surfaces as its frame.
-- Use the coral/berry accent for actions and emphasis, not every element.
-- Prefer readable line lengths, generous rhythm, and semantic surface/text tokens.
+- Structure with hairlines (`--moe-line`) first, surface tone second, and shadow only for things that float.
+- Give each view one primary action. Crimson marks that action and current state; honey marks highlights; clover confirms.
+- Prefer readable line lengths, compact controls, and semantic surface/text tokens.
+- Set paths, identifiers, and numbers in the mono face; leave sentences in the sans face.
+- Avoid unnecessary secondary labels and descriptions. Let the layout do the explaining; keep supporting text only when removing it would cause a mistake. Keep accessible names even when they are not visible.
 - Use glass, sparkle, and motion as occasional emphasis. They should not become the page's baseline texture.
 
 Preserve native semantics and the host framework's event, form, and routing conventions. The library supplies visual and interaction primitives, not application state, persistence, authorization, networking, or content policy.

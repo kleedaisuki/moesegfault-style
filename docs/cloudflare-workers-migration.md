@@ -329,6 +329,10 @@ restore. After production acceptance, the one-time DNS mutation and restore step
 were removed from the recurring deployment workflow, along with the repository
 `CNAME`. Workers deployment rollback is now the normal content rollback path.
 
+The observation window closed on 2026-11-22: GitHub Pages was disabled after confirming
+that Cloudflare serves every sampled production path. The Pages certificate had already
+failed renewal. Provider rollback now requires re-enabling Pages and redeploying first.
+
 ## Rollback and destructive boundaries
 
 There are two different rollback operations; do not conflate them.

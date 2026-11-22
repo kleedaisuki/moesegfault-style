@@ -10,14 +10,14 @@ export interface BrandMarkProps extends Omit<HTMLAttributes<HTMLSpanElement>, "c
 }
 
 /**
- * @brief 渲染带星芒的 MoeSegfault 品牌标记。Render the MoeSegfault brand mark with a sparkle.
+ * @brief 渲染带星芒的 moeSegFault 品牌标记。Render the moeSegFault brand mark with a sparkle.
  * @param props 品牌文字、紧凑模式和原生 span 属性。Label, compact mode, and native span props.
  * @return React span 元素。React span element.
  */
 export function BrandMark({
   className,
   compact = false,
-  label = "MoeSegfault",
+  label = "moeSegFault",
   ...props
 }: BrandMarkProps): ReactElement {
   return (
@@ -28,7 +28,14 @@ export function BrandMark({
       role="img"
     >
       <span aria-hidden="true" className="moe-brand-mark__glyph">
-        K
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="currentColor">
+          <title>K</title>
+          <path d="M18 13h9v14.4L40.2 13H51L35.7 30.2 52 51H40.6L28.3 35.3 27 36.7V51h-9V13Z" />
+          <path
+            className="moe-brand-mark__spark"
+            d="m49.5 7 1.8 4.7L56 13.5l-4.7 1.8L49.5 20l-1.8-4.7-4.7-1.8 4.7-1.8L49.5 7Z"
+          />
+        </svg>
       </span>
       {!compact && (
         <span className="moe-brand-mark__text">

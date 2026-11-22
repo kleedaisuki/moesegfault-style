@@ -3,39 +3,39 @@
   "skills": [
     {
       "name": "moesegfault-style",
-      "sourceVersion": "058e668b44c6697cf3aa65fe4417cac89ca2ee4cd7bcfcdc89abdb68e81edd27",
+      "sourceVersion": "46b88372588030fe91da10ac6c42126aa407bc3151cac1f00c0e678b5d4e2473",
       "entrypoint": "/skills/moesegfault-style/SKILL.md",
       "files": [
         {
           "path": "SKILL.md",
           "url": "/skills/moesegfault-style/SKILL.md",
-          "size": 3335,
-          "sha256": "0710980db19c602248c1c22e539cf860db916e82b7b6045e65fbd9dcb2476bbd"
+          "size": 3727,
+          "sha256": "4d0ae68c6a273f01ec9a78301f9519448d5ba17894f5f73c66f914d24ce88040"
         },
         {
           "path": "agents/openai.yaml",
           "url": "/skills/moesegfault-style/agents/openai.yaml",
-          "size": 214,
-          "sha256": "60eee225bd9c50064ee710ef195003a0a0c26150a4ca64269c0df070008cb36c"
+          "size": 216,
+          "sha256": "4c5c51e5e6dbba38d82b7188cac987cf2181be80a50124775906d1950cf75970"
         },
         {
           "path": "references/capabilities.md",
           "url": "/skills/moesegfault-style/references/capabilities.md",
-          "size": 3732,
-          "sha256": "5b38cdd033a1c8bb865106e0a109efb2434560f3fc70af3c448d29943cf3945f"
+          "size": 6048,
+          "sha256": "559cc0bdfc1cc00e945a9bd38a9c2916e50429adf9ae89efea0a0df3e08aac84"
         },
         {
           "path": "references/integration.md",
           "url": "/skills/moesegfault-style/references/integration.md",
-          "size": 5147,
-          "sha256": "97ef611e8a55998e781b7bb250cbcf139832ec97fe91cc1578f46142e405851b"
+          "size": 5421,
+          "sha256": "1bbdb64bf8830a253f8915e6ca5e79055e3cff7f6e7ee78da6bd5772d9c4e110"
         }
       ],
       "archive": {
         "format": "zip",
         "url": "/skills/moesegfault-style.zip",
-        "size": 13052,
-        "sha256": "40c2be1da1b6bb01d36aa2aab72a0ccb62bba6275f1ff71ab1f3b47b8764765b",
+        "size": 16036,
+        "sha256": "ec3f7eb17a7c64a37d66a33ff70ed2ef42b6b17c5b5940a231e8bee7fc39449e",
         "checksumUrl": "/skills/moesegfault-style.zip.sha256"
       }
     }

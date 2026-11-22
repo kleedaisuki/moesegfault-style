@@ -28,15 +28,24 @@
     }
     .moe-hover-lift,
     .moe-press {
-      transition: transform var(--moe-motion-fast) var(--moe-motion-ease-standard);
+      transition: transform var(--moe-motion-spring) var(--moe-motion-ease-spring);
     }
     @media (hover: hover) {
       .moe-hover-lift:hover:not(:disabled, [aria-disabled="true"]) {
-        transform: translateY(-3px);
+        transform: translateY(-2px);
       }
     }
     .moe-press:active:not(:disabled, [aria-disabled="true"]) {
       transform: scale(0.98);
+    }
+  }
+  /* 悬停或聚焦时重绘图标笔画。Redraw icon strokes on hover or focus. */
+  .moe-draw:is(:hover, :focus-visible) .moe-icon > path {
+    animation: moe-draw var(--moe-motion-slow) var(--moe-motion-ease-emphasized);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .moe-draw .moe-icon > path {
+      animation: none;
     }
   }
   @keyframes moe-enter-fade {
@@ -50,7 +59,7 @@
   @keyframes moe-enter-rise {
     from {
       opacity: 0;
-      transform: translateY(12px);
+      transform: translateY(8px);
     }
     to {
       opacity: 1;
@@ -60,7 +69,7 @@
   @keyframes moe-enter-scale {
     from {
       opacity: 0;
-      transform: scale(0.97);
+      transform: scale(0.98);
     }
     to {
       opacity: 1;
@@ -70,7 +79,7 @@
   @keyframes moe-enter-slide {
     from {
       opacity: 0;
-      transform: translateX(-12px);
+      transform: translateX(-8px);
     }
     to {
       opacity: 1;

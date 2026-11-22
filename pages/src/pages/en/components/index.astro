@@ -1,28 +1,5 @@
 ---
-import Container from "@moesegfault/style/astro/Container.astro";
-import { ComponentGallery } from "../../../components/ComponentGallery";
-import CodeBlock from "../../../components/CodeBlock.astro";
-import RichTextGallery from "../../../components/RichTextGallery.astro";
-import { EditorGallery } from "../../../components/EditorGallery";
-import DocsLayout from "../../../layouts/DocsLayout.astro";
+import ComponentsView from "../../../views/ComponentsView.astro";
 ---
 
-<DocsLayout title="Component showcase" description="Warm paper, translucent glass, considered motion, and expressive conversations in MoeSegFault Style v0.1.2." currentPath="/en/components/" locale="en">
-  <header class="page-intro"><Container>
-    <p class="kicker">COMPONENTS / v0.1.2</p>
-    <h1>Same warmth.<br />A new light.</h1>
-    <p class="lede">A frosted pane over your notes, a sparkle beside a reply, a proof that fits the page. Try the pieces below; the paper, ink, and berry stay familiar.</p>
-    <div class="showcase-index" aria-label="Showcase contents"><a href="#glass">Frosted glass</a><a href="#motion">Motion</a><a href="#icons">Original icons</a><a href="#messages">Messages</a><a href="#code">Code highlighting</a><a href="#rich-text">Markdown &amp; TeX</a><a href="#editor">Rich-text editor</a></div>
-  </Container></header>
-  <section class="section section-tint" aria-label="Component showcase"><Container>
-    <ComponentGallery locale="en" client:load />
-    <section class="specimen" id="code" data-testid="v012-code" aria-labelledby="code-title" style="margin-top: 1.25rem">
-      <div class="specimen-heading"><div><p class="eyebrow">06 / Code, in its best light</p><h2 id="code-title">A better light for every line.</h2></div></div>
-      <p>Syntax highlighting, a reading-friendly monospace font, and separate light and dark palettes. Try the theme switch above. Long lines scroll inside the frame, not across the page.</p>
-      <CodeBlock language="tsx" label="React · composition.tsx" code={`import { GlassCard, Icon, MessageBubble } from "@moesegfault/style/react";\nimport "@moesegfault/style/all.css";\n\nexport function Workshop() {\n  return (\n    <GlassCard tone="warm">\n      <Icon name="sparkle" size={24} />\n      <MessageBubble author="Moe" tone="soft">\n        A little light, a little less noise.\n      </MessageBubble>\n    </GlassCard>\n  );\n}`} />
-      <p class="material-caption">Keyboard-focusable scrolling and copy controls. Unknown languages remain safe plain text; source code is not executed as HTML.</p>
-    </section>
-    <RichTextGallery locale="en" />
-    <EditorGallery locale="en" client:visible />
-  </Container></section>
-</DocsLayout>
+<ComponentsView locale="en" />

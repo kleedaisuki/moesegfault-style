@@ -1,0 +1,17 @@
+---
+import Button from "@moesegfault/style/astro/Button.astro";
+import Icon from "@moesegfault/style/astro/Icon.astro";
+import type { SiteLocale } from "../lib/site";
+
+interface Props {
+  text: string;
+  locale: SiteLocale;
+}
+const { text, locale } = Astro.props;
+---
+<div class="install">
+  <code>{text}</code>
+  <Button class="copy-button" variant="ghost" size="sm" data-icon-only data-copy={text} aria-label={locale === "en" ? "Copy stylesheet URL" : "复制样式地址"}>
+    <Icon name="copy" size={16} /><Icon name="check" size={16} />
+  </Button>
+</div>

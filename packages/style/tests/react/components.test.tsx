@@ -72,11 +72,11 @@ describe("基础 React 组件", () => {
   });
 
   it("让紧凑品牌标记仍拥有无障碍名称", () => {
-    const { rerender } = render(<BrandMark compact label="MoeSegfault" />);
-    expect(screen.getByLabelText("MoeSegfault")).toBeTruthy();
+    const { rerender } = render(<BrandMark compact label="moeSegFault" />);
+    expect(screen.getByLabelText("moeSegFault")).toBeTruthy();
 
-    rerender(<BrandMark label="MoeSegfault" />);
-    expect(screen.getByText("MoeSegfault")).toBeTruthy();
+    rerender(<BrandMark label="moeSegFault" />);
+    expect(screen.getByText("moeSegFault")).toBeTruthy();
   });
 
   it("为通知、状态点和徽章暴露稳定状态契约", () => {

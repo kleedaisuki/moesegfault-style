@@ -26,3 +26,17 @@ export { default as CodeBlock } from "./CodeBlock.astro";
 export { default as Markdown } from "./Markdown.astro";
 /** @brief TeX 公式排版。TeX math typesetting. */
 export { default as Math } from "./Math.astro";
+/** @brief 徽章公开类型 / Public badge types. */
+export type { BadgeTone } from "./Badge.astro";
+/** @brief 徽章 Astro 组件 / Badge Astro component. */
+export { default as Badge } from "./Badge.astro";
+/** @brief 自适应网格 Astro 组件 / Responsive grid Astro component. */
+export { default as Grid } from "./Grid.astro";
+/** @brief 界面图标 Astro 组件 / Interface icon Astro component. */
+export { default as Icon } from "./Icon.astro";
+/** @brief 通知公开类型 / Public notice types. */
+export type { NoticeTone } from "./Notice.astro";
+/** @brief 通知 Astro 组件 / Notice Astro component. */
+export { default as Notice } from "./Notice.astro";
+/** @brief 工具面板 Astro 组件 / Tool panel Astro component. */
+export { default as Panel } from "./Panel.astro";

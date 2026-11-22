@@ -1,6 +1,6 @@
 # @moesegfault/style
 
-MoeSegfault 的暖纸编辑工坊设计系统：设计令牌（Design Tokens）、CSS、React 19 组件与原生
+moeSegFault 的 Klee 色系设计系统，绯红行动、蜜金高光：设计令牌（Design Tokens）、CSS、React 19 组件与原生
 Astro 组件。
 
 ```bash
@@ -15,7 +15,54 @@ import { Button, Card } from "@moesegfault/style/react";
 完整文档、组件状态与 Astro/CDN 接入方式见
 [style.moesegfault.dev](https://style.moesegfault.dev)。包采用 GPL-3.0-or-later 许可。
 
-## v0.1.2 · Glass, motion, code, conversations / 玻璃、动效、代码与消息
+## v0.2.0 · Controls, data, navigation, overlays / 控件、数据、导航与浮层
+
+```tsx
+import "@moesegfault/style/all.css";
+import "@moesegfault/style/fonts.css"; // optional Geist + Geist Mono / 可选字体
+import { Button, Field, Panel, Select, Switch } from "@moesegfault/style/react";
+
+<Panel title="deploy.config">
+  <Field label="Channel" hint="Pin an exact version in production.">
+    <Select defaultValue="pinned">
+      <option value="pinned">Pinned</option>
+      <option value="latest">latest</option>
+    </Select>
+  </Field>
+  <Switch label="Follow system theme" defaultChecked />
+  <Button>Apply</Button>
+</Panel>;
+```
+
+| API | Contract / 约定 |
+| --- | --- |
+| `Button`, `IconButton`, `ButtonGroup` | `variant="primary\|contrast\|secondary\|ghost\|danger"`, `loading`, `iconOnly`; `IconButton` and `ButtonGroup` require `label` / 图标按钮与按钮组必须命名。 |
+| `Field` + `Input`, `Textarea`, `Select` | `Field` wires `label`, `hint`, `error`, `required` to the control through context / 自动关联标签、说明与错误。 |
+| `Checkbox`, `Radio`, `Switch` | Native inputs with required `label`, optional `description` / 原生输入。 |
+| `SegmentedControl` | Radio group; `options`, controlled or `defaultValue`, `onValueChange` / 单选组语义。 |
+| `Tabs` | `items`, `label`; arrow keys, Home and End / 方向键、Home 与 End。 |
+| `Accordion`, `AccordionItem` | Native `details` / 原生折叠，无需脚本。 |
+| `Dialog` | Controlled native `dialog`: `open`, `onOpenChange` / 焦点约束与 Escape 由浏览器负责。 |
+| `Tooltip` | One focusable child, `content`, `side`; describes, never replaces a name / 只作补充说明。 |
+| `Table`, `Stat`, `DescriptionList` | `Table` requires `label` and scrolls in its own region; mark numeric cells with `data-numeric` / 表格在自身区域滚动。 |
+| `Progress`, `Spinner`, `Skeleton`, `EmptyState`, `Avatar`, `Kbd`, `Separator` | `Progress` is native and requires `label` / 原生进度条。 |
+| `Panel`, `Card`, `Grid` | `Panel` takes `title`, `actions`, `flush`; `Card` takes `interactive`; `Grid` takes `min`, `ruled` / 面板、卡片与网格。 |
+| `Icon` | 16px stroked glyphs sharing `iconGlyphs`; unnamed icons are decorative / 未命名图标默认为装饰。 |
+
+`data-moe-surface="brand"` turns any region crimson and remaps the roles inside it, so ordinary buttons, text and lines
+stay legible without extra variants. Keep status colors out of it. 品牌表面会重映射内部角色，状态色不要放进去。
+
+Astro ships `Badge`, `BrandMark`, `Button`, `Card`, `Cluster`, `CodeBlock`, `Container`, `Grid`, `Icon`, `Markdown`,
+`Math`, `Notice`, `Panel` and `Stack` with no client script. 原生 Astro 组件不发送客户端脚本。
+
+### Upgrading from 0.1 / 从 0.1 升级
+
+No export, prop, class, variable or import path was removed. Semantic colors now follow the Klee palette; the 0.1
+primitives (`cream-*`, `brown-*`, `coral-*`, `gold`, `green`, `red`, `gray`, `ink`) keep their values and are marked
+`$deprecated`. Radii, shadows, control heights and font stacks also have new defaults; override semantic colors, `--moe-radius-*`, `--moe-shadow-*` or `--moe-font-family-*` to keep
+the old ones. 没有删除公共契约；语义颜色改用 Klee 色系，0.1 原始色板变量保留原值并标为弃用。
+
+## Glass, motion, code, conversations / 玻璃、动效、代码与消息
 
 ```tsx
 import "@moesegfault/style/all.css";
@@ -25,10 +72,10 @@ import {
 
 <Motion preset="rise">
   <GlassCard tone="warm">
-    <Icon name="brand" size={48} title="MoeSegfault" />
+    <Icon name="brand" size={48} title="moeSegFault" />
     <MessageBubble author="Moe" tone="soft" status="Ready">
-      <MessageQuote author="Klee">Keep the warm paper.</MessageQuote>
-      <p>A translucent surface, the same warm identity.</p>
+      <MessageQuote author="Klee">Keep the honey trim.</MessageQuote>
+      <p>A translucent surface, the same identity.</p>
     </MessageBubble>
     <CodeBlock code="const answer = 42;" language="typescript" filename="answer.ts" />
   </GlassCard>
@@ -39,7 +86,6 @@ import {
 | --- | --- |
 | `GlassPanel`, `GlassCard`, `GlassToolbar` | `tone="neutral\|warm\|rose"`; opaque fallback, reduced transparency and forced colors / 实色回退、减少透明度与强制颜色支持。 |
 | `Motion` | `preset="fade\|rise\|scale\|slide"`, `delay`, `duration` (0–2000 ms), `disabled`; one-shot on mount, respects reduced motion / 挂载时单次播放，尊重系统减少动态偏好。 |
-| `Icon` | `name="brand\|sparkle"`, `size`, `title`; unnamed icons are decorative / 未命名图标默认为装饰。 |
 | `CodeBlock` | `code`, `language`, `filename`, `label`, `copyable`, `wrap`; localizable `copyLabel`, `copiedLabel`, `copyErrorLabel` / 可本地化复制反馈。 |
 | `MessageBubble` | Existing props preserved; adds `avatar`, `actions`, `status`, `tone="solid\|soft\|outline"` / 保留旧属性，新增插槽与表面风格。 |
 | Message family / 消息家族 | `MessageTyping`, `MessageQuote`, `MessageAttachment`, `MessageActions`, `MessageAction`; native semantics, no backend implied / 原生语义，不包含后端业务。 |
@@ -55,16 +101,17 @@ escaped plain text; no automatic language guessing. Root token/theme imports do 
 显式支持上述语言；Astro 采用标记语言高亮，不宣称完整编译器级解析。未知语言与超过 50,000 个
 UTF-16 代码单元的输入安全回退纯文本；根令牌入口不加载高亮器。复制需要安全上下文与浏览器支持，失败会明确提示。
 
-The font stack prefers JetBrains Mono; the library does not download fonts. To self-host like the docs:
+Text fonts are opt-in: `@moesegfault/style/fonts.css` self-hosts Geist and Geist Mono (OFL-1.1). Without it the
+stacks fall back to system fonts. Set `--moe-code-font-family` to use another monospace face.
 
-```tsx
-import "@fontsource-variable/jetbrains-mono";
-```
-
-先安装 `@fontsource-variable/jetbrains-mono`，由应用自行托管；也可设置 `--moe-code-font-family`。
-The docs bundle the OFL-1.1 font locally. Highlight.js is BSD-3-Clause; see `THIRD_PARTY_NOTICES.txt`.
+文本字体按需启用；不引入 `fonts.css` 时使用系统字体，也可设置 `--moe-code-font-family`。
+Highlight.js is BSD-3-Clause; see `THIRD_PARTY_NOTICES.txt`.
 
 ### CSS and static SVG / 样式与静态图标
+
+Move geometry with `var(--moe-spring)`, `var(--moe-bounce)`, or `var(--moe-exit)`: each is a duration and easing pair
+that becomes `0s` under reduced motion, so `transition: translate var(--moe-spring)` needs no media query.
+位移请使用这三个成对变量；减少动态时自动归零，无需再写媒体查询。
 
 `all.css` and `components.css` include the new families. Standalone `glass.css`, `motion.css`,
 `messages.css`, `code.css`, and `icons.css` are also exported; load theme tokens and foundations first.
@@ -74,8 +121,8 @@ The `messages.css` enhancement expects the existing `components.css` base.
 `.moe-hover-lift`、`.moe-press`。请勿用动画控制业务状态。
 
 Static assets: `@moesegfault/style/icons/brand.svg` and `@moesegfault/style/icons/sparkle.svg`;
-CDN: `/v0.1.2/assets/icons/brand.svg`. Use meaningful `alt` text on `<img>` or `alt=""` for decoration.
-祖传品牌路径原样保留；已有 `BrandMark` API 不变。
+CDN: `/v0.2.0/assets/icons/brand.svg`. Use meaningful `alt` text on `<img>` or `alt=""` for decoration.
+已有 `BrandMark` API 不变。
 
 ### Frosted glass / 真正的毛玻璃
 

@@ -1,0 +1,51 @@
+---
+import Panel from "@moesegfault/style/astro/Panel.astro";
+import { tokens } from "@moesegfault/style";
+import source from "@moesegfault/style/tokens.dtcg.json";
+
+/** 色板就是字节：每个颜色三字节，地址为真实偏移。The palette is bytes: three per color, at real offsets. */
+const COLUMNS = 5;
+const palette = Object.entries(source.color).flatMap(([name, node]) =>
+  typeof node === "object" && !("$deprecated" in node) ? [{ name, hex: node.$value.hex }] : [],
+);
+
+/** WCAG 相对亮度。WCAG relative luminance. */
+function luminance(hex: string): number {
+  const [r = 0, g = 0, b = 0] = (hex.match(/[\da-f]{2}/gi) ?? []).map((byte) => {
+    const channel = Number.parseInt(byte, 16) / 255;
+    return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+const ink = tokens["color.leather-950"];
+const paper = tokens["color.snow-50"];
+/** 在墨色与纸色中选对比更高者。Pick whichever of ink and paper contrasts more. */
+function readable(hex: string): string {
+  const value = luminance(hex);
+  const onInk = (value + 0.05) / (luminance(ink) + 0.05);
+  const onPaper = (luminance(paper) + 0.05) / (value + 0.05);
+  return onInk > onPaper ? ink : paper;
+}
+const rows = Array.from({ length: Math.ceil(palette.length / COLUMNS) }, (_, row) => ({
+  address: (row * COLUMNS * 3).toString(16).padStart(4, "0"),
+  cells: palette.slice(row * COLUMNS, (row + 1) * COLUMNS),
+}));
+const order = new Map(palette.map(({ name }, index) => [name, index]));
+---
+<div class="moe-ticks">
+  <Panel title="palette.bin" flush>
+    <div class="hexdump">
+      {rows.map(({ address, cells }) => (
+        <Fragment>
+          <span class="hexdump__address" aria-hidden="true">{address}</span>
+          {cells.map(({ name, hex }) => (
+            <button type="button" class="hexdump__cell" data-copy={hex} style={`--cell:${hex};--cell-ink:${readable(hex)};--order:${order.get(name)}`}>
+              <span>{hex.slice(1).match(/../g)?.join(" ")}</span>
+              <small>{name}</small>
+            </button>
+          ))}
+        </Fragment>
+      ))}
+    </div>
+  </Panel>
+</div>
